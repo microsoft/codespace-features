@@ -1,0 +1,23 @@
+{
+    "debian_tests": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "microsoft-git": {
+                "version": "2.39.1.vfs.0.0"
+            }
+        }
+    },
+    "ubuntu_tests": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "microsoft-git": {}
+        }
+    },
+    "mariner_tests": {
+        "image": "mcr.microsoft.com/cbl-mariner/base/core:2.0",
+        "features": {
+            "ghcr.io/devcontainers/features/common-utils:2": {},
+            "microsoft-git": {}
+        }
+    }
+}

@@ -1,0 +1,108 @@
+{
+    "basic-install": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "external-repository": {
+                "cloneUrl": "https://github.com/devcontainers/community",
+                "folder": "/tmp/basic-repos",
+                "cloneSecret": "EXT_GIT_PAT"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },    
+        "onCreateCommand": "external-git clone",
+        "postStartCommand": "external-git config"     
+    },
+    "options-install": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "external-repository": {
+                "gitProvider": "other",
+                "cloneUrl": "https://github.com/devcontainers/community",
+                "folder": "/tmp/options-repos",
+                "cloneSecret": "EXT_GIT_PAT",
+                "options": "--depth 1 --single-branch --no-tags"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },    
+        "onCreateCommand": "external-git clone",
+        "postStartCommand": "external-git config"     
+    },
+    "scalar-basic": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "ghcr.io/devcontainers/features/git:1": {"version": "latest"},
+            "external-repository": {
+                "cloneUrl": "https://github.com/devcontainers/features",
+                "folder": "/tmp/scalar-basic",
+                "cloneSecret": "EXT_GIT_PAT",
+                "scalar": "true"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },    
+        "onCreateCommand": "external-git clone",
+        "postStartCommand": "external-git config"     
+    },
+    "scalar-no-src": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "microsoft-git": {"version": "latest"},
+            "external-repository": {
+                "gitProvider": "azuredevops",
+                "cloneUrl": "https://github.com/devcontainer/features",
+                "folder": "/tmp/scalar-no-src",
+                "cloneSecret": "EXT_GIT_PAT",
+                "options": "--single-branch --no-src",
+                "scalar": "true"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },    
+        "onCreateCommand": "external-git clone",
+        "postStartCommand": "external-git config"     
+    },
+    "sparse-test": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "microsoft-git": {"version": "latest"},
+            "external-repository": {
+                "cloneUrl": "https://github.com/devcontainer/features",
+                "folder": "/tmp/sparse-repos",
+                "cloneSecret": "EXT_GIT_PAT",
+                "options": "--single-branch",
+                "scalar": "true",
+                "sparseCheckout": "src/common-utils test/common-utils"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },    
+        "onCreateCommand": "external-git clone",
+        "postStartCommand": "external-git config"     
+    },
+    "scalar-folder": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "microsoft-git": {"version": "latest"},
+            "external-repository": {
+                "gitProvider": "azuredevops",
+                "cloneUrl": "https://github.com/devcontainer/features",
+                "folder": "/tmp/scalar-folder",
+                "cloneSecret": "EXT_GIT_PAT",
+                "options": "--single-branch --no-src",
+                "scalar": "true"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },    
+        "onCreateCommand": "mkdir /tmp/scalar-folder && external-git clone",
+        "postStartCommand": "external-git config"     
+    }    
+}
