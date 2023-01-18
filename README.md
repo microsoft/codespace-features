@@ -1,14 +1,13 @@
-# Project
+# Codespace Features
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
 
-As the maintainer of this project, please make a few updates:
+This is a repository of [devcontainer features](https://containers.dev/implementors/features/)
+to assist teams in adopting Codespaces. Here is a list of the features in this repository:
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+| Feature | Description |
+| ------- | ----------- |
+| [microsoft-git](src/microsoft-git) | Install microsoft/git with Scalar and GVFS support |
+
 
 ## Contributing
 
