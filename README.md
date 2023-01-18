@@ -6,6 +6,7 @@ to assist teams in adopting Codespaces. Here is a list of the features in this r
 
 | Feature | Description |
 | ------- | ----------- |
+| [external-repository](src/external-repository)   | Handles all the details of working with an external git repository in Codespaces |
 | [microsoft-git](src/microsoft-git) | Install microsoft/git with Scalar and GVFS support |
 
 

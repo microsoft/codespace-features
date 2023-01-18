@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -e
+
+# Optional: Import test library
+source dev-container-features-test-lib
+
+# Definition specific tests
+check "version" grep "2.0\." <(git-credential-manager --version)
+check "git-config" grep "/usr/local/bin/git-credential-manager" <(cat /tmp/scalar-no-src/.git/config)
+check "no-dirs"  grep -v "drwxr" <(ls -l /tmp/scalar-no-src)
+
+
+# Report result
+reportResults

@@ -4,20 +4,59 @@
         "features": {
             "microsoft-git": {
                 "version": "2.39.1.vfs.0.0"
+            },
+            "external-repository": {
+                "gitProvider": "azuredevops",
+                "cloneUrl": "https://github.com/devcontainer/features",
+                "folder": "/tmp/debian_tests",
+                "cloneSecret": "EXT_GIT_PAT",
+                "options": "--single-branch --no-src",
+                "scalar": "true"
             }
-        }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },
+        "onCreateCommand": "external-git clone",
+        "postStartCommand": "external-git config"
     },
     "ubuntu_tests": {
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
-            "microsoft-git": {}
-        }
+            "microsoft-git": {},
+            "external-repository": {
+                "gitProvider": "azuredevops",
+                "cloneUrl": "https://github.com/devcontainer/features",
+                "folder": "/tmp/ubuntu_tests",
+                "cloneSecret": "EXT_GIT_PAT",
+                "options": "--single-branch --no-src",
+                "scalar": "true"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },
+        "onCreateCommand": "external-git clone",
+        "postStartCommand": "external-git config"
     },
     "mariner_tests": {
         "image": "mcr.microsoft.com/cbl-mariner/base/core:2.0",
         "features": {
             "ghcr.io/devcontainers/features/common-utils:2": {},
-            "microsoft-git": {}
-        }
+            "microsoft-git": {},
+            "external-repository": {
+                "gitProvider": "azuredevops",
+                "cloneUrl": "https://github.com/devcontainer/features",
+                "folder": "/tmp/mariner_tests",
+                "cloneSecret": "EXT_GIT_PAT",
+                "options": "--single-branch --no-src",
+                "scalar": "true"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },
+        "onCreateCommand": "external-git clone",
+        "postStartCommand": "external-git config"
     }
 }
