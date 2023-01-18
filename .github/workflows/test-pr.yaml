@@ -15,7 +15,6 @@ jobs:
         id: filter
         with:
           filters: |
-            external-repository: ./**/external-repository/**
             microsoft-git: ./**/microsoft-git/**
   test:
     needs: [detect-changes]
@@ -27,6 +26,7 @@ jobs:
         baseImage:
           [
             "mcr.microsoft.com/devcontainers/base:ubuntu",
+            "mcr.microsoft.com/devcontainers/base:debian",
             "mcr.microsoft.com/cbl-mariner/base/core:2.0",
           ]
     steps:

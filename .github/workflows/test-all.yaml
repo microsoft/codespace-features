@@ -12,10 +12,10 @@ jobs:
     strategy:
       matrix:
         features:
-          - external-repository
           - microsoft-git
         baseImage:
           - mcr.microsoft.com/devcontainers/base:ubuntu
+          - mcr.microsoft.com/devcontainers/base:debian
           - mcr.microsoft.com/cbl-mariner/base/core:2.0
     steps:
       - uses: actions/checkout@v3
