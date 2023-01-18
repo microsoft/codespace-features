@@ -33,8 +33,8 @@ that the token only have this scope.
 "image": "mcr.microsoft.com/devcontainers/universal:ubuntu",
 "features": {
     "ghcr.io/microsoft/codespace-features/external-repository:latest": {
-        "cloneurl": "https://dev.azure.com/contoso/_git/reposname",
-        "clonesecret": "ADO_PAT",
+        "cloneUrl": "https://dev.azure.com/contoso/_git/reposname",
+        "cloneSecret": "ADO_PAT",
         "folder": "/workspaces/ado-repos"
     }
 },
@@ -54,7 +54,7 @@ when they try to push/fetch the repository.
 If you want to allow your users to use their own token, then you can add this to the configuration:
 
 ```json
-        "usersecret": "ADO_SECRET"
+        "userSecret": "ADO_SECRET"
 ```
 
 If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns this secret to the
