@@ -1,0 +1,39 @@
+name: "CI - Test All Features"
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      matrix:
+        features:
+          - external-repository
+          - microsoft-git
+        baseImage:
+          - mcr.microsoft.com/devcontainers/base:ubuntu
+          - mcr.microsoft.com/cbl-mariner/base/core:2.0
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Install latest devcontainer CLI"
+        run: npm install -g @devcontainers/cli
+
+      - name: "Generating tests for '${{ matrix.features }}' against '${{ matrix.baseImage }}'"
+        run: devcontainer features test -f ${{ matrix.features }} -i ${{ matrix.baseImage }} .
+
+  test-global:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: "Install latest devcontainer CLI"
+        run: npm install -g @devcontainers/cli
+
+      - name: "Testing global scenarios"
+        run: devcontainer features test --global-scenarios-only .
