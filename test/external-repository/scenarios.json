@@ -54,7 +54,7 @@
             "microsoft-git": {"version": "latest"},
             "external-repository": {
                 "gitProvider": "azuredevops",
-                "cloneUrl": "https://github.com/devcontainer/features",
+                "cloneUrl": "https://github.com/devcontainers/features",
                 "folder": "/tmp/scalar-no-src",
                 "cloneSecret": "EXT_GIT_PAT",
                 "options": "--single-branch --no-src",
@@ -72,7 +72,7 @@
         "features": {
             "microsoft-git": {"version": "latest"},
             "external-repository": {
-                "cloneUrl": "https://github.com/devcontainer/features",
+                "cloneUrl": "https://github.com/devcontainers/features",
                 "folder": "/tmp/sparse-repos",
                 "cloneSecret": "EXT_GIT_PAT",
                 "options": "--single-branch",
@@ -92,7 +92,7 @@
             "microsoft-git": {"version": "latest"},
             "external-repository": {
                 "gitProvider": "azuredevops",
-                "cloneUrl": "https://github.com/devcontainer/features",
+                "cloneUrl": "https://github.com/devcontainers/features",
                 "folder": "/tmp/scalar-folder",
                 "cloneSecret": "EXT_GIT_PAT",
                 "options": "--single-branch --no-src",

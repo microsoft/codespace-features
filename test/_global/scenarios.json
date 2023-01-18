@@ -7,7 +7,7 @@
             },
             "external-repository": {
                 "gitProvider": "azuredevops",
-                "cloneUrl": "https://github.com/devcontainer/features",
+                "cloneUrl": "https://github.com/devcontainers/features",
                 "folder": "/tmp/debian_tests",
                 "cloneSecret": "EXT_GIT_PAT",
                 "options": "--single-branch --no-src",
@@ -26,7 +26,7 @@
             "microsoft-git": {},
             "external-repository": {
                 "gitProvider": "azuredevops",
-                "cloneUrl": "https://github.com/devcontainer/features",
+                "cloneUrl": "https://github.com/devcontainers/features",
                 "folder": "/tmp/ubuntu_tests",
                 "cloneSecret": "EXT_GIT_PAT",
                 "options": "--single-branch --no-src",
@@ -46,7 +46,7 @@
             "microsoft-git": {},
             "external-repository": {
                 "gitProvider": "azuredevops",
-                "cloneUrl": "https://github.com/devcontainer/features",
+                "cloneUrl": "https://github.com/devcontainers/features",
                 "folder": "/tmp/mariner_tests",
                 "cloneSecret": "EXT_GIT_PAT",
                 "options": "--single-branch --no-src",
