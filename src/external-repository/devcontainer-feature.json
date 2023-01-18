@@ -1,0 +1,77 @@
+{
+    "name": "External Git Repository in Codespace",
+    "id": "external-repository",
+    "version": "1.0.0",
+    "description": "Configures Codespace to work with an external Git repository",
+    "options": {
+        "gitProvider": {
+            "type": "string",
+            "enum": [
+                "azuredevops",
+                "other"
+            ],
+            "default": "azuredevops",
+            "description": "Git Provider"
+        },
+        "cloneUrl": {
+            "type": "string",
+            "default": "",
+            "description": "Clone URL without username: https://dev.azure.com/{organization}/{project}/_git/{repository}"
+        },
+        "folder": {
+            "type": "string",
+            "default": "/workspaces/external-repos",
+            "description": "Specify the workspace path in the devcontainer for the clone"
+        },
+        "username": {
+            "type": "string",
+            "default": "codespaces",
+            "description": "Username for clone (if required)"
+        },
+        "cloneSecret": {
+            "type": "string",
+            "default": "",
+            "description": "Name of the Codespaces repository secret that contains the token or password for clone. Example: ADO_PAT"
+        },
+        "userSecret": {
+            "type": "string",
+            "default": "",
+            "description": "Name of the Codespaces user secret that contains the token or password for Codespace user"
+        },
+        "scalar": {
+            "type": "boolean",
+            "default": false,
+            "description": "Use Scalar to clone the repository"
+        },
+        "sparseCheckout": {
+            "type": "string",
+            "default": "",
+            "description": "Sparse checkout paths when using scalar. Example: common projecta/src projectb/src"
+        },
+        "options": {
+            "type": "string",
+            "default": "",
+            "description": "Additional options for the clone operation: --depth 1 --single-branch --no-tags"
+        },
+        "branch": {
+            "type": "string",
+            "default": "main",
+            "description": "Default branch"
+        },  
+        "timeout": {
+            "type": "string",
+            "default": "30m",
+            "description": "Timeout for the clone operation"
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "jeffwilcox.vscode-toaster"
+            ]
+        }
+    }    
+}

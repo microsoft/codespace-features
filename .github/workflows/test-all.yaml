@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         features:
+          - external-repository        
           - microsoft-git
         baseImage:
           - mcr.microsoft.com/devcontainers/base:ubuntu

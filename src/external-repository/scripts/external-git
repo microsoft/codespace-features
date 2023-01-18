@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -e
+
+SUBCOMMAND=$1
+
+case "${SUBCOMMAND}" in
+    "clone")
+        exec /bin/bash "/usr/local/external-repository-feature/clone.sh"
+        ;;
+    "config")
+        exec /bin/bash "/usr/local/external-repository-feature/setup-user.sh"
+        ;;
+    "setup-user")
+        exec /bin/bash "/usr/local/external-repository-feature/setup-user.sh"
+        ;;
+    "prebuild")
+        if [ "$2" = "get" ]; then
+            source /usr/local/external-repository-feature/variables.sh
+            PREBUILD_PAT=${!EXT_GIT_PREBUILD_PAT}
+            echo "username=${EXT_GIT_USERNAME}"
+            echo "password=${PREBUILD_PAT}"
+        fi
+        exit 0
+        ;;
+    "helper")
+        if [ "$2" = "get" ]; then
+            source /usr/local/external-repository-feature/variables.sh
+            USER_PAT=${!EXT_GIT_USER_PAT}
+            echo "username=${EXT_GIT_USERNAME}"
+            echo "password=${USER_PAT}"
+        fi
+        exit 0
+        ;;
+    *)
+        echo "devcontainer.json example:"
+        echo "  "\"onCreateCommand\": \"external-git clone\",""
+        echo "  "\"postStartCommand\": \"external-git config\",""
+        exit 0
+        ;;
+esac
+exit $?
