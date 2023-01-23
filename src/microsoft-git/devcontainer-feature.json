@@ -1,7 +1,7 @@
 {
     "name": "Microsoft Git for monorepo with GVFS support",
     "id": "microsoft-git",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A fork of Git containing Microsoft-specific patches",
     "options": {
         "version": {
