@@ -94,6 +94,7 @@ is not defined by the user it will fallback to Git Credential Manager.
 
 This feature is tested to work with Debian, Ubuntu and Mariner for the Codespaces base image
 
+
 ---
 
 _Note: This file was auto-generated from the [devcontainer-feature.json](https://github.com/microsoft/codespace-features/blob/main/src/external-repository/devcontainer-feature.json).  Add additional notes to a `NOTES.md`._
