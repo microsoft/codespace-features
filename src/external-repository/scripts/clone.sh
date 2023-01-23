@@ -52,10 +52,23 @@ if [ ! -d  "${EXT_GIT_LOCAL_PATH}"/.git ]; then
         # Perform a scalar clone
         echo "Cloning ${EXT_GIT_REPO_URL} to ${EXT_GIT_LOCAL_PATH} using scalar"
         
-        # If the local path exists, but is empty then we need to remove it
-        # because scalar cannot clone into an existing folder, unlike git
-        # if the folder is not empty, then we will just let this fail
-        if [ -d "${EXT_GIT_LOCAL_PATH}" ] && [ ! "$(ls -A ${EXT_GIT_LOCAL_PATH})" ]; then
+        # Scalar cannot clone into an existing folder so we need to remove it
+        # Anyone using workspaceFolder in Codespaces will have created this folder already
+        # so this will be a common scenario. We have already confirmed there is no .git folder
+        # let's just do one more check to make sure there is not a src/.git folder which
+        # would indicate a previous Scalar clone has been done
+        if [ -d  "${EXT_GIT_LOCAL_PATH}"/src/.git ]; then
+            echo "Repository already cloned"
+            rm ${HOME}/.gitconfig
+            # Put back the original .gitconfig if it exists
+            if [ -f ${HOME}/.gitconfig.external_git_feature ]; then
+                mv ${HOME}/.gitconfig.external_git_feature ${HOME}/.gitconfig
+            fi
+            exit 0
+        fi
+
+        # Remove the local path if it exists
+        if [ -d  "${EXT_GIT_LOCAL_PATH}" ]; then
             rm -rf "${EXT_GIT_LOCAL_PATH}"
         fi
 
@@ -72,7 +85,7 @@ if [ ! -d  "${EXT_GIT_LOCAL_PATH}"/.git ]; then
         if [[ "${EXT_GIT_SPARSECHECKOUT}" != "" ]]; then
             timeout ${EXT_GIT_CLONE_TIMEOUT} git sparse-checkout add ${EXT_GIT_SPARSECHECKOUT}
             if [ $? -eq 124 ]; then
-                echo "git sparse-checkout ommand timed out..."
+                echo "git sparse-checkout command timed out..."
             fi
         fi
         cd "$(dirname "$0")"
