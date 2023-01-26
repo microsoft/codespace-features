@@ -38,7 +38,7 @@ export DEBIAN_FRONTEND=noninteractive
 if [ "${ID}" = "mariner" ]; then
     tdnf install -y curl ca-certificates
 else
-    check_packages curl ca-certificates cron
+    check_packages curl ca-certificates
 fi
 
 # Partial version matching
@@ -60,17 +60,6 @@ fi
 
 
 echo "Downloading Microsoft Git ${GIT_VERSION}..."
-
-# Install crontab
-cp cron-init.sh /usr/local/share/cron-init.sh
-chmod +rx /usr/local/share/cron-init.sh
-if command -v sudo >/dev/null 2>&1; then
-    if [ "root" != "$_REMOTE_USER" ]; then
-        sudo -u ${_REMOTE_USER} bash -c "(crontab -l; echo \"30 0 * * * echo 'running cron'\") | sort -u | crontab -"
-    fi
-fi
-# Create for root user too
-(crontab -l; echo "30 0 * * * echo 'running cron for root'") | sort -u | crontab -
 
 # If ID is mariner
 if [ "${ID}" = "mariner" ]; then
