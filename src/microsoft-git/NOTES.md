@@ -4,4 +4,4 @@ Scalar and support for GVFS protocol.
 
 ## OS Support
 
-This feature is tested on base images for Debian/Ubuntu
+This feature is tested on base images for Debian/Ubuntu and Mariner-CBL 2.0

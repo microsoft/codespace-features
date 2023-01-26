@@ -38,7 +38,7 @@ export DEBIAN_FRONTEND=noninteractive
 if [ "${ID}" = "mariner" ]; then
     tdnf install -y curl ca-certificates
 else
-    check_packages curl ca-certificates
+    check_packages curl ca-certificates cron
 fi
 
 # Partial version matching
@@ -60,17 +60,20 @@ fi
 
 
 echo "Downloading Microsoft Git ${GIT_VERSION}..."
+cp cron-init.sh /usr/local/share/cron-init.sh
+chmod +rx /usr/local/share/cron-init.sh
 
 # If ID is mariner
 if [ "${ID}" = "mariner" ]; then
-    # Install Git so we get all dependencies then install Microsoft Git over it
-    # We need binutils to extract the .deb
-    tdnf install -y wget tar git pcre2 binutils
-    wget -q https://github.com/microsoft/git/releases/download/v${GIT_VERSION}/microsoft-git_${GIT_VERSION}.deb
-    ar x "microsoft-git_${GIT_VERSION}.deb" data.tar.xz
-    tar xvf data.tar.xz -C /
-    rm data.tar.xz
-    rm "microsoft-git_${GIT_VERSION}.deb"
+    # We need to build Git from source release on Mariner
+    tdnf install -y wget tar git pcre2 binutils build-essential openssl-devel expat-devel curl-devel python3-devel gettext asciidoc xmlto cronie
+    wget -q https://github.com/microsoft/git/archive/refs/tags/v${GIT_VERSION}.tar.gz
+    tar xvf v${GIT_VERSION}.tar.gz -C /usr
+    rm v${GIT_VERSION}.tar.gz
+    cd /usr/git-${GIT_VERSION}
+    make prefix=/usr/local all install
+    cd /usr
+    rm -rf git-${GIT_VERSION}
     tdnf clean all
     exit 0
 fi
