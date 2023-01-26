@@ -64,7 +64,7 @@ echo "Downloading Microsoft Git ${GIT_VERSION}..."
 # If ID is mariner
 if [ "${ID}" = "mariner" ]; then
     # We need to build Git from source release on Mariner
-    tdnf install -y wget tar git pcre2 binutils build-essential openssl-devel expat-devel curl-devel python3-devel gettext asciidoc xmlto
+    tdnf install -y wget tar git pcre2 binutils build-essential openssl-devel expat-devel curl-devel python3-devel gettext asciidoc xmlto cronie
     wget -q https://github.com/microsoft/git/archive/refs/tags/v${GIT_VERSION}.tar.gz
     tar xvf v${GIT_VERSION}.tar.gz -C /usr
     rm v${GIT_VERSION}.tar.gz
