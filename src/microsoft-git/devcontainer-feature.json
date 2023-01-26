@@ -18,6 +18,7 @@
             "description": "Select version of Microsoft Git, if not latest."
         }
     },
+    "entrypoint": "/usr/local/share/cron-init.sh",
     "installsAfter": [
         "ghcr.io/devcontainers/features/common-utils"
     ]
