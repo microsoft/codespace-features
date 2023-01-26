@@ -60,8 +60,16 @@ fi
 
 
 echo "Downloading Microsoft Git ${GIT_VERSION}..."
+
+# Install crontab
 cp cron-init.sh /usr/local/share/cron-init.sh
 chmod +rx /usr/local/share/cron-init.sh
+if command -v sudo >/dev/null 2>&1; then
+    if [ "root" != "$_REMOTE_USER" ]; then
+        sudo -u ${_REMOTE_USER} bash -c "(crontab -l; echo "30 0 * * * echo 'running cron'") | sort -u | crontab -"
+        exit 0
+    fi
+fi
 
 # If ID is mariner
 if [ "${ID}" = "mariner" ]; then
