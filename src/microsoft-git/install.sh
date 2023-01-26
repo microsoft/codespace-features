@@ -67,9 +67,10 @@ chmod +rx /usr/local/share/cron-init.sh
 if command -v sudo >/dev/null 2>&1; then
     if [ "root" != "$_REMOTE_USER" ]; then
         sudo -u ${_REMOTE_USER} bash -c "(crontab -l; echo \"30 0 * * * echo 'running cron'\") | sort -u | crontab -"
-        exit 0
     fi
 fi
+# Create for root user too
+(crontab -l; echo "30 0 * * * echo 'running cron for root'") | sort -u | crontab -
 
 # If ID is mariner
 if [ "${ID}" = "mariner" ]; then
