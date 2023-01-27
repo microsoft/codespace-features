@@ -38,7 +38,7 @@ export DEBIAN_FRONTEND=noninteractive
 if [ "${ID}" = "mariner" ]; then
     tdnf install -y curl ca-certificates
 else
-    check_packages curl ca-certificates cron
+    check_packages curl ca-certificates
 fi
 
 # Partial version matching
@@ -60,8 +60,6 @@ fi
 
 
 echo "Downloading Microsoft Git ${GIT_VERSION}..."
-cp cron-init.sh /usr/local/share/cron-init.sh
-chmod +rx /usr/local/share/cron-init.sh
 
 # If ID is mariner
 if [ "${ID}" = "mariner" ]; then
