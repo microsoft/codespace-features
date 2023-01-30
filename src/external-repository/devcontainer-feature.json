@@ -1,7 +1,7 @@
 {
     "name": "External Git Repository in Codespace",
     "id": "external-repository",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "description": "Configures Codespace to work with an external Git repository",
     "options": {
         "gitProvider": {
@@ -62,6 +62,17 @@
             "type": "string",
             "default": "30m",
             "description": "Timeout for the clone operation"
+        },
+        "telemetrySource": {
+            "type": "string",
+            "enum": [
+                "none",
+                "message",
+                "name",
+                "email"
+            ],
+            "default": "none",
+            "description": "Configure source of Git commit telemetry"
         }
     },
     "installsAfter": [

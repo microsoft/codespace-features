@@ -61,6 +61,16 @@ If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns thi
 Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
 is not defined by the user it will fallback to Git Credential Manager.
 
+## Usage Telemetry
+
+If you are looking for ways to track usage of Codespaces within your team, we offer a mechanism
+to install a "telemetrySource" for git commits within the Codespace. This offers three options:
+
+* `none`: the default. Does not make any changes to git
+* `message`: installs commit-msg hook that adds a trailer to the commit message in the form of `Codespaces: name-of-codespace`
+* `name`: changes the user name in the git configuration to `Existing Name (Codespaces)`
+* `email`: changes the email address in the git configuration to `existing+codespaces@domain.com`
+
 ## OS Support
 
 This feature is tested to work with Debian, Ubuntu and Mariner for the Codespaces base image

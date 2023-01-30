@@ -14,6 +14,57 @@
         "onCreateCommand": "external-git clone",
         "postStartCommand": "external-git config"     
     },
+    "telemetry-msg": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "external-repository": {
+                "cloneUrl": "https://github.com/devcontainers/community",
+                "folder": "/tmp/telemetry-msg",
+                "cloneSecret": "EXT_GIT_PAT",
+                "telemetrySource": "message"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },    
+        "onCreateCommand": "external-git clone",
+        "postCreateCommand": "git config --global user.name 'Test User' && git config --global user.email 'testuser@microsoft.com'",
+        "postStartCommand": "external-git config"     
+    },
+    "telemetry-name": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "external-repository": {
+                "cloneUrl": "https://github.com/devcontainers/community",
+                "folder": "/tmp/telemetry-name",
+                "cloneSecret": "EXT_GIT_PAT",
+                "telemetrySource": "name"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },    
+        "onCreateCommand": "external-git clone",
+        "postCreateCommand": "git config --global user.name 'Test User' && git config --global user.email 'testuser@microsoft.com'",
+        "postStartCommand": "external-git config"     
+    },
+    "telemetry-email": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "external-repository": {
+                "cloneUrl": "https://github.com/devcontainers/community",
+                "folder": "/tmp/telemetry-email",
+                "cloneSecret": "EXT_GIT_PAT",
+                "telemetrySource": "email"
+            }
+        },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },    
+        "onCreateCommand": "external-git clone",
+        "postCreateCommand": "git config --global user.name 'Test User' && git config --global user.email 'testuser@microsoft.com'",
+        "postStartCommand": "external-git config"     
+    },
     "options-install": {
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
