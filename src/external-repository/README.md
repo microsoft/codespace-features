@@ -26,6 +26,7 @@ Configures Codespace to work with an external Git repository
 | options | Additional options for the clone operation: --depth 1 --single-branch --no-tags | string | - |
 | branch | Default branch | string | main |
 | timeout | Timeout for the clone operation | string | 30m |
+| telemetrySource | Configure source of Git commit telemetry | string | none |
 
 This feature standardizes and simplifies the proces of setting up a Codespace
 to work with an external repository -- meaning a Git repository other than
@@ -89,6 +90,16 @@ If you want to allow your users to use their own token, then you can add this to
 If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns this secret to the
 Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
 is not defined by the user it will fallback to Git Credential Manager.
+
+## Usage Telemetry
+
+If you are looking for ways to track usage of Codespaces within your team, we offer a mechanism
+to install a "telemetrySource" for git commits within the Codespace. This offers three options:
+
+* `none`: the default. Does not make any changes to git
+* `message`: installs commit-msg hook that adds a trailer to the commit message in the form of `Codespaces: name-of-codespace`
+* `name`: changes the user name in the git configuration to `Existing Name (Codespaces)`
+* `email`: changes the email address in the git configuration to `existing+codespaces@domain.com`
 
 ## OS Support
 
