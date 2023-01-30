@@ -69,7 +69,7 @@ fi
 
 if [ "${EXT_GIT_TELEMETRY}" = "message" ]; then
     echo "Configuring Git commit-msg hook"
-    cp "./commit-msg.sh" >> "${GIT_PATH}/hooks/commit-msg"
+    cp "./commit-msg.sh" "${GIT_PATH}/hooks/commit-msg"
     chmod +x "${GIT_PATH}/hooks/commit-msg"
     exit 0
 fi
