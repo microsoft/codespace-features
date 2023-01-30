@@ -39,16 +39,16 @@ else
     GCM="false"
 fi
 
-CONFIG_PATH=""
+GIT_PATH=""
 if [ -d  "${EXT_GIT_LOCAL_PATH}"/.git ]; then 
-    CONFIG_PATH="${EXT_GIT_LOCAL_PATH}/.git/config"
+    GIT_PATH="${EXT_GIT_LOCAL_PATH}/.git"
 else
-    CONFIG_PATH="${EXT_GIT_LOCAL_PATH}/src/.git/config"
+    GIT_PATH="${EXT_GIT_LOCAL_PATH}/src/.git"
 fi
 
 # See if $EXT_GIT_LOCAL_PATH/.git/config contains [credential] section
-if grep -q "\[credential\]" "${CONFIG_PATH}"; then
-    if grep -q "helper =" "${CONFIG_PATH}"; then
+if grep -q "\[credential\]" "${GIT_PATH}/config"; then
+    if grep -q "helper =" "${GIT_PATH}/config"; then
         echo "Git [credential] is already configured"
         exit 0
     fi
@@ -56,8 +56,55 @@ fi
 
 if [ "$GCM" = "true" ]; then
     echo "Configuring Git Credential Manager"
-    cat "./gcm-git.config" >> "${CONFIG_PATH}"
+    cat "./gcm-git.config" >> "${GIT_PATH}/config"
 else
     echo "Configuring Git Credentials to use a secret"
-    cat "./usersecret-git.config" >> "${CONFIG_PATH}"
+    cat "./usersecret-git.config" >> "${GIT_PATH}/config"
+fi
+
+# Setup Git Telemetry .. note that the checks for the credentials
+# will already have exited the script before we get here if
+# they have previously been configured. So we are relying on
+# that as our way to only do this once
+
+if [ "${EXT_GIT_TELEMETRY}" = "message" ]; then
+    echo "Configuring Git commit-msg hook"
+    cp "./commit-msg.sh" "${GIT_PATH}/hooks/commit-msg"
+    chmod +x "${GIT_PATH}/hooks/commit-msg"
+    exit 0
+fi
+
+if [ "${EXT_GIT_TELEMETRY}" = "name" ]; then
+    echo "Configuring Git Username"
+    cd "${EXT_GIT_LOCAL_PATH}"
+    # Retrieve the user's name from the git config
+    GIT_USER_NAME=$(git config user.name)
+    if [ "${GIT_USER_NAME}" = "" ]; then
+        echo "Git Username is not set"
+        exit 0
+    fi
+    # Set the git user name to the telemetry name
+    git config user.name "${GIT_USER_NAME} (Codespaces)"
+    exit 0
+fi
+
+if [ "${EXT_GIT_TELEMETRY}" = "email" ]; then
+    echo "Configuring Git Email address"
+    cd "${EXT_GIT_LOCAL_PATH}"
+    # Retrieve the user's email from the git config
+    GIT_USER_EMAIL=$(git config user.email)
+    if [ "${GIT_USER_EMAIL}" = "" ]; then
+        echo "Git Email is not set"
+        exit 0
+    fi
+    # Split the email address at the @ sign
+    IFS="@"
+    set -- ${GIT_USER_EMAIL}
+    if [ "${#@}" -ne 2 ];then
+        echo "Could not parse email address"
+        exit 0
+    fi
+    # Set the git user email to the telemetry email
+    git config user.email "${1}+codespaces@${2}"
+    exit 0
 fi

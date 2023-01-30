@@ -13,6 +13,7 @@ EXT_GIT_BRANCH="${BRANCH:-"main"}"
 EXT_GIT_OPTIONS="${OPTIONS:-""}"
 EXT_GIT_SCALAR="${SCALAR:-"false"}"
 EXT_GIT_SPARSECHECKOUT="${SPARSECHECKOUT:-""}"
+EXT_GIT_TELEMETRY="${TELEMETRYSOURCE:-"none"}"
 
 
 if [ "$(id -u)" -ne 0 ]; then
@@ -48,8 +49,9 @@ chmod a+rx /usr/local/bin/external-git
 
 mkdir -p /usr/local/external-repository-feature
 chmod +r /usr/local/external-repository-feature
-cp -r ./scripts/clone.sh /usr/local/external-repository-feature
-cp -r ./scripts/setup-user.sh /usr/local/external-repository-feature
+cp ./scripts/clone.sh /usr/local/external-repository-feature
+cp ./scripts/setup-user.sh /usr/local/external-repository-feature
+cp ./scripts/commit-msg.sh /usr/local/external-repository-feature
 
 # Write the variables.sh script
 echo "EXT_GIT_PROVIDER=\"${EXT_GIT_PROVIDER}\"" > /usr/local/external-repository-feature/variables.sh
@@ -63,6 +65,7 @@ echo "EXT_GIT_BRANCH=\"${EXT_GIT_BRANCH}\"" >> /usr/local/external-repository-fe
 echo "EXT_GIT_OPTIONS=\"${EXT_GIT_OPTIONS}\"" >> /usr/local/external-repository-feature/variables.sh
 echo "EXT_GIT_SCALAR=\"${EXT_GIT_SCALAR}\"" >> /usr/local/external-repository-feature/variables.sh
 echo "EXT_GIT_SPARSECHECKOUT=\"${EXT_GIT_SPARSECHECKOUT}\"" >> /usr/local/external-repository-feature/variables.sh
+echo "EXT_GIT_TELEMETRY=\"${EXT_GIT_TELEMETRY}\"" >> /usr/local/external-repository-feature/variables.sh
 
 # Make the scripts executable
 chmod +rx /usr/local/external-repository-feature/*.sh
