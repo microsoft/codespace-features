@@ -15,7 +15,7 @@ jobs:
         id: filter
         with:
           filters: |
-            docfx: ./**docfx/**
+            docfx: ./**/docfx/**
             external-repository: ./**/external-repository/**
             microsoft-git: ./**/microsoft-git/**
   test:
