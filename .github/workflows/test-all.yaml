@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         features:
+          - docfx
           - external-repository        
           - microsoft-git
         baseImage:
