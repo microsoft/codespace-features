@@ -56,7 +56,7 @@ fi
 if [ "$ADO" = "true" ]; then
     echo "Configuring ADO Authorization Helper"
     ADO_HELPER=$(echo ~)/ado-auth-helper
-    sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" >> "${CONFIG_PATH}"
+    sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" >> "${GIT_PATH}/config"
 else
     echo "Configuring Git Credentials to use a secret"
     cat "./usersecret-git.config" >> "${GIT_PATH}/config"
