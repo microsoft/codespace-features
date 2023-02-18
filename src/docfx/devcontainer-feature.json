@@ -1,19 +1,19 @@
 {
-    "name": "DocFX",
-    "id": "docfx",
-    "version": "1.0.0",
-    "description": "Installs docfx tools",
-    "customizations": {
-        "vscode": {
-            "extensions": [
-				"yzhang.markdown-all-in-one"
-            ]
-        }
-    },
-    "containerEnv": {
-        "PATH": "/home/vscode/.dotnet/tools:${PATH}"
-    },
-    "installsAfter": [
-        "ghcr.io/devcontainers/features/common-utils"
-    ]    
+  "name": "DocFX",
+  "id": "docfx",
+  "version": "1.0.1",
+  "description": "Installs docfx tools",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+         "yzhang.markdown-all-in-one"
+       ]
+    }
+  },
+  "containerEnv": {
+     "PATH": "/home/vscode/.dotnet/tools:${PATH}"
+  },
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/common-utils"
+  ]    
 }
