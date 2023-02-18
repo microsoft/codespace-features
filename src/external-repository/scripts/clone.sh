@@ -54,7 +54,7 @@ if [ ! -d  "${EXT_GIT_LOCAL_PATH}"/.git ]; then
         sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" > ${HOME}/.gitconfig
     else
         # Put the prebuild git config in place
-        cp /usr/local/external-git-feature/prebuild-git.config ${HOME}/.gitconfig
+        cp /usr/local/external-repository-feature/prebuild-git.config ${HOME}/.gitconfig
     fi
 
     # Perform a git clone
