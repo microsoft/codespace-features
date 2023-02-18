@@ -6,8 +6,8 @@ set -e
 source dev-container-features-test-lib
 
 # Definition specific tests
-check "version" grep "2.0\." <(git-credential-manager --version)
-check "git-config" grep "/usr/local/bin/git-credential-manager" <(cat /tmp/telemetry-email/.git/config)
+
+check "git-config" grep "ado-auth-helper" <(cat /tmp/telemetry-email/.git/config)
 
 cd /tmp/telemetry-email
 export CODESPACE_NAME="commit.hooks-testing"

@@ -18,19 +18,28 @@ if [[ "${EXT_GIT_LOCAL_PATH}" == "" ]]; then
 fi
 
 if [[ "${EXT_GIT_PREBUILD_PAT}" == "" ]]; then
-    echo "Clone Secret for Codespace is not set"
-    exit 0;
+    echo "Prebuild secret is not set, attempting to clone with ado-auth-helper"
+    if [ ! -f ${HOME}/ado-auth-helper ]; then
+        echo "Waiting up to 60 seconds for ado-auth-helper extension to be installed"
+    fi    
+    # Wait up to 1 minute for the ado-auth-helper to be installed
+    for i in {1..60}; do
+        if [ -f ${HOME}/ado-auth-helper ]; then
+            break
+        fi
+        sleep 1
+    done
+else
+    # Get the value from environment variable whose name is set in EXT_GIT_PREBUILD_PAT
+    EXT_GIT_PAT_VALUE=${!EXT_GIT_PREBUILD_PAT}
+
+    if [[ "${EXT_GIT_PAT_VALUE}" == "" ]]; then
+        echo "There is no secret stored in ${EXT_GIT_PREBUILD_PAT}"
+        exit 0;
+    fi
 fi
 
-# Get the value from environment variable whose name is set in EXT_GIT_PREBUILD_PAT
-EXT_GIT_PAT_VALUE=${!EXT_GIT_PREBUILD_PAT}
-
-if [[ "${EXT_GIT_PAT_VALUE}" == "" ]]; then
-    echo "There is no secret stored in ${EXT_GIT_PREBUILD_PAT}"
-    exit 0;
-fi
-
-set -ex
+set -e
 
 # If .git directory exists, then we can assume that the repo has already been cloned
 if [ ! -d  "${EXT_GIT_LOCAL_PATH}"/.git ]; then 
@@ -38,8 +47,15 @@ if [ ! -d  "${EXT_GIT_LOCAL_PATH}"/.git ]; then
     if [ -f ${HOME}/.gitconfig ]; then
         mv ${HOME}/.gitconfig ${HOME}/.gitconfig.external_git_feature
     fi
-    # Put the prebuild git config in place
-    cp /usr/local/external-repository-feature/prebuild-git.config ${HOME}/.gitconfig
+
+    if [[ "${EXT_GIT_PREBUILD_PAT}" == "" ]]; then
+        # Put the ado-auth-helper git config in place
+        ADO_HELPER=$(echo ~)/ado-auth-helper
+        sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" > ${HOME}/.gitconfig
+    else
+        # Put the prebuild git config in place
+        cp /usr/local/external-git-feature/prebuild-git.config ${HOME}/.gitconfig
+    fi
 
     # Perform a git clone
     if [[ "${EXT_GIT_SCALAR}" != "true" ]]; then

@@ -23,20 +23,19 @@ if [ ! -d "${EXT_GIT_LOCAL_PATH}" ]; then
     cd "$(dirname "$0")"
 fi
 
-# Until we get user feedback, we will only install GCM for Azure DevOps repositories
-# other git hosting service should use the userSecret approach
+# Configure to use ado-auth-helper unless a userSecret is specified
 if [ "${EXT_GIT_PROVIDER}" = "azuredevops" ]; then
     # Check if a USER PAT variable name is specified
-    # and if it exists with a value set. Otherwise, use GCM
-    GCM="true"
+    # and if it exists with a value set. Otherwise, use ADO Helper
+    ADO="true"
     if [[ "${EXT_GIT_USER_PAT}" != "" ]]; then
         EXT_GIT_PAT_VALUE=${!EXT_GIT_USER_PAT}
         if [[ "${EXT_GIT_PAT_VALUE}" != "" ]]; then
-            GCM="false"
+            ADO="false"
         fi
     fi
 else
-    GCM="false"
+    ADO="false"
 fi
 
 GIT_PATH=""
@@ -54,9 +53,10 @@ if grep -q "\[credential\]" "${GIT_PATH}/config"; then
     fi
 fi
 
-if [ "$GCM" = "true" ]; then
-    echo "Configuring Git Credential Manager"
-    cat "./gcm-git.config" >> "${GIT_PATH}/config"
+if [ "$ADO" = "true" ]; then
+    echo "Configuring ADO Authorization Helper"
+    ADO_HELPER=$(echo ~)/ado-auth-helper
+    sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" >> "${CONFIG_PATH}"
 else
     echo "Configuring Git Credentials to use a secret"
     cat "./usersecret-git.config" >> "${GIT_PATH}/config"

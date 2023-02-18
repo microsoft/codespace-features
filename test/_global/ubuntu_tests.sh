@@ -8,7 +8,7 @@ source dev-container-features-test-lib
 check "git-version" bash -c "git --version | grep 'vfs'"
 check "gcm-version" grep "2.0\." <(git-credential-manager --version)
 check "no-dirs"  grep -v "drwxr" <(ls -l /tmp/debian_tests)
-check "git-config" grep "/usr/local/bin/git-credential-manager" <(cat /tmp/debian_tests/.git/config)
+check "git-config" grep "ado-auth-helper" <(cat /tmp/debian_tests/.git/config)
 
 
 # Report result

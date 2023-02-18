@@ -4,15 +4,10 @@
         "features": {
             "external-repository": {
                 "cloneUrl": "https://github.com/devcontainers/community",
-                "folder": "/tmp/basic-repos",
-                "cloneSecret": "EXT_GIT_PAT"
+                "folder": "/tmp/basic-repos"
             }
         },
-        "remoteEnv": {
-            "EXT_GIT_PAT": "dummypat"
-        },    
-        "onCreateCommand": "external-git clone",
-        "postStartCommand": "external-git config"     
+        "postStartCommand": "external-git clone && external-git config"     
     },
     "telemetry-msg": {
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
