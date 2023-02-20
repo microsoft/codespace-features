@@ -81,7 +81,7 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "RJEx.ado-codespaces-auth-test"
+                "ms-codespaces-tools.ado-codespaces-auth"
             ]
         }
     }    
