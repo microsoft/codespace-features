@@ -5,7 +5,7 @@ set -e
 EXT_GIT_PROVIDER="${GITPROVIDER:-"azuredevops"}"
 EXT_GIT_REPO_URL="${CLONEURL:-"required"}"
 EXT_GIT_USERNAME="${USERNAME:-"user"}"
-EXT_GIT_PREBUILD_PAT="${CLONESECRET:-"required"}"
+EXT_GIT_PREBUILD_PAT="${CLONESECRET:-""}"
 EXT_GIT_LOCAL_PATH="${FOLDER:-"/workspace/external-repos"}"
 EXT_GIT_USER_PAT="${USERSECRET:-""}"
 EXT_GIT_CLONE_TIMEOUT="${TIMEOUT:-"30m"}"
@@ -21,27 +21,8 @@ if [ "$(id -u)" -ne 0 ]; then
     exit 1
 fi
 
-if [ "${EXT_GIT_REPO_URL}" = "required" ]; then
-    echo 'Clone URL is required. Set the feature variable "cloneUrl" to the https:// URL of the repository you want to clone. Example: "https://dev.azure.com/contoso/MyProject/_git/MyRepo".'
-    exit 1
-fi
-
-if [ "${EXT_GIT_PREBUILD_PAT}" = "required" ]; then
-    echo 'Clone Secret is required. Please set the feature variable "cloneSecret" to the name of the Codespaces Secret you will use to store your token. Example: "ADO_PAT".'
-    exit 1
-fi
-
-
 # Change to the directory where this script is located
 cd "$(dirname "$0")"
-
-if [ "${EXT_GIT_PROVIDER}" = "azuredevops" ]; then
-    # Install Git Credential Manager and exit if not zero
-    ./install-gcm.sh
-    if [ $? -ne 0 ]; then
-        exit 1
-    fi
-fi
 
 # Install our scripts to the devcontainer
 cp ./scripts/external-git /usr/local/bin

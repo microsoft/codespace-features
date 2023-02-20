@@ -8,15 +8,9 @@ as well as configuring the Git authentication for the user of the Codespace by
 providing a Git credential helper that does not conflict with the one that is
 installed by Codespaces for the primary repository.
 
-For Azure DevOps repositories, this installs what is currently a [fork of Git Credential Manager](https://github.com/markphip/git-credential-manager)
-that adapts it to work in Codespaces. Specifically, when GCM attempts to use
-the Device Code Flow to authenticate the user, rather than just output to the Terminal (which is
-not visible when Git is run from the VSCode GUI) it also outputs a JSON file with the information.
-A companion VSCode extension is installed by this feature that picks up
-the JSON and displays UI to the user to initiate the flow.
-
-Once we confirm this authentication flow is desirable, we will work with the GCM team to
-upstream this feature in a way that is compatible with their design philosophy.
+For Azure DevOps repositories, this installs a companion VSCode extension that provides
+a Git credential helper that uses the web browser to perform an OAuth 2.0 authentication
+process.
 
 It is always possible to provide a token via the `userSecret` and this is what works with
 other Git hosting providers.
@@ -48,8 +42,7 @@ that the token only have this scope.
 This would clone the repository to `/workspaces/ado-repos` during the Prebuild process
 using the PAT stored in a Codespaces secret. At runtime, when a user opens the Codespace
 the `workspaceFolder` feature would open VS Code to this folder automatically and it
-would be configured to use Git Credential Manager to prompt the user for credentials
-when they try to push/fetch the repository.
+would be configured to prompt the user to login to Azure DevOps when they open the Codespace.
 
 If you want to allow your users to use their own token, then you can add this to the configuration:
 
@@ -59,7 +52,7 @@ If you want to allow your users to use their own token, then you can add this to
 
 If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns this secret to the
 Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
-is not defined by the user it will fallback to Git Credential Manager.
+is not defined by the user it will fallback to the browser login.
 
 ## Usage Telemetry
 
