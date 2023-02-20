@@ -8,7 +8,7 @@ as well as configuring the Git authentication for the user of the Codespace by
 providing a Git credential helper that does not conflict with the one that is
 installed by Codespaces for the primary repository.
 
-For Azure DevOps repositories, this installs a companion VSCode extension that installs
+For Azure DevOps repositories, this installs a companion VSCode extension that provides
 a Git credential helper that uses the web browser to perform an OAuth 2.0 authentication
 process.
 
@@ -42,8 +42,7 @@ that the token only have this scope.
 This would clone the repository to `/workspaces/ado-repos` during the Prebuild process
 using the PAT stored in a Codespaces secret. At runtime, when a user opens the Codespace
 the `workspaceFolder` feature would open VS Code to this folder automatically and it
-would be configured to prompt the user to login to Azure DevOps when they try to push/fetch
-the repository.
+would be configured to prompt the user to login to Azure DevOps when they open the Codespace.
 
 If you want to allow your users to use their own token, then you can add this to the configuration:
 
@@ -68,17 +67,3 @@ to install a "telemetrySource" for git commits within the Codespace. This offers
 ## OS Support
 
 This feature is tested to work with Debian, Ubuntu and Mariner for the Codespaces base image
-
-## Customization
-
-When using this feature with Azure DevOps, we recommend you add the following snippet to your devcontainer.json.
-This hides the port used for authentication process from the **Ports** view in VS Code.
-
-```json
-  "portAttributes": {
-    "34567": {
-    	"label": "adoAuthService",
-    	"onAutoForward": "ignore"
-    }
-  }
-```
