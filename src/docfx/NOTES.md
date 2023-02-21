@@ -4,4 +4,4 @@ send a pull request.
 
 ## OS Support
 
-This feature requires `dotnet tool` and will attempt to install .NET 6.0. It is tested to work on Debian/Ubuntu and Mariner
+This feature requires `dotnet tool` and will attempt to install .NET 6.0. It is tested to work on Debian/Ubuntu and Mariner CBL 2.0

@@ -1,7 +1,7 @@
 {
   "name": "DocFX",
   "id": "docfx",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Installs docfx tools",
   "customizations": {
     "vscode": {
