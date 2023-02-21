@@ -3,7 +3,7 @@
         "image": "mcr.microsoft.com/devcontainers/base:debian",
         "features": {
             "microsoft-git": {
-                "version": "2.39.1.vfs.0.0"
+                "version": "2.39.2.vfs.0.0"
             },
             "external-repository": {
                 "gitProvider": "azuredevops",
