@@ -64,6 +64,13 @@ to install a "telemetrySource" for git commits within the Codespace. This offers
 * `name`: changes the user name in the git configuration to `Existing Name (Codespaces)`
 * `email`: changes the email address in the git configuration to `existing+codespaces@domain.com`
 
+## Azure Artifacts Support
+
+When the provider is `azuredevops` this feature installs [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
+and creates an alias for the `dotnet` command that will configure nuget authentication to use the same token
+used for Git, including the one obtained by the VS Code extension. This should allow nuget to install packages
+from a private feed without any additional user authentication required.
+
 ## OS Support
 
 This feature is tested to work with Debian, Ubuntu and Mariner for the Codespaces base image
