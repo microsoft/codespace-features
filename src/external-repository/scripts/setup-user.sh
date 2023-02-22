@@ -53,6 +53,18 @@ if grep -q "\[credential\]" "${GIT_PATH}/config"; then
     fi
 fi
 
+# Setup dotnet alias for Azure Artifacts to use same
+# authentication as git for nuget
+if [ "${EXT_GIT_PROVIDER}" = "azuredevops" ]; then
+    # Add alias for dotnet to bash and zsh
+    if [ -f ~/.bashrc ]; then
+        echo "alias dotnet='/usr/local/external-repository-feature/run-dotnet.sh'" >> ~/.bashrc
+    fi
+    if [ -f ~/.zshrc ]; then
+        echo "alias dotnet='/usr/local/external-repository-feature/run-dotnet.sh'" >> ~/.zshrc
+    fi
+fi
+
 if [ "$ADO" = "true" ]; then
     echo "Configuring ADO Authorization Helper"
     ADO_HELPER=$(echo ~)/ado-auth-helper

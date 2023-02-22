@@ -33,6 +33,7 @@ chmod +r /usr/local/external-repository-feature
 cp ./scripts/clone.sh /usr/local/external-repository-feature
 cp ./scripts/setup-user.sh /usr/local/external-repository-feature
 cp ./scripts/commit-msg.sh /usr/local/external-repository-feature
+cp ./scripts/run-dotnet.sh /usr/local/external-repository-feature
 
 # Write the variables.sh script
 echo "EXT_GIT_PROVIDER=\"${EXT_GIT_PROVIDER}\"" > /usr/local/external-repository-feature/variables.sh
