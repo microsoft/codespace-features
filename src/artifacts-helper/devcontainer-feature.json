@@ -16,12 +16,12 @@
         },
         "dotnetAlias": {
             "type": "boolean",
-            "default": "true",
+            "default": true,
             "description": "Create alias for dotnet"
         },
         "nugetAlias": {
             "type": "boolean",
-            "default": "true",
+            "default": true,
             "description": "Create alias for nuget"
         }
     },
