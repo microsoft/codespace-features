@@ -12,6 +12,7 @@ jobs:
     strategy:
       matrix:
         features:
+          - artifacts-helper
           - docfx
           - external-repository        
           - microsoft-git

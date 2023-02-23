@@ -1,0 +1,38 @@
+{
+    "name": "Azure Artifacts Credential Helper",
+    "id": "artifacts-helper",
+    "version": "1.0.0",
+    "description": "Configures Codespace to authenticate with Azure Artifact feeds",
+    "options": {
+        "nugetURIPrefixes": {
+            "type": "string",
+            "default": "https://pkgs.dev.azure.com/",
+            "description": "Nuget URI Prefixes"
+        },
+        "dotnet6": {
+            "type": "boolean",
+            "default": false,
+            "description": "Use .NET 6 Runtime"
+        },
+        "dotnetAlias": {
+            "type": "boolean",
+            "default": "true",
+            "description": "Create alias for dotnet"
+        },
+        "nugetAlias": {
+            "type": "boolean",
+            "default": "true",
+            "description": "Create alias for nuget"
+        }
+    },
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-codespaces-tools.ado-codespaces-auth"
+            ]
+        }
+    }    
+}
