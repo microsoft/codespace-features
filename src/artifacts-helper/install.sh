@@ -6,6 +6,8 @@ PREFIXES="${NUGETURIPREFIXES:-"https://pkgs.dev.azure.com/"}"
 USENET6="${DOTNET6:-"false"}"
 ALIAS_DOTNET="${DOTNETALIAS:-"true"}"
 ALIAS_NUGET="${NUGETALIAS:-"true"}"
+ALIAS_NPM="${NPMALIAS:-"true"}"
+ALIAS_YARN="${YARNALIAS:-"true"}"
 
 # Source /etc/os-release to get OS info
 . /etc/os-release
@@ -51,6 +53,13 @@ sed "s|REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX|${PREFIXES}|g" ./scripts/
 chmod +rx /usr/local/bin/run-dotnet.sh
 sed "s|REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX|${PREFIXES}|g" ./scripts/run-nuget.sh > /usr/local/bin/run-nuget.sh
 chmod +rx /usr/local/bin/run-nuget.sh
+cp ./scripts/run-npm.sh /usr/local/bin/run-npm.sh
+chmod +rx /usr/local/bin/run-npm.sh
+cp ./scripts/run-yarn.sh /usr/local/bin/run-yarn.sh
+chmod +rx /usr/local/bin/run-yarn.sh
+cp ./scripts/run-yarn.sh /usr/local/bin/write-npm.sh
+chmod +rx /usr/local/bin/write-npm.sh
+
 
 if command -v sudo >/dev/null 2>&1; then
     if [ "root" != "$_REMOTE_USER" ]; then
@@ -62,6 +71,14 @@ if command -v sudo >/dev/null 2>&1; then
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh' >> ~/.bashrc"
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh' >> ~/.zshrc"
         fi
+        if [ "${ALIAS_NPM}" = "true" ]; then
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias npm=/usr/local/bin/run-npm.sh' >> ~/.bashrc"
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias npm=/usr/local/bin/run-npm.sh' >> ~/.zshrc"
+        fi
+        if [ "${ALIAS_YARN}" = "true" ]; then
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias yarn=/usr/local/bin/run-yarn.sh' >> ~/.bashrc"
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias yarn=/usr/local/bin/run-yarn.sh' >> ~/.zshrc"
+        fi        
         sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
         rm /tmp/install-provider.sh
         exit 0
@@ -76,6 +93,16 @@ fi
 if [ "${ALIAS_NUGET}" = "true" ]; then
     echo "alias nuget='/usr/local/bin/run-nuget.sh'" >> /etc/bash.bashrc || true
     echo "alias nuget='/usr/local/bin/run-nuget.sh'" >> /etc/zsh/zshrc || true
+fi
+
+if [ "${ALIAS_NPM}" = "true" ]; then
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias npm=/usr/local/bin/run-npm.sh' >> /etc/bash.bashrc || true
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias npm=/usr/local/bin/run-npm.sh' >> /etc/zsh/zshrc || true
+fi
+
+if [ "${ALIAS_YARN}" = "true" ]; then
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias yarn=/usr/local/bin/run-yarn.sh' >> /etc/bash.bashrc || true
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias yarn=/usr/local/bin/run-yarn.sh' >> /etc/zsh/zshrc || true
 fi
 
 rm /tmp/install-provider.sh
