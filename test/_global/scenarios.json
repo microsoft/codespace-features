@@ -5,6 +5,7 @@
             "microsoft-git": {
                 "version": "2.39.2.vfs.0.0"
             },
+            "artifacts-helper": {},
             "external-repository": {
                 "gitProvider": "azuredevops",
                 "cloneUrl": "https://github.com/devcontainers/features",
@@ -31,7 +32,8 @@
                 "cloneSecret": "EXT_GIT_PAT",
                 "options": "--single-branch --no-src",
                 "scalar": "true"
-            }
+            },
+            "artifacts-helper": {}
         },
         "remoteEnv": {
             "EXT_GIT_PAT": "dummypat"
@@ -51,7 +53,8 @@
                 "cloneSecret": "EXT_GIT_PAT",
                 "options": "--single-branch --no-src",
                 "scalar": "true"
-            }
+            },
+            "artifacts-helper": {}
         },
         "remoteEnv": {
             "EXT_GIT_PAT": "dummypat"
