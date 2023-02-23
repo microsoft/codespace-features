@@ -8,8 +8,7 @@ source dev-container-features-test-lib
 # Feature-specific tests
 check "dotnet" grep "pkgs.dev.azure.com" <(cat /usr/local/bin/run-dotnet.sh)
 check "nuget" grep "pkgs.dev.azure.com" <(cat /usr/local/bin/run-nuget.sh)
-/usr/local/bin/write-npm.sh pkgs.dev.azure.com
-check "npm" grep "pkgs.dev.azure.com" <(cat ~/.npmrc)
+check "write-npm" /usr/local/bin/write-npm.sh pkgs.dev.azure.com && grep "pkgs.dev.azure.com" <(cat ~/.npmrc)
 
 
 # Report results

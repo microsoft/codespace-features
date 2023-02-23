@@ -57,7 +57,7 @@ cp ./scripts/run-npm.sh /usr/local/bin/run-npm.sh
 chmod +rx /usr/local/bin/run-npm.sh
 cp ./scripts/run-yarn.sh /usr/local/bin/run-yarn.sh
 chmod +rx /usr/local/bin/run-yarn.sh
-cp ./scripts/run-yarn.sh /usr/local/bin/write-npm.sh
+cp ./scripts/write-npm.sh /usr/local/bin/write-npm.sh
 chmod +rx /usr/local/bin/write-npm.sh
 
 
