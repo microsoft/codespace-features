@@ -62,7 +62,7 @@ if command -v sudo >/dev/null 2>&1; then
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh'" >> ~/.bashrc
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh'" >> ~/.zshrc
         fi
-        sudo -u ${_REMOTE_USER} bash -c "./tmp/install-provider.sh ${USENET6}"
+        sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
         rm /tmp/install-provider.sh
         exit 0
     fi
