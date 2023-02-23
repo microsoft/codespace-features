@@ -20,10 +20,10 @@ fi
 if [[ "${EXT_GIT_PREBUILD_PAT}" == "" ]]; then
     echo "Prebuild secret is not set, attempting to clone with ado-auth-helper"
     if [ ! -f ${HOME}/ado-auth-helper ]; then
-        echo "Waiting up to 60 seconds for ado-auth-helper extension to be installed"
+        echo "Waiting up to 180 seconds for ado-auth-helper extension to be installed"
     fi    
-    # Wait up to 1 minute for the ado-auth-helper to be installed
-    for i in {1..60}; do
+    # Wait up to 3 minutes for the ado-auth-helper to be installed
+    for i in {1..180}; do
         if [ -f ${HOME}/ado-auth-helper ]; then
             break
         fi

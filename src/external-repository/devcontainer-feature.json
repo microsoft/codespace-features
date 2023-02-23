@@ -1,7 +1,7 @@
 {
     "name": "External Git Repository in Codespace",
     "id": "external-repository",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "Configures Codespace to work with an external Git repository",
     "options": {
         "gitProvider": {
