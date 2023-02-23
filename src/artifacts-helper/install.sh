@@ -55,12 +55,12 @@ chmod +rx /usr/local/bin/run-nuget.sh
 if command -v sudo >/dev/null 2>&1; then
     if [ "root" != "$_REMOTE_USER" ]; then
         if [ "${ALIAS_DOTNET}" = "true" ]; then
-            sudo -u ${_REMOTE_USER} bash -c "echo 'alias dotnet=/usr/local/bin/run-dotnet.sh'" >> ~/.bashrc
-            sudo -u ${_REMOTE_USER} bash -c "echo 'alias dotnet=/usr/local/bin/run-dotnet.sh'" >> ~/.zshrc
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias dotnet=/usr/local/bin/run-dotnet.sh' >> ~/.bashrc"
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias dotnet=/usr/local/bin/run-dotnet.sh' >> ~/.zshrc"
         fi
         if [ "${ALIAS_NUGET}" = "true" ]; then
-            sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh'" >> ~/.bashrc
-            sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh'" >> ~/.zshrc
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh' >> ~/.bashrc"
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh' >> ~/.zshrc"
         fi
         sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
         rm /tmp/install-provider.sh
