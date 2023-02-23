@@ -31,27 +31,20 @@ if command -v sudo >/dev/null 2>&1; then
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh'" >> ~/.bashrc
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias nuget=/usr/local/bin/run-nuget.sh'" >> ~/.zshrc
         fi
-        if [ "${USENET6}" = "true" ]; then
-            sudo -u ${_REMOTE_USER} bash -c "echo 'export USE_NET6_ARTIFACTS_CREDENTIAL_PROVIDER=true'" >> ~/.bashrc"
-            sudo -u ${_REMOTE_USER} bash -c "echo 'export USE_NET6_ARTIFACTS_CREDENTIAL_PROVIDER=true'" >> ~/.zshrc"
-        fi
-        exit 0
+        sudo -u ${_REMOTE_USER} bash -c "./scripts/install-provider.sh ${USENET6}"
     fi
 fi
 
 if [ "${ALIAS_DOTNET}" = "true" ]; then
-    echo "alias dotnet='/usr/local/bin/run-dotnet.sh'" >> /etc/bash.bashrc
-    echo "alias dotnet='/usr/local/bin/run-dotnet.sh'" >> /etc/zsh/zshrc
+    echo "alias dotnet='/usr/local/bin/run-dotnet.sh'" >> /etc/bash.bashrc || true
+    echo "alias dotnet='/usr/local/bin/run-dotnet.sh'" >> /etc/zsh/zshrc || true
 fi
 
 if [ "${ALIAS_NUGET}" = "true" ]; then
-    echo "alias nuget='/usr/local/bin/run-nuget.sh'" >> /etc/bash.bashrc
-    echo "alias nuget='/usr/local/bin/run-nuget.sh'" >> /etc/zsh/zshrc
+    echo "alias nuget='/usr/local/bin/run-nuget.sh'" >> /etc/bash.bashrc || true
+    echo "alias nuget='/usr/local/bin/run-nuget.sh'" >> /etc/zsh/zshrc || true
 fi
 
-if [ "${USENET6}" = "true" ]; then
-   echo "export USE_NET6_ARTIFACTS_CREDENTIAL_PROVIDER=true" >> /etc/bash.bashrc
-   echo "export USE_NET6_ARTIFACTS_CREDENTIAL_PROVIDER=true" >> /etc/zsh/zshrc
-fi
+./scripts/install-provider.sh ${USENET6}
 
 exit 0
