@@ -12,8 +12,8 @@ if [ "${ARTIFACTS_FEED}" = "required" ]; then
 fi
 
 echo "//${ARTIFACTS_FEED}/registry/:username=${FEED_USER}" >> ${HOME}/.npmrc
-echo "//${ARTIFACTS_FEED}/registry/:_password=\${ARTIFACTS_ACCESSTOKEN}" >> ${HOME}/.npmrc
+echo "//${ARTIFACTS_FEED}/registry/:_authToken=\${ARTIFACTS_ACCESSTOKEN}" >> ${HOME}/.npmrc
 echo "//${ARTIFACTS_FEED}/registry/:email=${FEED_EMAIL}" >> ${HOME}/.npmrc
 echo "//${ARTIFACTS_FEED}/:username=${FEED_USER}"  >> ${HOME}/.npmrc
-echo "//${ARTIFACTS_FEED}/:_password=\${ARTIFACTS_ACCESSTOKEN}" >> ${HOME}/.npmrc
+echo "//${ARTIFACTS_FEED}/:_authToken=\${ARTIFACTS_ACCESSTOKEN}" >> ${HOME}/.npmrc
 echo "//${ARTIFACTS_FEED}/:email=${FEED_EMAIL}" >> ${HOME}/.npmrc
