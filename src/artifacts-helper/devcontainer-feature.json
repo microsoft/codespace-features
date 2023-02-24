@@ -1,7 +1,7 @@
 {
     "name": "Azure Artifacts Credential Helper",
     "id": "artifacts-helper",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Configures Codespace to authenticate with Azure Artifact feeds",
     "options": {
         "nugetURIPrefixes": {
