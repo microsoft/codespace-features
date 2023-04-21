@@ -130,13 +130,11 @@ if [ ${#EXT_GIT_REPO_URL_ARRAY[@]} -gt 1 ]; then
         REPO_URL=$i
         # Get the folder name from the last part of the URL
         REPO_FOLDER=$(echo "${REPO_URL}" | awk -F'/' '{print $NF}' | awk -F'.' '{print $1}')
-        LOCAL_PATH=${EXT_GIT_LOCAL_PATH}/${REPO_FOLDER
+        LOCAL_PATH=${EXT_GIT_LOCAL_PATH}/${REPO_FOLDER}
         # Clone the repo
-        clone_repository $REPO_URL $LOCAL_PATH
+        clone_repository ${REPO_URL} ${LOCAL_PATH}
     done
     exit 0
 fi
 # There was only one repository specified
-clone_repository $EXT_GIT_REPO_URL $EXT_GIT_LOCAL_PATH
-
-
+clone_repository ${EXT_GIT_REPO_URL} ${EXT_GIT_LOCAL_PATH}
