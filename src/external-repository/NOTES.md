@@ -54,6 +54,12 @@ If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns thi
 Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
 is not defined by the user it will fallback to the browser login.
 
+## Multiple Repository Support
+
+As of version 3, you can clone multiple repositories by separating the URL's with a comma. In this
+mode all of the repositories will be cloned to the folder. Each will get a local folder name from the
+last part of the clone URL so this value has to be unique for each repository specified.
+
 ## Usage Telemetry
 
 If you are looking for ways to track usage of Codespaces within your team, we offer a mechanism

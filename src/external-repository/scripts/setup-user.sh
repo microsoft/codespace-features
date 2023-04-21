@@ -6,6 +6,81 @@ cd "$(dirname "$0")"
 # Load the variables
 source ./variables.sh
 
+configure_git_for_user() {
+
+    GIT_PATH=""
+    if [ -d  "${1}"/.git ]; then 
+        GIT_PATH="${1}/.git"
+    else
+        GIT_PATH="${1}/src/.git"
+    fi
+
+    # See if $GIT_PATH/.git/config contains [credential] section
+    if grep -q "\[credential\]" "${GIT_PATH}/config"; then
+        if grep -q "helper =" "${GIT_PATH}/config"; then
+            echo "Git [credential] is already configured"
+            return
+        fi
+    fi
+
+    if [ "$ADO" = "true" ]; then
+        echo "Configuring ADO Authorization Helper"
+        ADO_HELPER=$(echo ~)/ado-auth-helper
+        sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" >> "${GIT_PATH}/config"
+    else
+        echo "Configuring Git Credentials to use a secret"
+        cat "./usersecret-git.config" >> "${GIT_PATH}/config"
+    fi
+
+    # Setup Git Telemetry .. note that the checks for the credentials
+    # will already have exited the script before we get here if
+    # they have previously been configured. So we are relying on
+    # that as our way to only do this once
+
+    if [ "${EXT_GIT_TELEMETRY}" = "message" ]; then
+        echo "Configuring Git commit-msg hook"
+        cp "./commit-msg.sh" "${GIT_PATH}/hooks/commit-msg"
+        chmod +x "${GIT_PATH}/hooks/commit-msg"
+        return
+    fi
+
+    if [ "${EXT_GIT_TELEMETRY}" = "name" ]; then
+        echo "Configuring Git Username"
+        cd "${EXT_GIT_LOCAL_PATH}"
+        # Retrieve the user's name from the git config
+        GIT_USER_NAME=$(git config user.name)
+        if [ "${GIT_USER_NAME}" = "" ]; then
+            echo "Git Username is not set"
+            return
+        fi
+        # Set the git user name to the telemetry name
+        git config user.name "${GIT_USER_NAME} (Codespaces)"
+        return
+    fi
+
+    if [ "${EXT_GIT_TELEMETRY}" = "email" ]; then
+        echo "Configuring Git Email address"
+        cd "${EXT_GIT_LOCAL_PATH}"
+        # Retrieve the user's email from the git config
+        GIT_USER_EMAIL=$(git config user.email)
+        if [ "${GIT_USER_EMAIL}" = "" ]; then
+            echo "Git Email is not set"
+            return
+        fi
+        # Split the email address at the @ sign
+        IFS="@"
+        set -- ${GIT_USER_EMAIL}
+        if [ "${#@}" -ne 2 ];then
+            echo "Could not parse email address"
+            return
+        fi
+        # Set the git user email to the telemetry email
+        git config user.email "${1}+codespaces@${2}"
+        return
+    fi
+        
+}
+
 if [[ "${EXT_GIT_LOCAL_PATH}" == "" ]]; then
     echo "Repository Local Path is not set"
     exit 1;
@@ -38,73 +113,22 @@ else
     ADO="false"
 fi
 
-GIT_PATH=""
-if [ -d  "${EXT_GIT_LOCAL_PATH}"/.git ]; then 
-    GIT_PATH="${EXT_GIT_LOCAL_PATH}/.git"
-else
-    GIT_PATH="${EXT_GIT_LOCAL_PATH}/src/.git"
-fi
 
-# See if $EXT_GIT_LOCAL_PATH/.git/config contains [credential] section
-if grep -q "\[credential\]" "${GIT_PATH}/config"; then
-    if grep -q "helper =" "${GIT_PATH}/config"; then
-        echo "Git [credential] is already configured"
-        exit 0
-    fi
-fi
-
-if [ "$ADO" = "true" ]; then
-    echo "Configuring ADO Authorization Helper"
-    ADO_HELPER=$(echo ~)/ado-auth-helper
-    sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" >> "${GIT_PATH}/config"
-else
-    echo "Configuring Git Credentials to use a secret"
-    cat "./usersecret-git.config" >> "${GIT_PATH}/config"
-fi
-
-# Setup Git Telemetry .. note that the checks for the credentials
-# will already have exited the script before we get here if
-# they have previously been configured. So we are relying on
-# that as our way to only do this once
-
-if [ "${EXT_GIT_TELEMETRY}" = "message" ]; then
-    echo "Configuring Git commit-msg hook"
-    cp "./commit-msg.sh" "${GIT_PATH}/hooks/commit-msg"
-    chmod +x "${GIT_PATH}/hooks/commit-msg"
+# Split EXT_GIT_REPO_URL into an array based on a comma delimiter
+IFS=',' read -ra EXT_GIT_REPO_URL_ARRAY <<< "${EXT_GIT_REPO_URL}"
+# If there is more than one repo URL, then we need to clone each one
+if [ ${#EXT_GIT_REPO_URL_ARRAY[@]} -gt 1 ]; then
+    # Loop through each repo URL
+    for i in "${EXT_GIT_REPO_URL_ARRAY[@]}"; do
+        # Set the repo URL to the current value
+        REPO_URL=$i
+        # Get the folder name from the last part of the URL
+        REPO_FOLDER=$(echo "${REPO_URL}" | awk -F'/' '{print $NF}' | awk -F'.' '{print $1}')
+        LOCAL_PATH=${EXT_GIT_LOCAL_PATH}/${REPO_FOLDER
+        # Clone the repo
+        configure_git_for_user $LOCAL_PATH
+    done
     exit 0
 fi
-
-if [ "${EXT_GIT_TELEMETRY}" = "name" ]; then
-    echo "Configuring Git Username"
-    cd "${EXT_GIT_LOCAL_PATH}"
-    # Retrieve the user's name from the git config
-    GIT_USER_NAME=$(git config user.name)
-    if [ "${GIT_USER_NAME}" = "" ]; then
-        echo "Git Username is not set"
-        exit 0
-    fi
-    # Set the git user name to the telemetry name
-    git config user.name "${GIT_USER_NAME} (Codespaces)"
-    exit 0
-fi
-
-if [ "${EXT_GIT_TELEMETRY}" = "email" ]; then
-    echo "Configuring Git Email address"
-    cd "${EXT_GIT_LOCAL_PATH}"
-    # Retrieve the user's email from the git config
-    GIT_USER_EMAIL=$(git config user.email)
-    if [ "${GIT_USER_EMAIL}" = "" ]; then
-        echo "Git Email is not set"
-        exit 0
-    fi
-    # Split the email address at the @ sign
-    IFS="@"
-    set -- ${GIT_USER_EMAIL}
-    if [ "${#@}" -ne 2 ];then
-        echo "Could not parse email address"
-        exit 0
-    fi
-    # Set the git user email to the telemetry email
-    git config user.email "${1}+codespaces@${2}"
-    exit 0
-fi
+# There was only one repository specified
+configure_git_for_user $EXT_GIT_LOCAL_PATH
