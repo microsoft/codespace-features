@@ -60,6 +60,20 @@ As of version 3, you can clone multiple repositories by separating the URL's wit
 mode all of the repositories will be cloned to the folder. Each will get a local folder name from the
 last part of the clone URL so this value has to be unique for each repository specified.
 
+## AzDO Branch/PR Support
+
+When `external-git config` is executed it will check the branch name of the Codespaces bridge repository
+and if it begins with "azdo/" then it will treat the rest of the branch name as an AzDO branch name
+to checkout on the external repository. The idea here is that a utility could be created in AzDO that
+would let you open a Pull Request in a Codespace. The process would create a new branch in the bridge
+repository named "azdo/branch/name" and then create the Codespace on that branch name. When the Codespace
+opens and clones the AzDO repository default branch it will then detect the need to fetch and checkout
+the requested branch.
+
+If a different process is desired for determining the branch name, then an environment variabled named
+`AZDO_PR_BRANCH` can be created with the name of the branch that should be checked out. When the `external-git config`
+command runs it will also detect that this envvar is set and checkout that
+
 ## Usage Telemetry
 
 If you are looking for ways to track usage of Codespaces within your team, we offer a mechanism

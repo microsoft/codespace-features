@@ -123,6 +123,9 @@ fi
 # Split EXT_GIT_REPO_URL into an array based on a comma delimiter
 IFS=',' read -ra EXT_GIT_REPO_URL_ARRAY <<< "${EXT_GIT_REPO_URL}"
 # If there is more than one repo URL, then we need to clone each one
+# When there is more than one repo URL, the EXT_GIT_LOCAL_PATH is the parent folder
+# that will contain the repositories. When there is only one repo URL, the EXT_GIT_LOCAL_PATH
+# is the folder that will contain the repository
 if [ ${#EXT_GIT_REPO_URL_ARRAY[@]} -gt 1 ]; then
     # Loop through each repo URL
     for i in "${EXT_GIT_REPO_URL_ARRAY[@]}"; do

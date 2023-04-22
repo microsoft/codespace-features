@@ -6,13 +6,27 @@ cd "$(dirname "$0")"
 # Load the variables
 source ./variables.sh
 
-configure_git_for_user() {
+checkout_branch() {
+    # If AZDO_BRANCH is not set, then return
+    if [[ "${AZDO_BRANCH}" == "" ]]; then
+        return
+    fi
+    echo "Checking out branch ${AZDO_BRANCH}"
+    cd ${1}
+    # fetch the branch named AZDO_BRANCH
+    git fetch origin ${AZDO_BRANCH}
+    git checkout ${AZDO_BRANCH}
+}
 
+configure_git_for_user() {
     GIT_PATH=""
+    WC_PATH=""
     if [ -d  "${1}"/.git ]; then 
         GIT_PATH="${1}/.git"
+        WC_PATH="${1}"
     else
         GIT_PATH="${1}/src/.git"
+        WC_PATH="${1}/src"
     fi
 
     # See if $GIT_PATH/.git/config contains [credential] section
@@ -27,6 +41,18 @@ configure_git_for_user() {
         echo "Configuring ADO Authorization Helper"
         ADO_HELPER=$(echo ~)/ado-auth-helper
         sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" >> "${GIT_PATH}/config"
+        # See if there was a request to checkout an AzDO branch by checking the branch name of
+        # the Codespaces bridge repository. If the branch name begins with azdo/ then the
+        # rest of the branch name is the branch to checkout.
+        CS_FOLDER=/workspaces/${RepositoryName}
+        CS_BRANCH_NAME=$(git -C ${CS_FOLDER} branch --show-current)
+        if [[ ${CS_BRANCH_NAME} == azdo/* ]]; then
+            export AZDO_BRANCH=${CS_BRANCH_NAME#azdo/}
+        fi
+        # Call the function regardless so that some other process can set the AZDO_BRANCH variable
+        # before this script is called and it will still work. This allows for other techniques to be
+        # used to communicate the desire to checkout a branch
+        checkout_branch ${WC_PATH}
     else
         echo "Configuring Git Credentials to use a secret"
         cat "./usersecret-git.config" >> "${GIT_PATH}/config"
@@ -39,14 +65,14 @@ configure_git_for_user() {
 
     if [ "${EXT_GIT_TELEMETRY}" = "message" ]; then
         echo "Configuring Git commit-msg hook"
-        cp "./commit-msg.sh" "${GIT_PATH}/hooks/commit-msg"
+        cp "/usr/local/external-repository-feature/commit-msg.sh" "${GIT_PATH}/hooks/commit-msg"
         chmod +x "${GIT_PATH}/hooks/commit-msg"
         return
     fi
 
     if [ "${EXT_GIT_TELEMETRY}" = "name" ]; then
-        echo "Configuring Git Username"
-        cd "${EXT_GIT_LOCAL_PATH}"
+        echo "Confguring Git Username"
+        cd "${WC_PATH}"
         # Retrieve the user's name from the git config
         GIT_USER_NAME=$(git config user.name)
         if [ "${GIT_USER_NAME}" = "" ]; then
@@ -60,7 +86,7 @@ configure_git_for_user() {
 
     if [ "${EXT_GIT_TELEMETRY}" = "email" ]; then
         echo "Configuring Git Email address"
-        cd "${EXT_GIT_LOCAL_PATH}"
+        cd "${WC_PATH}"
         # Retrieve the user's email from the git config
         GIT_USER_EMAIL=$(git config user.email)
         if [ "${GIT_USER_EMAIL}" = "" ]; then
@@ -114,9 +140,12 @@ else
 fi
 
 
-# Split EXT_GIT_REPO_URL into an array based on a comma delimiter
+# Split EXT_GIT_REPO_URL into an array based on a comma delimiter if multiple URLs are specified
 IFS=',' read -ra EXT_GIT_REPO_URL_ARRAY <<< "${EXT_GIT_REPO_URL}"
-# If there is more than one repo URL, then we need to clone each one
+# If there is more than one repo URL, then we need to configure each one
+# When there is more than one repo URL, the EXT_GIT_LOCAL_PATH is the parent folder
+# that will contain the repositories. When there is only one repo URL, the EXT_GIT_LOCAL_PATH
+# is the folder that will contain the repository
 if [ ${#EXT_GIT_REPO_URL_ARRAY[@]} -gt 1 ]; then
     # Loop through each repo URL
     for i in "${EXT_GIT_REPO_URL_ARRAY[@]}"; do
