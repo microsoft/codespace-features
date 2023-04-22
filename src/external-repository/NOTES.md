@@ -71,7 +71,7 @@ opens and clones the AzDO repository default branch it will then detect the need
 the requested branch.
 
 If a different process is desired for determining the branch name, then an environment variabled named
-`AZDO_PR_BRANCH` can be created with the name of the branch that should be checked out. When the `external-git config`
+`AZDO_BRANCH` can be created with the name of the branch that should be checked out. When the `external-git config`
 command runs it will also detect that this envvar is set and checkout that
 
 ## Usage Telemetry
