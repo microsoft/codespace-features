@@ -44,13 +44,16 @@ configure_git_for_user() {
         # See if there was a request to checkout an AzDO branch by checking the branch name of
         # the Codespaces bridge repository. If the branch name begins with azdo/ then the
         # rest of the branch name is the branch to checkout.
-        CS_FOLDER=/workspaces/${RepositoryName}
-        if [ -d "${CS_FOLDER}" ]; then
-            CS_BRANCH_NAME=$(git -C ${CS_FOLDER} branch --show-current)
-            if [[ ${CS_BRANCH_NAME} == azdo/* ]]; then
-                export AZDO_BRANCH=${CS_BRANCH_NAME#azdo/}
+        if [[ "${RepositoryName}" != "" ]]; then
+            CS_FOLDER=/workspaces/${RepositoryName}
+            if [ -d "${CS_FOLDER}" ]; then
+                CS_BRANCH_NAME=$(git -C ${CS_FOLDER} branch --show-current)
+                if [[ ${CS_BRANCH_NAME} == azdo/* ]]; then
+                    export AZDO_BRANCH=${CS_BRANCH_NAME#azdo/}
+                fi
             fi
-        fi
+        fi        
+
         # Call the function regardless so that some other process can set the AZDO_BRANCH variable
         # before this script is called and it will still work. This allows for other techniques to be
         # used to communicate the desire to checkout a branch
