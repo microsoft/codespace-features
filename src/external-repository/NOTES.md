@@ -60,7 +60,7 @@ As of version 3, you can clone multiple repositories by separating the URL's wit
 mode all of the repositories will be cloned to the folder. Each will get a local folder name from the
 last part of the clone URL so this value has to be unique for each repository specified.
 
-## AzDO Branch/PR Support
+## AzDO Branch Support
 
 When `external-git config` is executed it will check the branch name of the Codespaces bridge repository
 and if it begins with "azdo/" then it will treat the rest of the branch name as an AzDO branch name
