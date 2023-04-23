@@ -13,6 +13,18 @@ checkout_branch() {
     fi
     echo "Checking out branch ${AZDO_BRANCH}"
     cd ${1}
+    
+    if [ ! -f ${HOME}/ado-auth-helper ]; then
+        echo "Waiting up to 180 seconds for ado-auth-helper extension to be installed"
+    fi    
+    # Wait up to 3 minutes for the ado-auth-helper to be installed
+    for i in {1..180}; do
+        if [ -f ${HOME}/ado-auth-helper ]; then
+            break
+        fi
+        sleep 1
+    done
+
     # fetch the branch named AZDO_BRANCH
     git fetch origin ${AZDO_BRANCH}
     git checkout ${AZDO_BRANCH}
