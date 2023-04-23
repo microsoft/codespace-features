@@ -1,7 +1,7 @@
 {
     "name": "External Git Repository in Codespace",
     "id": "external-repository",
-    "version": "2.0.1",
+    "version": "3.0.0",
     "description": "Configures Codespace to work with an external Git repository",
     "options": {
         "gitProvider": {
@@ -16,7 +16,7 @@
         "cloneUrl": {
             "type": "string",
             "default": "",
-            "description": "Clone URL without username: https://dev.azure.com/{organization}/{project}/_git/{repository}"
+            "description": "Clone URL without username: https://dev.azure.com/{organization}/{project}/_git/{repository}. Separate multiple URLs with comma."
         },
         "folder": {
             "type": "string",

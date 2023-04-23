@@ -9,6 +9,29 @@
         },
         "postStartCommand": "external-git clone && external-git config"     
     },
+    "multi-install": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "external-repository": {
+                "cloneUrl": "https://github.com/devcontainers/community,https://github.com/devcontainers/spec,https://github.com/devcontainers/action",
+                "folder": "/tmp/multi-repos"
+            }
+        },
+        "postStartCommand": "external-git clone && external-git config"     
+    },
+    "branch-install": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "external-repository": {
+                "cloneUrl": "https://github.com/devcontainers/spec",
+                "folder": "/tmp/branch-repos"
+            }
+        },
+        "remoteEnv": {
+            "AZDO_BRANCH": "joshaber/parallel-execution-schema"
+        },
+        "postStartCommand": "external-git clone && external-git config"     
+    },
     "telemetry-msg": {
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
