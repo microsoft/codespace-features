@@ -7,7 +7,7 @@ Configures Codespace to work with an external Git repository
 
 ```json
 "features": {
-    "ghcr.io/microsoft/codespace-features/external-repository:2": {}
+    "ghcr.io/microsoft/codespace-features/external-repository:3": {}
 }
 ```
 
@@ -16,7 +16,7 @@ Configures Codespace to work with an external Git repository
 | Options Id | Description | Type | Default Value |
 |-----|-----|-----|-----|
 | gitProvider | Git Provider | string | azuredevops |
-| cloneUrl | Clone URL without username: https://dev.azure.com/{organization}/{project}/_git/{repository} | string | - |
+| cloneUrl | Clone URL without username: https://dev.azure.com/{organization}/{project}/_git/{repository}. Separate multiple URLs with comma. | string | - |
 | folder | Specify the workspace path in the devcontainer for the clone | string | /workspaces/external-repos |
 | username | Username for clone (if required) | string | codespaces |
 | cloneSecret | Name of the Codespaces repository secret that contains the token or password for clone. Example: ADO_PAT | string | - |
@@ -27,6 +27,12 @@ Configures Codespace to work with an external Git repository
 | branch | Default branch | string | main |
 | timeout | Timeout for the clone operation | string | 30m |
 | telemetrySource | Configure source of Git commit telemetry | string | none |
+
+## Customizations
+
+### VS Code Extensions
+
+- `ms-codespaces-tools.ado-codespaces-auth`
 
 This feature standardizes and simplifies the proces of setting up a Codespace
 to work with an external repository -- meaning a Git repository other than
@@ -83,6 +89,26 @@ If you want to allow your users to use their own token, then you can add this to
 If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns this secret to the
 Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
 is not defined by the user it will fallback to the browser login.
+
+## Multiple Repository Support
+
+As of version 3, you can clone multiple repositories by separating the URL's with a comma. In this
+mode all of the repositories will be cloned to the folder. Each will get a local folder name from the
+last part of the clone URL so this value has to be unique for each repository specified.
+
+## AzDO Branch Support
+
+When `external-git config` is executed it will check the branch name of the Codespaces bridge repository
+and if it begins with "azdo/" then it will treat the rest of the branch name as an AzDO branch name
+to checkout on the external repository. The idea here is that a utility could be created in AzDO that
+would let you open a Pull Request in a Codespace. The process would create a new branch in the bridge
+repository named "azdo/branch/name" and then create the Codespace on that branch name. When the Codespace
+opens and clones the AzDO repository default branch it will then detect the need to fetch and checkout
+the requested branch.
+
+If a different process is desired for determining the branch name, then an environment variabled named
+`AZDO_BRANCH` can be created with the name of the branch that should be checked out. When the `external-git config`
+command runs it will also detect that this envvar is set and checkout that
 
 ## Usage Telemetry
 

@@ -22,6 +22,12 @@ Configures Codespace to authenticate with Azure Artifact feeds
 | npmAlias | Create alias for npm | boolean | true |
 | yarnAlias | Create alias for yarn | boolean | true |
 
+## Customizations
+
+### VS Code Extensions
+
+- `ms-codespaces-tools.ado-codespaces-auth`
+
 This installs [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
 and optionally configures an alias for `dotnet`, `nuget`, `npm`, and `yarn` that dynamically sets an authentication token
 for pulling artifacts from a feed before running the command.

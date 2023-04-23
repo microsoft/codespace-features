@@ -13,6 +13,12 @@ Installs docfx tools
 
 
 
+## Customizations
+
+### VS Code Extensions
+
+- `yzhang.markdown-all-in-one`
+
 This feature currently only supports installing the latest published version
 of DocFX. If support for older versions are required please file an Issue or
 send a pull request.
