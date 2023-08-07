@@ -16,6 +16,7 @@ jobs:
           - docfx
           - external-repository        
           - microsoft-git
+          - go
         baseImage:
           - mcr.microsoft.com/devcontainers/base:ubuntu
           - mcr.microsoft.com/devcontainers/base:debian

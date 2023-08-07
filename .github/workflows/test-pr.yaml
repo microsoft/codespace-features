@@ -19,6 +19,7 @@ jobs:
             docfx: ./**/docfx/**
             external-repository: ./**/external-repository/**
             microsoft-git: ./**/microsoft-git/**
+            go: ./**/go/**
   test:
     needs: [detect-changes]
     runs-on: ubuntu-latest
