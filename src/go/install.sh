@@ -117,7 +117,7 @@ check_packages() {
 export DEBIAN_FRONTEND=noninteractive
 
 if [ "${ID}" = "mariner" ]; then
-    tdnf install -y curl ca-certificates gnupg2 tar g++ gcc make git
+    tdnf install -y curl ca-certificates gnupg2 tar g++ gcc make git build-essential
 else
     # Clean up
     rm -rf /var/lib/apt/lists/*
