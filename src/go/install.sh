@@ -19,9 +19,8 @@ INSTALL_GO_TOOLS="${INSTALL_GO_TOOLS:-"true"}"
 GO_GPG_KEY_URI="https://dl.google.com/linux/linux_signing_key.pub"
 
 set -e
-
-# Clean up
-rm -rf /var/lib/apt/lists/*
+# Source /etc/os-release to get OS info
+. /etc/os-release
 
 if [ "$(id -u)" -ne 0 ]; then
     echo -e 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
@@ -117,10 +116,17 @@ check_packages() {
 
 export DEBIAN_FRONTEND=noninteractive
 
-# Install curl, tar, git, other dependencies if missing
-check_packages curl ca-certificates gnupg2 tar g++ gcc libc6-dev make pkg-config
-if ! type git > /dev/null 2>&1; then
-    check_packages git
+if [ "${ID}" = "mariner" ]; then
+    tdnf install -y curl ca-certificates gnupg2 tar g++ gcc make git
+else
+    # Clean up
+    rm -rf /var/lib/apt/lists/*
+    check_packages curl ca-certificates
+    # Install curl, tar, git, other dependencies if missing
+    check_packages curl ca-certificates gnupg2 tar g++ gcc libc6-dev make pkg-config
+    if ! type git > /dev/null 2>&1; then
+        check_packages git
+    fi
 fi
 
 # Get closest match for version number specified
@@ -246,6 +252,10 @@ find "${TARGET_GOROOT}" -type d -print0 | xargs -n 1 -0 chmod g+s
 find "${TARGET_GOPATH}" -type d -print0 | xargs -n 1 -0 chmod g+s
 
 # Clean up
-rm -rf /var/lib/apt/lists/*
+if [ "${ID}" = "mariner" ]; then
+    tdnf clean all
+else
+    rm -rf /var/lib/apt/lists/*
+fi
 
 echo "Done!"
