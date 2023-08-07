@@ -9,6 +9,15 @@
         },
         "postCreateCommand": "go install filippo.io/mkcert@v1.4.2"
     },
+    "install_mariner": {
+        "image": "mcr.microsoft.com/cbl-mariner/base/core:2.0",
+        "features": {
+            "go": {
+                "version": "latest",
+                "golangciLintVersion": "1.50.0"
+            }
+        }
+    }, 
     "install_go_twice": {
         "image": "mcr.microsoft.com/devcontainers/go:1.18",
         "features": {
