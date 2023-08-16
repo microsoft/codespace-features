@@ -1,8 +1,19 @@
 {
   "name": "DocFX",
   "id": "docfx",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "description": "Installs docfx tools",
+  "options": {
+    "version": {
+        "type": "string",
+        "proposals": [
+            "latest",
+            "2.67.5"
+        ],
+        "default": "2.67.5",
+        "description": "Select version of DocFX"
+    }
+  },  
   "customizations": {
     "vscode": {
       "extensions": [
