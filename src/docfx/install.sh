@@ -24,7 +24,7 @@ fi
 
 if command -v sudo >/dev/null 2>&1; then
     if [ "root" != "$_REMOTE_USER" ]; then
-        if [ "latest" == "${DOCFX_VERSION}"]
+        if [ "latest" == "${DOCFX_VERSION}"]; then
             sudo -u ${_REMOTE_USER} bash -c "cd ~ && dotnet tool install --global docfx"
             exit 0
         else
@@ -34,7 +34,7 @@ if command -v sudo >/dev/null 2>&1; then
     fi
 fi
 
-if [ "latest" == "${DOCFX_VERSION}"]
+if [ "latest" == "${DOCFX_VERSION}"]; then
     dotnet tool install --global docfx
 else
     dotnet tool install --global docfx --version ${DOCFX_VERSION}
