@@ -54,7 +54,8 @@
                 "options": "--single-branch --no-src",
                 "scalar": "true"
             },
-            "artifacts-helper": {}
+            "artifacts-helper": {},
+            "docfx": {"version": "latest"}
         },
         "remoteEnv": {
             "EXT_GIT_PAT": "dummypat"

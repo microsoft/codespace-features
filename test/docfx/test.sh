@@ -6,7 +6,7 @@ set -e
 source dev-container-features-test-lib
 
 # Feature-specific tests
-check "version" docfx --version
+check "version" bash -c "docfx --version | grep '2.67.5'"
 
 # Report results
 # If any of the checks above exited with a non-zero exit code, the test will fail.
