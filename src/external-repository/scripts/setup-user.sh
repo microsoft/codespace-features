@@ -176,8 +176,8 @@ if [ ${#EXT_GIT_REPO_URL_ARRAY[@]} -gt 1 ]; then
     for i in "${EXT_GIT_REPO_URL_ARRAY[@]}"; do
         # Set the repo URL to the current value
         REPO_URL=$i
-        # Get the folder name from the last part of the URL
-        REPO_FOLDER=$(echo "${REPO_URL}" | awk -F'/' '{print $NF}' | awk -F'.' '{print $1}')
+        # Get the folder name from the last part of the URL (dropping .git if necessary)
+        REPO_FOLDER=$(echo "${REPO_URL}" | sed 's/\.git$//;s#.*/##')
         LOCAL_PATH=${EXT_GIT_LOCAL_PATH}/${REPO_FOLDER}
         # Clone the repo
         configure_git_for_user ${LOCAL_PATH}
