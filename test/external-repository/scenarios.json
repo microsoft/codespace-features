@@ -13,7 +13,7 @@
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
             "external-repository": {
-                "cloneUrl": "https://github.com/devcontainers/community,https://github.com/devcontainers/spec,https://github.com/devcontainers/action",
+                "cloneUrl": "https://github.com/devcontainers/community,https://github.com/devcontainers/spec.git,https://github.com/devcontainers/devcontainers.github.io",
                 "folder": "/tmp/multi-repos"
             }
         },
