@@ -21,6 +21,7 @@ Configures Codespace to authenticate with Azure Artifact feeds
 | nugetAlias | Create alias for nuget | boolean | true |
 | npmAlias | Create alias for npm | boolean | true |
 | yarnAlias | Create alias for yarn | boolean | true |
+| npxAlias | Create alias for npx | boolean | true |
 
 ## Customizations
 
