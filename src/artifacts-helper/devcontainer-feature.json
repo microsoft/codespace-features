@@ -33,6 +33,11 @@
             "type": "boolean",
             "default": true,
             "description": "Create alias for yarn"
+        },
+        "npxAlias": {
+            "type": "boolean",
+            "default": true,
+            "description": "Create alias for npx"
         }
     },
     "installsAfter": [

@@ -8,6 +8,7 @@ ALIAS_DOTNET="${DOTNETALIAS:-"true"}"
 ALIAS_NUGET="${NUGETALIAS:-"true"}"
 ALIAS_NPM="${NPMALIAS:-"true"}"
 ALIAS_YARN="${YARNALIAS:-"true"}"
+ALIAS_NPX="${NPXALIAS:-"true"}"
 
 # Source /etc/os-release to get OS info
 . /etc/os-release
@@ -59,6 +60,8 @@ cp ./scripts/run-yarn.sh /usr/local/bin/run-yarn.sh
 chmod +rx /usr/local/bin/run-yarn.sh
 cp ./scripts/write-npm.sh /usr/local/bin/write-npm.sh
 chmod +rx /usr/local/bin/write-npm.sh
+cp ./scripts/run-npx.sh /usr/local/bin/run-npx.sh
+chmod +rx /usr/local/bin/run-npx.sh
 
 
 if command -v sudo >/dev/null 2>&1; then
@@ -78,6 +81,10 @@ if command -v sudo >/dev/null 2>&1; then
         if [ "${ALIAS_YARN}" = "true" ]; then
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias yarn=/usr/local/bin/run-yarn.sh' >> ~/.bashrc"
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias yarn=/usr/local/bin/run-yarn.sh' >> ~/.zshrc"
+        fi
+        if [ "${ALIAS_NPX}" = "true" ]; then
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias npx=/usr/local/bin/run-npx.sh' >> ~/.bashrc"
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias npx=/usr/local/bin/run-npx.sh' >> ~/.zshrc"
         fi        
         sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
         rm /tmp/install-provider.sh
@@ -103,6 +110,11 @@ fi
 if [ "${ALIAS_YARN}" = "true" ]; then
     sudo -u ${_REMOTE_USER} bash -c "echo 'alias yarn=/usr/local/bin/run-yarn.sh' >> /etc/bash.bashrc || true
     sudo -u ${_REMOTE_USER} bash -c "echo 'alias yarn=/usr/local/bin/run-yarn.sh' >> /etc/zsh/zshrc || true
+fi
+
+if [ "${ALIAS_NPX}" = "true" ]; then
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias npx=/usr/local/bin/run-npx.sh' >> /etc/bash.bashrc || true
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias npx=/usr/local/bin/run-npx.sh' >> /etc/zsh/zshrc || true
 fi
 
 rm /tmp/install-provider.sh
