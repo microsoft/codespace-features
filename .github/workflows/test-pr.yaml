@@ -16,6 +16,7 @@ jobs:
         with:
           filters: |
             artifacts-helper: ./**/artifacts-helper/**
+            devtool: ./**/devtool/**
             docfx: ./**/docfx/**
             external-repository: ./**/external-repository/**
             microsoft-git: ./**/microsoft-git/**

@@ -13,6 +13,7 @@ jobs:
       matrix:
         features:
           - artifacts-helper
+          - devtool
           - docfx
           - external-repository        
           - microsoft-git
