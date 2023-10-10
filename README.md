@@ -7,6 +7,7 @@ to assist teams in adopting Codespaces. Here is a list of the features in this r
 | Feature | Description |
 | ------- | ----------- |
 | [artifacts-helper](src/artifacts-helper)   | Install Azure Artifacts credential helper configured for Codespace authentication |
+| [devtool](src/devtool) | Installs DevTool (Microsoft-internal only) |
 | [docfx](src/docfx)   | Install docfx to support editing and testing documentation |
 | [external-repository](src/external-repository)   | Handles all the details of working with an external git repository in Codespaces |
 | [microsoft-git](src/microsoft-git) | Install microsoft/git with Scalar and GVFS support |

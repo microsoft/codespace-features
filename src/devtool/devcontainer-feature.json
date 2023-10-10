@@ -1,0 +1,17 @@
+{
+    "name": "DevTool",
+    "id": "devtool",
+    "version": "1.0.0",
+    "description": "Install DevTool",
+    "installsAfter": [
+        "ghcr.io/devcontainers/features/common-utils"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-codespaces-tools.ado-codespaces-auth"
+            ]
+        }
+    },
+    "postCreateCommand": "curl –sL https://aka.ms/InstallToolLinux.sh | sh -s DevTool​"    
+}
