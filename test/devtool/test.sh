@@ -6,7 +6,7 @@ set -e
 source dev-container-features-test-lib
 
 # Feature-specific tests
-check "dev" dev --version
+check "devtool" cat /usr/local/share/install-devtool.sh
 
 
 # Report results

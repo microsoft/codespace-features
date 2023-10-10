@@ -1,7 +1,7 @@
 {
     "name": "DevTool",
     "id": "devtool",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Install DevTool",
     "installsAfter": [
         "ghcr.io/devcontainers/features/common-utils"
@@ -13,5 +13,5 @@
             ]
         }
     },
-    "postCreateCommand": "curl -sL https://aka.ms/InstallToolLinux.sh | sh -s DevTool"
+    "postCreateCommand": "/usr/local/share/install-devtool.sh"
 }

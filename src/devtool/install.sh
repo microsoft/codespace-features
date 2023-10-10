@@ -37,4 +37,31 @@ else
     check_packages curl ca-certificates xdg-utils
 fi
 
+# --- Generate a 'install-devtool.sh' script to be executed by the 'postCreateCommand' lifecycle hook
+DEVTOOL_SCRIPT_PATH="/usr/local/share/install-devtool.sh"
+
+tee "$DEVTOOL_SCRIPT_PATH" > /dev/null \
+<< EOF
+#!/bin/bash
+set -e
+EOF
+
+tee -a "$DEVTOOL_SCRIPT_PATH" > /dev/null \
+<< 'EOF'
+
+echo "Installing DevTool..."
+# Wait up to 3 minutes for the ado-auth-helper to be installed
+for i in {1..180}; do
+    if [ -f ${HOME}/ado-auth-helper ]; then
+        break
+    fi
+    sleep 1
+done
+
+cd /tmp
+curl -sL https://aka.ms/InstallToolLinux.sh | sh -s DevTool
+EOF
+
+chmod 755 "$DEVTOOL_SCRIPT_PATH"
+
 exit 0
