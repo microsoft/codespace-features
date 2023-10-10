@@ -13,5 +13,5 @@
             ]
         }
     },
-    "postCreateCommand": "curl –sL https://aka.ms/InstallToolLinux.sh | sh -s DevTool​"    
+    "postCreateCommand": "curl -sL https://aka.ms/InstallToolLinux.sh | sh -s DevTool"
 }
