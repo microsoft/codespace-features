@@ -31,7 +31,7 @@ check_packages() {
 export DEBIAN_FRONTEND=noninteractive
 
 if [ "${ID}" = "mariner" ]; then
-    tdnf install -y curl ca-certificates
+    tdnf install -y curl ca-certificates tar
     tdnf clean all
 else
     check_packages curl ca-certificates xdg-utils
