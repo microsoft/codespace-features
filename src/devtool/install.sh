@@ -75,7 +75,7 @@ if command -v sudo >/dev/null 2>&1; then
 fi
 
 echo "Adding DevTool to PATH for root"
-echo 'export PATH=\$PATH:/root/.config/DevTool/CurrentVersion` >> /etc/bash.bashrc || true
-echo `export PATH=\$PATH:/root/.config/DevTool/CurrentVersion` >> /etc/zsh/zshrc || true
+echo "export PATH=\$PATH:/root/.config/DevTool/CurrentVersion" >> /etc/bash.bashrc || true
+echo "export PATH=\$PATH:/root/.config/DevTool/CurrentVersion" >> /etc/zsh/zshrc || true
 
 exit 0
