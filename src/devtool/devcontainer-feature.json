@@ -1,7 +1,7 @@
 {
     "name": "DevTool",
     "id": "devtool",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Install DevTool",
     "installsAfter": [
         "ghcr.io/devcontainers/features/common-utils"
