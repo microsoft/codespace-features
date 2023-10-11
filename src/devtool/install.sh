@@ -65,16 +65,17 @@ EOF
 chmod 755 "$DEVTOOL_SCRIPT_PATH"
 
 # Setup PATH so that DevTool will be on PATH when the initial terminal is started
-
 if command -v sudo >/dev/null 2>&1; then
     if [ "root" != "$_REMOTE_USER" ]; then
-        sudo -u ${_REMOTE_USER} bash -c "echo 'export PATH=$PATH:~/.config/DevTool/CurrentVersion' >> ~/.bashrc"
-        sudo -u ${_REMOTE_USER} bash -c "echo 'export PATH=$PATH:~/.config/DevTool/CurrentVersion' >> ~/.zshrc"
+        echo "Adding DevTool to PATH for $_REMOTE_USER"
+        sudo -u ${_REMOTE_USER} bash -c 'echo "export PATH=\$PATH:$HOME/.config/DevTool/CurrentVersion" >> ~/.bashrc'
+        sudo -u ${_REMOTE_USER} bash -c 'echo "export PATH=\$PATH:$HOME/.config/DevTool/CurrentVersion" >> ~/.zshrc'
         exit 0
     fi
 fi
 
-echo "export PATH=$PATH:~/.config/DevTool/CurrentVersion" >> /etc/bash.bashrc || true
-echo "export PATH=$PATH:~/.config/DevTool/CurrentVersion" >> /etc/zsh/zshrc || true
+echo "Adding DevTool to PATH for root"
+echo 'export PATH=\$PATH:/root/.config/DevTool/CurrentVersion` >> /etc/bash.bashrc || true
+echo `export PATH=\$PATH:/root/.config/DevTool/CurrentVersion` >> /etc/zsh/zshrc || true
 
 exit 0
