@@ -49,7 +49,7 @@ EOF
 tee -a "$DEVTOOL_SCRIPT_PATH" > /dev/null \
 << 'EOF'
 
-echo "Installing DevTool..."
+echo "::step::Waiting for AzDO Authentication Helper..."
 # Wait up to 3 minutes for the ado-auth-helper to be installed
 for i in {1..180}; do
     if [ -f ${HOME}/ado-auth-helper ]; then
@@ -57,11 +57,25 @@ for i in {1..180}; do
     fi
     sleep 1
 done
-
+echo "::step::Installing DevTool..."
 cd /tmp
 curl -sL https://aka.ms/InstallToolLinux.sh | sh -s DevTool
 EOF
 
 chmod 755 "$DEVTOOL_SCRIPT_PATH"
+
+# Setup PATH so that DevTool will be on PATH when the initial terminal is started
+if command -v sudo >/dev/null 2>&1; then
+    if [ "root" != "$_REMOTE_USER" ]; then
+        echo "Adding DevTool to PATH for $_REMOTE_USER"
+        sudo -u ${_REMOTE_USER} bash -c 'echo "export PATH=\$PATH:$HOME/.config/DevTool/CurrentVersion" >> ~/.bashrc'
+        sudo -u ${_REMOTE_USER} bash -c 'echo "export PATH=\$PATH:$HOME/.config/DevTool/CurrentVersion" >> ~/.zshrc'
+        exit 0
+    fi
+fi
+
+echo "Adding DevTool to PATH for root"
+echo "export PATH=\$PATH:/root/.config/DevTool/CurrentVersion" >> /etc/bash.bashrc || true
+echo "export PATH=\$PATH:/root/.config/DevTool/CurrentVersion" >> /etc/zsh/zshrc || true
 
 exit 0
