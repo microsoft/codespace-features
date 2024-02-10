@@ -50,17 +50,24 @@ configure_git_for_user() {
     fi
 
     # See if $GIT_PATH/.git/config contains [credential] section
+    credential_configured=false
     if grep -q "\[credential\]" "${GIT_PATH}/config"; then
         if grep -q "helper =" "${GIT_PATH}/config"; then
             echo "Git [credential] is already configured"
-            return
+            credential_configured=true
         fi
     fi
 
-    if [ "$ADO" = "true" ]; then
+    if [ "$ADO" = "true" ] && [ "$credential_configured" = false ]; then
         echo "Configuring ADO Authorization Helper"
         ADO_HELPER=$(echo ~)/ado-auth-helper
         sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" >> "${GIT_PATH}/config"
+    elif [ "$ADO" != "true" ]; then
+        echo "Configuring Git Credentials to use a secret"
+        cat "./usersecret-git.config" >> "${GIT_PATH}/config"
+    fi
+
+    if [ "$ADO" = "true" ]; then
         # See if there was a request to checkout an AzDO branch by checking the branch name of
         # the Codespaces bridge repository. If the branch name begins with azdo/ then the
         # rest of the branch name is the branch to checkout.
@@ -78,9 +85,6 @@ configure_git_for_user() {
         # before this script is called and it will still work. This allows for other techniques to be
         # used to communicate the desire to checkout a branch
         checkout_branch ${WC_PATH}
-    else
-        echo "Configuring Git Credentials to use a secret"
-        cat "./usersecret-git.config" >> "${GIT_PATH}/config"
     fi
 
     # Setup Git Telemetry .. note that the checks for the credentials
