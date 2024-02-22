@@ -16,7 +16,12 @@ It is always possible to provide a token via the `userSecret` and this is what w
 other Git hosting providers.
 
 #### Microsoft Entra ID Tenant Configuration
-The authentication happens on the common tenant. If the user is present on multiple tenant and the Azure DevOps organization for the reposiotory belongs to a specific one the repo opearations may fail (unauthorized). You can configure the tenant for the authenthication by providing it as setting customization to the the underlying extension, following an example:
+
+The authentication to Azure DevOps happens on the default tenant. If the user is present on
+multiple tenants, and the Azure DevOps organization for the reposiotory belongs to a specific
+one, the repository operations may fail (unauthorized). You can configure the tenant for
+the authentication by providing it as setting to the the underlying extension in your devcontainer.json:
+
 ```json
 "customizations": {
   "vscode":{
@@ -67,7 +72,11 @@ Codespace, then the value of that secret will be used as a PAT for authenticatio
 is not defined by the user it will fallback to the browser login.
 
 ### Interactive authentication only (avoids PAT token)
-The advantage of using a PAT token is the ability to clone the repository during the devContainer creation (onCreateCommand). You can avoid to configure any secret by requiring the authentication once the Codespace load it means that the repository will be cloned when the Codespaces UI initielizes completely. Following a configuration example for this scenario:
+
+The advantage of using a PAT token is the ability to clone the repository during the devContainer creation
+(onCreateCommand). You can avoid the need to configure a secret by requiring the authentication once the
+Codespace loads. This means the repository will be cloned only after the Codespaces UI initializes completely:
+
 ```json
 {
 "image": "mcr.microsoft.com/devcontainers/universal:ubuntu",
