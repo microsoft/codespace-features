@@ -56,7 +56,7 @@ that the token only have this scope.
 }
 ```
 
-This would clone the repository to `/workspaces/ado-repos` during the Prebuild s
+This would clone the repository to `/workspaces/ado-repos` during the Prebuild process
 using the PAT stored in a Codespaces secret. At runtime, when a user opens the Codespace
 the `workspaceFolder` feature would open VS Code to this folder automatically and it
 would be configured to prompt the user to login to Azure DevOps when they open the Codespace.
