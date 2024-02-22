@@ -1,4 +1,4 @@
-This feature standardizes and simplifies the proces of setting up a Codespace
+This feature standardizes and simplifies the process of setting up a Codespace
 to work with an external repository -- meaning a Git repository other than
 the one that defines your Codespace. This is being primarily developed to
 support Azure DevOps repositories but it ought to work with any Git repository.
@@ -18,7 +18,7 @@ other Git hosting providers.
 #### Microsoft Entra ID Tenant Configuration
 
 The authentication to Azure DevOps happens on the default tenant. If the user is present on
-multiple tenants, and the Azure DevOps organization for the reposiotory belongs to a specific
+multiple tenants, and the Azure DevOps organization for the repository belongs to a specific
 one, the repository operations may fail (unauthorized). You can configure the tenant for
 the authentication by providing it as setting to the the underlying extension in your devcontainer.json:
 
@@ -56,7 +56,7 @@ that the token only have this scope.
 }
 ```
 
-This would clone the repository to `/workspaces/ado-repos` during the Prebuild process
+This would clone the repository to `/workspaces/ado-repos` during the Prebuild s
 using the PAT stored in a Codespaces secret. At runtime, when a user opens the Codespace
 the `workspaceFolder` feature would open VS Code to this folder automatically and it
 would be configured to prompt the user to login to Azure DevOps when they open the Codespace.
@@ -103,12 +103,12 @@ last part of the clone URL so this value has to be unique for each repository sp
 When `external-git config` is executed it will check the branch name of the Codespaces bridge repository
 and if it begins with "azdo/" then it will treat the rest of the branch name as an AzDO branch name
 to checkout on the external repository. The idea here is that a utility could be created in AzDO that
-would let you open a Pull Request in a Codespace. The process would create a new branch in the bridge
+would let you open a Pull Request in a Codespace. The s would create a new branch in the bridge
 repository named "azdo/branch/name" and then create the Codespace on that branch name. When the Codespace
 opens and clones the AzDO repository default branch it will then detect the need to fetch and checkout
 the requested branch.
 
-If a different process is desired for determining the branch name, then an environment variabled named
+If a different s is desired for determining the branch name, then an environment variabled named
 `AZDO_BRANCH` can be created with the name of the branch that should be checked out. When the `external-git config`
 command runs it will also detect that this envvar is set and checkout that
 
