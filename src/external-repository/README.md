@@ -34,7 +34,7 @@ Configures Codespace to work with an external Git repository
 
 - `ms-codespaces-tools.ado-codespaces-auth`
 
-This feature standardizes and simplifies the proces of setting up a Codespace
+This feature standardizes and simplifies the process of setting up a Codespace
 to work with an external repository -- meaning a Git repository other than
 the one that defines your Codespace. This is being primarily developed to
 support Azure DevOps repositories but it ought to work with any Git repository.
@@ -50,6 +50,23 @@ process.
 
 It is always possible to provide a token via the `userSecret` and this is what works with
 other Git hosting providers.
+
+#### Microsoft Entra ID Tenant Configuration
+
+The authentication to Azure DevOps happens on the default tenant. If the user is present on
+multiple tenants, and the Azure DevOps organization for the repository belongs to a specific
+one, the repository operations may fail (unauthorized). You can configure the tenant for
+the authentication by providing it as setting to the the underlying extension in your devcontainer.json:
+
+```json
+"customizations": {
+  "vscode":{
+    "settings": { 
+      "adoCodespacesAuth.tenantID": "<YOUR_ENTRA_ID_TENANT_ID>",
+     }
+   }
+}
+```
 
 ## Example Usage Scenarios
 
@@ -89,6 +106,27 @@ If you want to allow your users to use their own token, then you can add this to
 If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns this secret to the
 Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
 is not defined by the user it will fallback to the browser login.
+
+### Interactive authentication only (avoids PAT token)
+
+The advantage of using a PAT token is the ability to clone the repository during the devContainer creation
+(onCreateCommand). You can avoid the need to configure a secret by requiring the authentication once the
+Codespace loads. This means the repository will be cloned only after the Codespaces UI initializes completely:
+
+```json
+{
+"image": "mcr.microsoft.com/devcontainers/universal:ubuntu",
+"features": {
+    "ghcr.io/microsoft/codespace-features/external-repository:latest": {
+        "cloneUrl": "https://dev.azure.com/contoso/_git/reposname",
+        "folder": "/workspaces/ado-repos"
+    }
+},
+"workspaceFolder": "/workspaces/ado-repos",
+"initializeCommand": "mkdir -p ${localWorkspaceFolder}/../ado-repos",
+"postStartCommand": "external-git clone && external-git config"     
+}
+```
 
 ## Multiple Repository Support
 
