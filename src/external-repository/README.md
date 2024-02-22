@@ -51,6 +51,18 @@ process.
 It is always possible to provide a token via the `userSecret` and this is what works with
 other Git hosting providers.
 
+#### Microsoft Entra ID Tenant Configuration
+The authentication happens on the common tenant. If the user is present on multiple tenant and the Azure DevOps organization for the reposiotory belongs to a specific one the repo opearations may fail (unauthorized). You can configure the tenant for the authenthication by providing it as setting customization to the the underlying extension, following an example:
+```json
+"customizations": {
+  "vscode":{
+    "settings": { 
+      "adoCodespacesAuth.tenantID": "<YOUR_ENTRA_ID_TENANT_ID>",
+     }
+   }
+}
+```
+
 ## Example Usage Scenarios
 
 Here is a minimal example that clones an Azure DevOps repository. This would also require
@@ -89,6 +101,24 @@ If you want to allow your users to use their own token, then you can add this to
 If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns this secret to the
 Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
 is not defined by the user it will fallback to the browser login.
+
+### Interactive authentication only (avoids PAT token)
+The advantage of using a PAT token is the ability to clone the repository during the devContainer creation (onCreateCommand). You can avoid to configure any secret by requiring the authentication once the Codespace load it means that the repository will be cloned when the Codespaces UI initielizes completely. Following a configuration example for this scenario:
+```json
+{
+"image": "mcr.microsoft.com/devcontainers/universal:ubuntu",
+"features": {
+    "ghcr.io/microsoft/codespace-features/external-repository:latest": {
+        "cloneUrl": "https://dev.azure.com/contoso/_git/reposname",
+        "folder": "/workspaces/ado-repos"
+    }
+},
+"workspaceFolder": "/workspaces/ado-repos",
+"initializeCommand": "mkdir -p ${localWorkspaceFolder}/../ado-repos",
+"postStartCommand": "external-git clone && external-git config"     
+}
+```
+
 
 ## Multiple Repository Support
 
