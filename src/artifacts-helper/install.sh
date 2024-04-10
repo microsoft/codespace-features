@@ -9,6 +9,7 @@ ALIAS_NUGET="${NUGETALIAS:-"true"}"
 ALIAS_NPM="${NPMALIAS:-"true"}"
 ALIAS_YARN="${YARNALIAS:-"true"}"
 ALIAS_NPX="${NPXALIAS:-"true"}"
+ALIAS_RUSH="${RUSHALIAS:-"true"}"
 
 # Source /etc/os-release to get OS info
 . /etc/os-release
@@ -63,6 +64,11 @@ chmod +rx /usr/local/bin/write-npm.sh
 cp ./scripts/run-npx.sh /usr/local/bin/run-npx.sh
 chmod +rx /usr/local/bin/run-npx.sh
 
+cp ./scripts/run-rush.sh /usr/local/bin/run-rush.sh
+chmod +rx /usr/local/bin/run-rush.sh
+cp ./scripts/run-rush-pnpm.sh /usr/local/bin/run-rush-pnpm.sh
+chmod +rx /usr/local/bin/run-rush-pnpm.sh
+
 
 if command -v sudo >/dev/null 2>&1; then
     if [ "root" != "$_REMOTE_USER" ]; then
@@ -85,7 +91,14 @@ if command -v sudo >/dev/null 2>&1; then
         if [ "${ALIAS_NPX}" = "true" ]; then
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias npx=/usr/local/bin/run-npx.sh' >> ~/.bashrc"
             sudo -u ${_REMOTE_USER} bash -c "echo 'alias npx=/usr/local/bin/run-npx.sh' >> ~/.zshrc"
-        fi        
+        fi
+        if [ "${ALIAS_RUSH}" = "true" ]; then
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush=/usr/local/bin/run-rush.sh' >> ~/.bashrc"
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush=/usr/local/bin/run-rush.sh' >> ~/.zshrc"
+
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush-pnpm=/usr/local/bin/run-rush-pnpm.sh' >> ~/.bashrc"
+            sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush-pnpm=/usr/local/bin/run-rush-pnpm.sh' >> ~/.zshrc"
+        fi
         sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
         rm /tmp/install-provider.sh
         exit 0
@@ -115,6 +128,14 @@ fi
 if [ "${ALIAS_NPX}" = "true" ]; then
     sudo -u ${_REMOTE_USER} bash -c "echo 'alias npx=/usr/local/bin/run-npx.sh' >> /etc/bash.bashrc || true
     sudo -u ${_REMOTE_USER} bash -c "echo 'alias npx=/usr/local/bin/run-npx.sh' >> /etc/zsh/zshrc || true
+fi
+
+if [ "${ALIAS_RUSH}" = "true" ]; then
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush=/usr/local/bin/run-rush.sh' >> /etc/bash.bashrc || true
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush=/usr/local/bin/run-rush.sh' >> /etc/zsh/zshrc || true
+
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush-pnpm=/usr/local/bin/run-rush-pnpm.sh' >> /etc/bash.bashrc || true
+    sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush-pnpm=/usr/local/bin/run-rush-pnpm.sh' >> /etc/zsh/zshrc || true
 fi
 
 rm /tmp/install-provider.sh
