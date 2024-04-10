@@ -38,6 +38,11 @@
             "type": "boolean",
             "default": true,
             "description": "Create alias for npx"
+        },
+        "rushAlias": {
+            "type": "boolean",
+            "default": true,
+            "description": "Create alias for rush"
         }
     },
     "installsAfter": [
