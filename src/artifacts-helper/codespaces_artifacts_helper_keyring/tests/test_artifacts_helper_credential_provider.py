@@ -6,10 +6,10 @@ from typing import Optional, Union
 
 import pytest
 from codespaces_artifacts_helper_keyring import (
-    CredentialProvider,
+    ArtifactsHelperCredentialProvider,
 )
-from codespaces_artifacts_helper_keyring.artifacts_helper_wrapper import (
-    CredentialProviderError,
+from codespaces_artifacts_helper_keyring.artifacts_helper_credential_provider import (
+    ArtifactsHelperCredentialProviderError,
 )
 
 
@@ -38,61 +38,70 @@ class TestArtifactsHelperWrapper(unittest.TestCase):
         set_path_executable(self.script_path)
 
     def test_auth_helper_installed_invalid_path(self):
-        assert not CredentialProvider.resolve_auth_helper_path(
+        assert not ArtifactsHelperCredentialProvider.resolve_auth_helper_path(
             self.tmp_dir / "nonexistent"
         )
-        assert not CredentialProvider.auth_helper_installed(
+        assert not ArtifactsHelperCredentialProvider.auth_helper_installed(
             self.tmp_dir / "nonexistent"
         )
 
     def test_auth_helper_installed_and_not_executable(self):
         self.write_script("pass")
         set_path_not_executable(self.script_path)
-        assert not CredentialProvider.resolve_auth_helper_path(self.script_path)
-        assert not CredentialProvider.auth_helper_installed(self.script_path)
+        assert not ArtifactsHelperCredentialProvider.resolve_auth_helper_path(
+            self.script_path
+        )
+        assert not ArtifactsHelperCredentialProvider.auth_helper_installed(
+            self.script_path
+        )
 
     def test_auth_helper_installed_and_executable(self):
         self.write_script("pass")
-        assert CredentialProvider.resolve_auth_helper_path(self.script_path) is not None
-        assert CredentialProvider.auth_helper_installed(self.script_path)
+        assert (
+            ArtifactsHelperCredentialProvider.resolve_auth_helper_path(self.script_path)
+            is not None
+        )
+        assert ArtifactsHelperCredentialProvider.auth_helper_installed(self.script_path)
 
     def test_get_jwt_from_helper(self):
         raw_jwt_value = "raw_jwt_here._-azAZ09"
         self.write_script(f"print('{raw_jwt_value}')")
-        provider = CredentialProvider(self.script_path)
+        provider = ArtifactsHelperCredentialProvider(self.script_path)
         assert provider._get_jwt_from_helper() == raw_jwt_value.strip()
 
     def test_get_jwt_from_helper_not_installed(self):
-        provider = CredentialProvider()
+        provider = ArtifactsHelperCredentialProvider()
         with pytest.raises(
-            CredentialProviderError, match="No authentication tool found"
+            ArtifactsHelperCredentialProviderError, match="No authentication tool found"
         ):
             provider._get_jwt_from_helper()
 
     def test_get_credentials_from_jwt(self):
-        provider = CredentialProvider()
+        provider = ArtifactsHelperCredentialProvider()
         creds = provider._get_credentials_from_jwt(self.TEST_JWT)
         assert creds.username == self.TEST_JWT_USERNAME
         assert creds.password == self.TEST_JWT
 
     def test_get_credentials(self):
         self.write_script(f"print('{self.TEST_JWT}')")
-        provider = CredentialProvider(self.script_path)
+        provider = ArtifactsHelperCredentialProvider(self.script_path)
         creds = provider.get_credentials(self.SUPPORTED_HOST)
         assert creds.username == self.TEST_JWT_USERNAME
         assert creds.password == self.TEST_JWT
 
     def test_get_credentials_invalid_jwt(self):
         self.write_script("print('invalid jwt')")
-        provider = CredentialProvider(self.script_path)
-        with pytest.raises(CredentialProviderError, match="Failed to decode JWT:"):
+        provider = ArtifactsHelperCredentialProvider(self.script_path)
+        with pytest.raises(
+            ArtifactsHelperCredentialProviderError, match="Failed to decode JWT:"
+        ):
             provider.get_credentials(self.SUPPORTED_HOST)
 
     def test_get_crendentials_helper_non_zero_exit(self):
         self.write_script("exit(1)")
-        provider = CredentialProvider(self.script_path)
+        provider = ArtifactsHelperCredentialProvider(self.script_path)
         with pytest.raises(
-            CredentialProviderError,
+            ArtifactsHelperCredentialProviderError,
             match=f"Process .*{self.script_name}.* exited with code 1",
         ):
             provider.get_credentials(self.SUPPORTED_HOST)

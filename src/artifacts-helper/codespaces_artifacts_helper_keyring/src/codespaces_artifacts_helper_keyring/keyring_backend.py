@@ -6,7 +6,7 @@ from jaraco.classes import properties
 from keyring.backend import KeyringBackend
 from keyring.credentials import Credential, SimpleCredential
 
-from .artifacts_helper_wrapper import CredentialProvider
+from .artifacts_helper_credential_provider import ArtifactsHelperCredentialProvider
 
 
 class CodespacesArtifactsHelperKeyringBackend(KeyringBackend):
@@ -17,7 +17,9 @@ class CodespacesArtifactsHelperKeyringBackend(KeyringBackend):
         "pkgs.vsts.me",
     )
 
-    _PROVIDER: Type[CredentialProvider] = CredentialProvider
+    _PROVIDER: Type[ArtifactsHelperCredentialProvider] = (
+        ArtifactsHelperCredentialProvider
+    )
     AUTH_HELPER_PATH = _PROVIDER.DEFAULT_AUTH_HELPER_PATH
 
     @properties.classproperty

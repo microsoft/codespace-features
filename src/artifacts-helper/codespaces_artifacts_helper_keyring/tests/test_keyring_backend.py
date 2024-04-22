@@ -9,8 +9,8 @@ import keyring.backends.chainer
 import keyring.errors
 import pytest
 from codespaces_artifacts_helper_keyring import (
+    ArtifactsHelperCredentialProvider,
     CodespacesArtifactsHelperKeyringBackend,
-    CredentialProvider,
 )
 from keyring.credentials import SimpleCredential
 
@@ -19,8 +19,7 @@ from keyring.credentials import SimpleCredential
 SUPPORTED_HOST = "https://pkgs.dev.azure.com/"
 
 
-class FakeProvider(CredentialProvider):
-
+class FakeProvider(ArtifactsHelperCredentialProvider):
     def get_credentials(self, service):
         return SimpleCredential("user" + service[-4:], "pass" + service[-4:])
 
@@ -68,8 +67,7 @@ def passwords(monkeypatch):
     def mock_get_all_keyring():
         return [CodespacesArtifactsHelperKeyringBackend(), passwords_backend]
 
-    monkeypatch.setattr(keyring.backend, "get_all_keyring",
-                        mock_get_all_keyring)
+    monkeypatch.setattr(keyring.backend, "get_all_keyring", mock_get_all_keyring)
 
     chainer_backend = keyring.backends.chainer.ChainerBackend()
 
@@ -81,8 +79,9 @@ def passwords(monkeypatch):
 
 @pytest.fixture
 def fake_provider(monkeypatch):
-    monkeypatch.setattr(CodespacesArtifactsHelperKeyringBackend, "_PROVIDER",
-                        FakeProvider)
+    monkeypatch.setattr(
+        CodespacesArtifactsHelperKeyringBackend, "_PROVIDER", FakeProvider
+    )
 
 
 def test_get_credential_unsupported_host(only_backend):
@@ -102,8 +101,7 @@ def test_set_password_raises(only_backend):
 
 def test_set_password_fallback(passwords, fake_provider):
     # Ensure we are getting good credentials
-    assert keyring.get_credential(SUPPORTED_HOST + "1234",
-                                  None).password == "pass1234"
+    assert keyring.get_credential(SUPPORTED_HOST + "1234", None).password == "pass1234"
 
     assert keyring.get_password("SYSTEM", "USERNAME") is None
     keyring.set_password("SYSTEM", "USERNAME", "PASSWORD")
@@ -113,8 +111,7 @@ def test_set_password_fallback(passwords, fake_provider):
     assert keyring.get_credential("SYSTEM", "USERNAME").password == "PASSWORD"
 
     # Ensure we are getting good credentials
-    assert keyring.get_credential(SUPPORTED_HOST + "1234",
-                                  None).password == "pass1234"
+    assert keyring.get_credential(SUPPORTED_HOST + "1234", None).password == "pass1234"
 
 
 def test_delete_password_raises(only_backend):
@@ -124,8 +121,7 @@ def test_delete_password_raises(only_backend):
 
 def test_delete_password_fallback(passwords, fake_provider):
     # Ensure we are getting good credentials
-    assert keyring.get_credential(SUPPORTED_HOST + "1234",
-                                  None).password == "pass1234"
+    assert keyring.get_credential(SUPPORTED_HOST + "1234", None).password == "pass1234"
 
     passwords["SYSTEM", "USERNAME"] = "PASSWORD"
     keyring.delete_password("SYSTEM", "USERNAME")

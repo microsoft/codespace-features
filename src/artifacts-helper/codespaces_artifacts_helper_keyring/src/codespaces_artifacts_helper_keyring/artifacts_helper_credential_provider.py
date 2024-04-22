@@ -22,11 +22,11 @@ class Credentials:
     password: str
 
 
-class CredentialProviderError(RuntimeError):
+class ArtifactsHelperCredentialProviderError(RuntimeError):
     pass
 
 
-class CredentialProvider:
+class ArtifactsHelperCredentialProvider:
     DEFAULT_AUTH_HELPER_PATH = "~/ado-auth-helper"
 
     def __init__(
@@ -39,20 +39,18 @@ class CredentialProvider:
 
     @staticmethod
     def resolve_auth_helper_path(
-        auth_helper_path: Union[os.PathLike, str], ) -> Optional[str]:
-        return shutil.which(str(Path(auth_helper_path).expanduser()),
-                            mode=os.X_OK)
+        auth_helper_path: Union[os.PathLike, str],
+    ) -> Optional[str]:
+        return shutil.which(str(Path(auth_helper_path).expanduser()), mode=os.X_OK)
 
     @classmethod
-    def auth_helper_installed(
-            cls, auth_helper_path: Union[os.PathLike, str]) -> bool:
+    def auth_helper_installed(cls, auth_helper_path: Union[os.PathLike, str]) -> bool:
         return cls.resolve_auth_helper_path(auth_helper_path) is not None
 
     def get_credentials(self, url) -> Optional[Credentials]:
         # Public feed short circuit: return nothing if not getting credentials for the upload endpoint
         # (which always requires auth) and the endpoint is public (can authenticate without credentials).
-        if not self._is_upload_endpoint(url) and self._can_authenticate(
-                url, None):
+        if not self._is_upload_endpoint(url) and self._can_authenticate(url, None):
             return None
 
         jwt_str = self._get_jwt_from_helper()
@@ -68,13 +66,13 @@ class CredentialProvider:
 
     def _can_authenticate(self, url, auth) -> bool:
         response = requests.get(url, auth=auth, timeout=self.timeout)
-        return response.status_code < 500 and response.status_code not in (401,
-                                                                           403)
+        return response.status_code < 500 and response.status_code not in (401, 403)
 
     def _get_jwt_from_helper(self) -> str:
         if self.auth_tool_path is None:
-            raise CredentialProviderError(
-                "Failed to get credentials: No authentication tool found")
+            raise ArtifactsHelperCredentialProviderError(
+                "Failed to get credentials: No authentication tool found"
+            )
 
         try:
             p = subprocess.run(
@@ -88,27 +86,29 @@ class CredentialProvider:
             if stdout:
                 return stdout.strip()
             else:
-                raise CredentialProviderError(
+                raise ArtifactsHelperCredentialProviderError(
                     f"Failed to get credentials: No output from subprocess {self.auth_tool_path}"
                 )
 
         except subprocess.CalledProcessError as e:
-            raise CredentialProviderError(
+            raise ArtifactsHelperCredentialProviderError(
                 f"Failed to get credentials: Process {self.auth_tool_path} exited with code {e.returncode}. Error: {e.stderr}"
             ) from e
         except subprocess.TimeoutExpired as e:
-            raise CredentialProviderError(
+            raise ArtifactsHelperCredentialProviderError(
                 f"Failed to get credentials: Process {self.auth_tool_path} timed out after {self.timeout} seconds"
             ) from e
 
     def _get_credentials_from_jwt(self, jwt_str: str) -> Credentials:
         try:
-            decoded = jwt.decode(jwt_str,
-                                 verify=False,
-                                 options={"verify_signature": False})
+            decoded = jwt.decode(
+                jwt_str, verify=False, options={"verify_signature": False}
+            )
             return Credentials(
                 username=decoded.get("unique_name", decoded.get("upn", None)),
                 password=jwt_str,
             )
         except jwt.PyJWTError as e:
-            raise CredentialProviderError(f"Failed to decode JWT: {e}") from e
+            raise ArtifactsHelperCredentialProviderError(
+                f"Failed to decode JWT: {e}"
+            ) from e
