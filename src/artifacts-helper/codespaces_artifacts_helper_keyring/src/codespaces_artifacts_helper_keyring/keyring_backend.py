@@ -1,3 +1,5 @@
+"""Keyring backend for Codespaces Artifacts Helper."""
+
 import warnings
 from typing import Optional, Type
 from urllib.parse import urlsplit
@@ -10,6 +12,8 @@ from .artifacts_helper_credential_provider import ArtifactsHelperCredentialProvi
 
 
 class CodespacesArtifactsHelperKeyringBackend(KeyringBackend):
+    """A keyring backend for Azure Artifacts using the ADO Codespaces Auth Helper."""
+
     SUPPORTED_NETLOC = (
         "pkgs.dev.azure.com",
         "pkgs.visualstudio.com",

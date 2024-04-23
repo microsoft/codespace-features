@@ -5,9 +5,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 import pytest
-from codespaces_artifacts_helper_keyring import (
-    ArtifactsHelperCredentialProvider,
-)
+from codespaces_artifacts_helper_keyring import ArtifactsHelperCredentialProvider
 from codespaces_artifacts_helper_keyring.artifacts_helper_credential_provider import (
     ArtifactsHelperCredentialProviderError,
 )
@@ -15,7 +13,7 @@ from codespaces_artifacts_helper_keyring.artifacts_helper_credential_provider im
 
 class TestArtifactsHelperWrapper(unittest.TestCase):
     SUPPORTED_HOST = "https://pkgs.dev.azure.com/"
-    TEST_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiJ1cG5AY29udG9zby5jb20iLCJ1bmlxdWVfbmFtZSI6Im5hbWVAY29udG9zby5jb20ifQ.srKYrr5B0i29XERHsvE6mqZpLBzyyrX-gUKe9OHZODw"
+    TEST_JWT = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cG4iOiJ1cG5AY29udG9zby5jb20iLCJ1bmlxdWVfbmFtZSI6Im5hbWVAY29udG9zby5jb20ifQ.srKYrr5B0i29XERHsvE6mqZpLBzyyrX-gUKe9OHZODw"  # noqa: E501
     TEST_JWT_USERNAME = "name@contoso.com"
 
     def __init__(self, *args, **kwargs) -> None:

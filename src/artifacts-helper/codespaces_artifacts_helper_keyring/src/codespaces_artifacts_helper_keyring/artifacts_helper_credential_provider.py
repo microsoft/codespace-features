@@ -1,7 +1,4 @@
-# --------------------------------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See LICENSE in the project root for license information.
-# --------------------------------------------------------------------------------------------
+"""Wrapper to interface with the artifacts authentication helper."""
 
 from __future__ import absolute_import
 
@@ -18,15 +15,31 @@ import requests
 
 @dataclass
 class Credentials:
+    """A set of credentials, consisting of a username and password."""
+
     username: str
     password: str
 
 
 class ArtifactsHelperCredentialProviderError(RuntimeError):
-    pass
+    """Generic error for ArtifactsHelperCredentialProvider."""
 
 
 class ArtifactsHelperCredentialProvider:
+    """A wrapper retrieve credentials from the artifacts authentication helper.
+
+    The authentication helper should be installed from
+    https://github.com/microsoft/ado-codespaces-auth.
+
+    Attributes:
+        DEFAULT_AUTH_HELPER_PATH: The default path to the authentication helper
+            executable.
+
+    Raises:
+        ArtifactsHelperCredentialProviderError: When the credentials could not be
+            retrieved.
+    """
+
     DEFAULT_AUTH_HELPER_PATH = "~/ado-auth-helper"
 
     def __init__(
@@ -34,6 +47,16 @@ class ArtifactsHelperCredentialProvider:
         auth_helper_path: Union[os.PathLike, str] = DEFAULT_AUTH_HELPER_PATH,
         timeout: int = 30,
     ):
+        """Initialise the provider.
+
+        Args:
+            auth_helper_path: The path to the authentication helper executable, or the
+                name of the executable if it is in the PATH. Defaults to
+                DEFAULT_AUTH_HELPER_PATH.
+
+            timeout: The timeout in seconds for calling the authentication helper and
+                any HTTP requests made to test credentials. Defaults to 30.
+        """
         self.auth_tool_path = self.resolve_auth_helper_path(auth_helper_path)
         self.timeout = timeout
 
@@ -41,15 +64,31 @@ class ArtifactsHelperCredentialProvider:
     def resolve_auth_helper_path(
         auth_helper_path: Union[os.PathLike, str],
     ) -> Optional[str]:
+        """Resolve the path to the authentication helper executable.
+
+        Returns:
+            The path to the authentication helper executable, or `None` if it is not
+            executable or not found.
+        """
         return shutil.which(str(Path(auth_helper_path).expanduser()), mode=os.X_OK)
 
     @classmethod
     def auth_helper_installed(cls, auth_helper_path: Union[os.PathLike, str]) -> bool:
+        """Check whether the authentication helper is installed and executable."""
         return cls.resolve_auth_helper_path(auth_helper_path) is not None
 
-    def get_credentials(self, url) -> Optional[Credentials]:
-        # Public feed short circuit: return nothing if not getting credentials for the upload endpoint
-        # (which always requires auth) and the endpoint is public (can authenticate without credentials).
+    def get_credentials(self, url: str) -> Optional[Credentials]:
+        """Get credentials for the given URL.
+
+        Args:
+            url: The URL to retrieve credentials for.
+
+        Returns:
+            The credentials for the URL, or `None` if no credentials could be retrieved.
+        """
+        # Public feed short circuit: return nothing if not getting credentials for the
+        # upload endpoint (which always requires auth) and the endpoint is public (can
+        # authenticate without credentials).
         if not self._is_upload_endpoint(url) and self._can_authenticate(url, None):
             return None
 
@@ -87,16 +126,19 @@ class ArtifactsHelperCredentialProvider:
                 return stdout.strip()
             else:
                 raise ArtifactsHelperCredentialProviderError(
-                    f"Failed to get credentials: No output from subprocess {self.auth_tool_path}"
+                    "Failed to get credentials: "
+                    f"No output from subprocess {self.auth_tool_path}"
                 )
 
         except subprocess.CalledProcessError as e:
             raise ArtifactsHelperCredentialProviderError(
-                f"Failed to get credentials: Process {self.auth_tool_path} exited with code {e.returncode}. Error: {e.stderr}"
+                f"Failed to get credentials: Process {self.auth_tool_path} exited with "
+                f"code {e.returncode}. Error: {e.stderr}"
             ) from e
         except subprocess.TimeoutExpired as e:
             raise ArtifactsHelperCredentialProviderError(
-                f"Failed to get credentials: Process {self.auth_tool_path} timed out after {self.timeout} seconds"
+                f"Failed to get credentials: Process {self.auth_tool_path} timed out "
+                f"after {self.timeout} seconds"
             ) from e
 
     def _get_credentials_from_jwt(self, jwt_str: str) -> Credentials:
