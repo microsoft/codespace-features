@@ -52,11 +52,12 @@ line-length = 88
 indent-width = 4
 
 [tool.ruff.lint]
-extend-select = ["E4", "E7", "E9", "F", "B", "I", "W", "Q"]
+extend-select = ["B", "C4", "D", "E", "F", "I", "W", "Q"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"**/{tests,docs,tools}/*" = ["E402"]
+"noxfile.py" = ["D1"]
+"**/{tests,docs,tools}/*" = ["D1", "E402"]
