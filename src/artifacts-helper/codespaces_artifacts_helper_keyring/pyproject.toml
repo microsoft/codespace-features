@@ -13,7 +13,6 @@ classifiers = [
 dependencies = [
     "jaraco-classes>=3.0.0",
     "keyring>=20.0.0",
-    "PyJWT>=2.0.0",
     "requests>=2.20.0",
 ]
 requires-python = ">=3.8"

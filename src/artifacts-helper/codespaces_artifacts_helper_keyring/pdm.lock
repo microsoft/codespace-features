@@ -5,7 +5,7 @@
 groups = ["default", "test", "lint", "dev", "stubs"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:3484757b3b80a58839cc0a968d925c995ae6f9e694bbe75a2c210f11ce6ece04"
+content_hash = "sha256:737f2a6b1def7f62ffffc133bd7dfaffe36e9d80b193a98064f80df7faa567cc"
 
 [[package]]
 name = "argcomplete"
@@ -739,17 +739,6 @@ marker = "platform_python_implementation != \"PyPy\" and sys_platform == \"linux
 files = [
     {file = "pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc"},
     {file = "pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6"},
-]
-
-[[package]]
-name = "pyjwt"
-version = "2.8.0"
-requires_python = ">=3.7"
-summary = "JSON Web Token implementation in Python"
-groups = ["default"]
-files = [
-    {file = "PyJWT-2.8.0-py3-none-any.whl", hash = "sha256:59127c392cc44c2da5bb3192169a91f429924e17aff6534d70fdc02ab3e04320"},
-    {file = "PyJWT-2.8.0.tar.gz", hash = "sha256:57e28d156e3d5c10088e0c68abb90bfac3df82b40a71bd0daa20c65ccd5c23de"},
 ]
 
 [[package]]

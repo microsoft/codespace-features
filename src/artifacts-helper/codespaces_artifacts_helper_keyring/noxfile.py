@@ -10,11 +10,9 @@ LOCATIONS = "src", "tests", "noxfile.py"
 
 @nox.session(py=PYTHON_VERSIONS)
 @nox.parametrize("keyring", ["20", "25.1"])
-@nox.parametrize("pyjwt", ["2.0.0", "2.8"])
-def tests(session, keyring, pyjwt):
+def tests(session, keyring):
     session.run_always("pdm", "install", "-G", "test", external=True)
     session.install(f"keyring=={keyring}")
-    session.install(f"pyjwt=={pyjwt}")
     session.run("pdm", "test", *session.posargs, external=True)
 
 
