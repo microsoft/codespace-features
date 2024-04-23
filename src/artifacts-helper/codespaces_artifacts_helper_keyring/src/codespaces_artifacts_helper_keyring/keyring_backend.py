@@ -21,6 +21,8 @@ class CodespacesArtifactsHelperKeyringBackend(KeyringBackend):
         "pkgs.vsts.me",
     )
 
+    DEFAULT_USERNAME = "codespaces"
+
     _PROVIDER: Type[ArtifactsHelperCredentialProvider] = (
         ArtifactsHelperCredentialProvider
     )
@@ -43,10 +45,10 @@ class CodespacesArtifactsHelperKeyringBackend(KeyringBackend):
             return None
 
         provider = self._PROVIDER(auth_helper_path=self.AUTH_HELPER_PATH)
-        creds = provider.get_credentials(service)
-        if creds is None:
+        token = provider.get_token(service)
+        if not token:
             return None
-        return SimpleCredential(creds.username or username, creds.password)
+        return SimpleCredential(username or self.DEFAULT_USERNAME, token)
 
     def _is_supported_netloc(self, service) -> bool:
         try:

@@ -5,20 +5,10 @@ from __future__ import absolute_import
 import os
 import shutil
 import subprocess
-from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Union
 
-import jwt
 import requests
-
-
-@dataclass
-class Credentials:
-    """A set of credentials, consisting of a username and password."""
-
-    username: str
-    password: str
 
 
 class ArtifactsHelperCredentialProviderError(RuntimeError):
@@ -77,14 +67,14 @@ class ArtifactsHelperCredentialProvider:
         """Check whether the authentication helper is installed and executable."""
         return cls.resolve_auth_helper_path(auth_helper_path) is not None
 
-    def get_credentials(self, url: str) -> Optional[Credentials]:
-        """Get credentials for the given URL.
+    def get_token(self, url: str) -> Optional[str]:
+        """Get an access token for the given URL.
 
         Args:
             url: The URL to retrieve credentials for.
 
         Returns:
-            The credentials for the URL, or `None` if no credentials could be retrieved.
+            The token for the URL, or `None` if no credentials could be retrieved.
         """
         # Public feed short circuit: return nothing if not getting credentials for the
         # upload endpoint (which always requires auth) and the endpoint is public (can
@@ -92,11 +82,8 @@ class ArtifactsHelperCredentialProvider:
         if not self._is_upload_endpoint(url) and self._can_authenticate(url, None):
             return None
 
-        jwt_str = self._get_jwt_from_helper()
-        if not jwt_str:
-            return None
-
-        return self._get_credentials_from_jwt(jwt_str)
+        token = self._get_token_from_helper()
+        return token if token else None
 
     @staticmethod
     def _is_upload_endpoint(url) -> bool:
@@ -107,7 +94,7 @@ class ArtifactsHelperCredentialProvider:
         response = requests.get(url, auth=auth, timeout=self.timeout)
         return response.status_code < 500 and response.status_code not in (401, 403)
 
-    def _get_jwt_from_helper(self) -> str:
+    def _get_token_from_helper(self) -> str:
         if self.auth_tool_path is None:
             raise ArtifactsHelperCredentialProviderError(
                 "Failed to get credentials: No authentication tool found"
@@ -139,18 +126,4 @@ class ArtifactsHelperCredentialProvider:
             raise ArtifactsHelperCredentialProviderError(
                 f"Failed to get credentials: Process {self.auth_tool_path} timed out "
                 f"after {self.timeout} seconds"
-            ) from e
-
-    def _get_credentials_from_jwt(self, jwt_str: str) -> Credentials:
-        try:
-            decoded = jwt.decode(
-                jwt_str, verify=False, options={"verify_signature": False}
-            )
-            return Credentials(
-                username=decoded.get("unique_name", decoded.get("upn", None)),
-                password=jwt_str,
-            )
-        except jwt.PyJWTError as e:
-            raise ArtifactsHelperCredentialProviderError(
-                f"Failed to decode JWT: {e}"
             ) from e

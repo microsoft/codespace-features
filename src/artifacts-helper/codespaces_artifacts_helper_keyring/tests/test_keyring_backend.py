@@ -7,7 +7,6 @@ from codespaces_artifacts_helper_keyring import (
     ArtifactsHelperCredentialProvider,
     CodespacesArtifactsHelperKeyringBackend,
 )
-from keyring.credentials import SimpleCredential
 
 # Shouldn't be accessed by tests, but needs to be able
 # to get past the quick check.
@@ -15,8 +14,8 @@ SUPPORTED_HOST = "https://pkgs.dev.azure.com/"
 
 
 class FakeProvider(ArtifactsHelperCredentialProvider):
-    def get_credentials(self, service):
-        return SimpleCredential("user" + service[-4:], "pass" + service[-4:])
+    def get_token(self, service):
+        return "pass" + service[-4:]
 
     @staticmethod
     def auth_helper_installed(auth_tool_path):
@@ -83,9 +82,15 @@ def test_get_credential_unsupported_host(only_backend):
     assert keyring.get_credential("https://example.com", None) is None
 
 
-def test_get_credential(only_backend, fake_provider):
+def test_get_credential_default_username(only_backend, fake_provider):
+    creds = keyring.get_credential(SUPPORTED_HOST + "1234", "user12345678")
+    assert creds.username == "user12345678"
+    assert creds.password == "pass1234"
+
+
+def test_get_credential_with_username(only_backend, fake_provider):
     creds = keyring.get_credential(SUPPORTED_HOST + "1234", None)
-    assert creds.username == "user1234"
+    assert creds.username == "codespaces"
     assert creds.password == "pass1234"
 
 
@@ -128,7 +133,7 @@ def test_delete_password_fallback(passwords, fake_provider):
 
 def test_cannot_delete_password(passwords, fake_provider):
     # Ensure we are getting good credentials
-    creds = keyring.get_credential(SUPPORTED_HOST + "1234", None)
+    creds = keyring.get_credential(SUPPORTED_HOST + "1234", "user1234")
     assert creds.username == "user1234"
     assert creds.password == "pass1234"
 
