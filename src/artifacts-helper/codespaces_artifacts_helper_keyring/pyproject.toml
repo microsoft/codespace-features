@@ -1,6 +1,6 @@
 [project]
 name = "codespaces-artifacts-helper-keyring"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Keyring backend to retrieve credentials for Azure Artifacts on Codespaces using https://github.com/microsoft/ado-codespaces-auth"
 authors = [{ name = "Delilah Wu", email = "delilahwu@microsoft.com" }]
 classifiers = [
@@ -31,6 +31,9 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 "codespaces_artifacts_helper_keyring" = ["py.typed"]
+
+[tool.setuptools.dynamic]
+version = {attr = "codespaces_artifacts_helper_keyring.__version__"}
 
 [tool.pdm]
 distribution = true
