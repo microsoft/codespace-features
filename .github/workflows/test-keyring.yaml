@@ -1,0 +1,59 @@
+name: Artifacts Helper Keyring Tests
+
+on:
+  push:
+    paths:
+      - ".github/workflows/test-keyring.yaml"
+      - "src/artifacts-helper/codespaces_artifacts_helper_keyring/**.py"
+
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/test-keyring.yaml"
+      - "src/artifacts-helper/codespaces_artifacts_helper_keyring/**.py"
+
+defaults:
+  run:
+    working-directory: src/artifacts-helper/codespaces_artifacts_helper_keyring
+
+jobs:
+  generate-jobs:
+    name: Generate jobs
+    runs-on: ubuntu-latest
+    outputs:
+      session: ${{ steps.set-matrix.outputs.session }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: wntrblm/nox@main
+        with:
+          python-versions: "3.12"
+
+      - id: set-matrix
+        shell: bash
+        run: echo session=$(nox --json -l --tags ci | jq -c '[.[].session]') | tee --append $GITHUB_OUTPUT
+
+  checks:
+    name: Session ${{ matrix.session }}
+    needs: [generate-jobs]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        session: ${{ fromJson(needs.generate-jobs.outputs.session) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: wntrblm/nox@main
+        with:
+          python-versions: "3.8, 3.9, 3.10, 3.11, 3.12, pypy-3.9, pypy-3.10"
+
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+        with:
+          version: "2.15.1"
+          python-version-file: "src/artifacts-helper/codespaces_artifacts_helper_keyring/pyproject.toml"
+
+      - name: Run ${{ matrix.session }}
+        run: pdm run nox --error-on-missing-interpreters --error-on-external-run -s "${{ matrix.session }}"

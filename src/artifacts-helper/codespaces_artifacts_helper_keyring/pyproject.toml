@@ -39,15 +39,25 @@ version = {attr = "codespaces_artifacts_helper_keyring.__version__"}
 distribution = true
 
 [tool.pdm.dev-dependencies]
-lint = ["mypy>=1.9.0", "ruff>=0.4.0", "pre-commit>=3.5.0"]
+lint = [
+    "mypy>=1.9.0",
+    "ruff>=0.4.0",
+]
 dev = ["pip>=24.0", "nox>=2024.4.15"]
 test = ["pytest>=8.1.1", "pytest-cov>=5.0.0"]
 stubs = ["types-requests>=2.31.0.20240406"]
 
 [tool.pdm.scripts]
-check = "ruff check ."
-fmt = "ruff format ."
-test = "pytest -v tests"
+lint-fix = "pdm lint --fix"
+lint = "nox --error-on-external-run -R -s lint -- {args}"
+
+format-check = "pdm format --check"
+format = "nox --error-on-external-run -R -s format -- {args}"
+
+mypy = "nox --error-on-external-run -R -s mypy -- {args}"
+tests = "nox --error-on-external-run -R -s tests -- {args}"
+
+release = "nox --error-on-external-run -R -s release"
 
 [tool.ruff]
 line-length = 88
