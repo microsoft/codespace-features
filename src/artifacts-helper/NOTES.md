@@ -25,6 +25,19 @@ are put in place if they are not provided. An example of the `.npmrc` file creat
 //pkgs.dev.azure.com/orgname/projectname/_packaging/feed1/npm/:email=codespaces@github.com
 ```
 
+## Python Keyring Helper
+
+Add the optional `{ "python" : true }` to install a Python Keyring helper that will handle authentication
+to Python feeds using the same mechanism as the other languages. To install a package just run something
+like:
+
+```
+pip install <package_name> --index-url https://pkgs.dev.azure.com/<org_name>/_packaging/<feed_name>/pypi/simple
+```
+
+When the feed URL is an Azure Artifacts feed pip will use the keyring helper to provide the credentials needed
+to download the package.
+
 ## OS Support
 
 This feature is tested to work on Debian/Ubuntu and Mariner CBL 2.0
