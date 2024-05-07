@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import keyring
 import keyring.backend
 import keyring.backends.chainer
@@ -7,6 +9,7 @@ from codespaces_artifacts_helper_keyring import (
     ArtifactsHelperCredentialProvider,
     CodespacesArtifactsHelperKeyringBackend,
 )
+from jaraco.classes import properties
 
 # Shouldn't be accessed by tests, but needs to be able
 # to get past the quick check.
@@ -139,3 +142,44 @@ def test_cannot_delete_password(passwords, fake_provider):
 
     with pytest.raises(keyring.errors.PasswordDeleteError):
         keyring.delete_password(SUPPORTED_HOST + "1234", creds.username)
+
+
+def test_priority_when_helper_installed(monkeypatch):
+    class MockProvider(ArtifactsHelperCredentialProvider):
+        @staticmethod
+        def resolve_auth_helper_path(auth_helper_path):
+            return Path("fake-path")
+
+        @properties.classproperty
+        @classmethod
+        def priority(cls) -> float:
+            return True
+
+    monkeypatch.setattr(
+        CodespacesArtifactsHelperKeyringBackend, "_PROVIDER", MockProvider
+    )
+
+    assert CodespacesArtifactsHelperKeyringBackend.priority == 10.0
+    assert CodespacesArtifactsHelperKeyringBackend().priority == 10.0
+
+
+def test_priority_when_helper_not_installed(monkeypatch):
+    class MockProvider(ArtifactsHelperCredentialProvider):
+        @staticmethod
+        def resolve_auth_helper_path(auth_helper_path):
+            return None
+
+        @properties.classproperty
+        @classmethod
+        def priority(cls) -> float:
+            return False
+
+    monkeypatch.setattr(
+        CodespacesArtifactsHelperKeyringBackend, "_PROVIDER", MockProvider
+    )
+
+    with pytest.raises(RuntimeError):
+        assert not CodespacesArtifactsHelperKeyringBackend.priority
+
+    with pytest.raises(RuntimeError):
+        assert not CodespacesArtifactsHelperKeyringBackend().priority
