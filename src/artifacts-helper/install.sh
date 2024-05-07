@@ -10,6 +10,7 @@ ALIAS_NPM="${NPMALIAS:-"true"}"
 ALIAS_YARN="${YARNALIAS:-"true"}"
 ALIAS_NPX="${NPXALIAS:-"true"}"
 ALIAS_RUSH="${RUSHALIAS:-"true"}"
+INSTALL_PIP_HELPER="${PYTHON:-"false"}"
 
 # Source /etc/os-release to get OS info
 . /etc/os-release
@@ -50,6 +51,8 @@ cd "$(dirname "$0")"
 
 cp ./scripts/install-provider.sh /tmp
 chmod +rx /tmp/install-provider.sh
+cp ./scripts/install-python-keyring.sh /tmp
+chmod +rx /tmp/install-python-keyring.sh
 
 sed "s|REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX|${PREFIXES}|g" ./scripts/run-dotnet.sh > /usr/local/bin/run-dotnet.sh
 chmod +rx /usr/local/bin/run-dotnet.sh
@@ -101,6 +104,15 @@ if command -v sudo >/dev/null 2>&1; then
         fi
         sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
         rm /tmp/install-provider.sh
+        if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
+        # check if python is installed
+            if command -v python3 >/dev/null 2>&1; then
+                sudo -u ${_REMOTE_USER} bash -c "/tmp/install-python-keyring.sh"
+                rm /tmp/install-python-keyring.sh
+            else
+                echo "Python installation not detected, keyring helper not installed."
+            fi
+        fi
         exit 0
     fi
 fi
@@ -138,6 +150,10 @@ if [ "${ALIAS_RUSH}" = "true" ]; then
     sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush-pnpm=/usr/local/bin/run-rush-pnpm.sh' >> /etc/zsh/zshrc || true
 fi
 
+if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
+    bash -c "/tmp/install-python-keyring.sh"
+    rm /tmp/install-python-keyring.sh
+fi
 rm /tmp/install-provider.sh
 
 exit 0
