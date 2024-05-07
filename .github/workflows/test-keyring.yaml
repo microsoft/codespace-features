@@ -4,14 +4,14 @@ on:
   push:
     paths:
       - ".github/workflows/test-keyring.yaml"
-      - "src/artifacts-helper/codespaces_artifacts_helper_keyring/**.py"
+      - "src/artifacts-helper/codespaces_artifacts_helper_keyring/**"
 
   pull_request:
     branches:
       - main
     paths:
       - ".github/workflows/test-keyring.yaml"
-      - "src/artifacts-helper/codespaces_artifacts_helper_keyring/**.py"
+      - "src/artifacts-helper/codespaces_artifacts_helper_keyring/**"
 
 defaults:
   run:
