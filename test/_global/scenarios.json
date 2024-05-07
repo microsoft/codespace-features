@@ -33,7 +33,7 @@
                 "options": "--single-branch --no-src",
                 "scalar": "true"
             },
-            "artifacts-helper": {}
+            "artifacts-helper": {"python" : "true"}
         },
         "remoteEnv": {
             "EXT_GIT_PAT": "dummypat"

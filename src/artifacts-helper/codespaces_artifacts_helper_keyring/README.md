@@ -40,8 +40,7 @@ To use `codespaces_artifacts_helper_keyring` to set up authentication between `p
   {
     "features": {
       "ghcr.io/microsoft/codespace-features/artifacts-helper:1": {
-        // TODO: Add parameter for installing package
-        "TODO": true
+        "python": true
       }
     }
   }
