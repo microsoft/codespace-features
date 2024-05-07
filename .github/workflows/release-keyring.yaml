@@ -1,9 +1,7 @@
 name: Artifacts Helper Keyring Releases
 
 on:
-  push:
-    tags:
-      - "feature_artifacts-helper_*"
+  workflow_dispatch:
 
 jobs:
   build:
