@@ -66,6 +66,10 @@ tests = "nox --error-on-external-run -R -s tests -- {args}"
 release = "nox --error-on-external-run -R -s release"
 
 [tool.ruff]
+# Allow imports relative to the "src" and "test" directories. Also allows ruff's
+# isort to determine that our package is first party when importing it in tests.
+src = ["src", "test"]
+
 line-length = 88
 indent-width = 4
 

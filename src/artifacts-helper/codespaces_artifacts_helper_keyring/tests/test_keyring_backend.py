@@ -5,11 +5,12 @@ import keyring.backend
 import keyring.backends.chainer
 import keyring.errors
 import pytest
+from jaraco.classes import properties
+
 from codespaces_artifacts_helper_keyring import (
     ArtifactsHelperCredentialProvider,
     CodespacesArtifactsHelperKeyringBackend,
 )
-from jaraco.classes import properties
 
 # Shouldn't be accessed by tests, but needs to be able
 # to get past the quick check.

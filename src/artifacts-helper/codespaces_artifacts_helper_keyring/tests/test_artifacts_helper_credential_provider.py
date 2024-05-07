@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 import pytest
+
 from codespaces_artifacts_helper_keyring import ArtifactsHelperCredentialProvider
 from codespaces_artifacts_helper_keyring.artifacts_helper_credential_provider import (
     ArtifactsHelperCredentialProviderError,
