@@ -1,11 +1,11 @@
 {
     "debian_tests": {
-        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "image": "mcr.microsoft.com/devcontainers/python:3",
         "features": {
             "microsoft-git": {
                 "version": "2.39.2.vfs.0.0"
             },
-            "artifacts-helper": {},
+            "artifacts-helper": {"python" : "true"},
             "external-repository": {
                 "gitProvider": "azuredevops",
                 "cloneUrl": "https://github.com/devcontainers/features",
