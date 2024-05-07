@@ -151,8 +151,13 @@ if [ "${ALIAS_RUSH}" = "true" ]; then
 fi
 
 if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
-    bash -c "/tmp/install-python-keyring.sh"
-    rm /tmp/install-python-keyring.sh
+# check if python is installed
+    if command -v python3 >/dev/null 2>&1; then
+        bash -c "/tmp/install-python-keyring.sh"
+        rm /tmp/install-python-keyring.sh
+    else
+        echo "Python installation not detected, keyring helper not installed."
+    fi
 fi
 rm /tmp/install-provider.sh
 
