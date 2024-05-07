@@ -1,0 +1,35 @@
+name: Artifacts Helper Keyring Releases
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: src/artifacts-helper/codespaces_artifacts_helper_keyring
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: wntrblm/nox@main
+        with:
+          python-versions: "3.11, 3.12"
+
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+        with:
+          version: "2.15.1"
+          python-version-file: "src/artifacts-helper/codespaces_artifacts_helper_keyring/pyproject.toml"
+
+      - name: Run nox release
+        run: pdm release
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: codespaces_artifacts_helper_keyring
+          path: |
+            src/artifacts-helper/codespaces_artifacts_helper_keyring/dist
