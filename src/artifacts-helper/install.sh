@@ -105,13 +105,8 @@ if command -v sudo >/dev/null 2>&1; then
         sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
         rm /tmp/install-provider.sh
         if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
-        # check if python is installed
-            if command -v pip >/dev/null 2>&1; then
-                sudo -u ${_REMOTE_USER} bash -c "/tmp/install-python-keyring.sh"
-                rm /tmp/install-python-keyring.sh
-            else
-                echo "Python pip installation not detected, keyring helper not installed."
-            fi
+            sudo -u ${_REMOTE_USER} bash -c "/tmp/install-python-keyring.sh"
+            rm /tmp/install-python-keyring.sh
         fi
         exit 0
     fi
@@ -151,13 +146,8 @@ if [ "${ALIAS_RUSH}" = "true" ]; then
 fi
 
 if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
-# check if python is installed
-    if command -v pip >/dev/null 2>&1; then
-        bash -c "/tmp/install-python-keyring.sh"
-        rm /tmp/install-python-keyring.sh
-    else
-        echo "Python pip installation not detected, keyring helper not installed."
-    fi
+    bash -c "/tmp/install-python-keyring.sh"
+    rm /tmp/install-python-keyring.sh
 fi
 rm /tmp/install-provider.sh
 
