@@ -5,7 +5,7 @@
             "microsoft-git": {
                 "version": "2.39.2.vfs.0.0"
             },
-            "artifacts-helper": {"python" : "true"},
+            "artifacts-helper": {},
             "external-repository": {
                 "gitProvider": "azuredevops",
                 "cloneUrl": "https://github.com/devcontainers/features",
@@ -33,7 +33,7 @@
                 "options": "--single-branch --no-src",
                 "scalar": "true"
             },
-            "artifacts-helper": {"python" : "true"}
+            "artifacts-helper": {}
         },
         "remoteEnv": {
             "EXT_GIT_PAT": "dummypat"

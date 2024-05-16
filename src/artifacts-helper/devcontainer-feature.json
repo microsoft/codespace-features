@@ -51,7 +51,8 @@
         }        
     },
     "installsAfter": [
-        "ghcr.io/devcontainers/features/common-utils"
+        "ghcr.io/devcontainers/features/common-utils",
+        "ghcr.io/devcontainers/features/python"
     ],
     "customizations": {
         "vscode": {
@@ -59,5 +60,5 @@
                 "ms-codespaces-tools.ado-codespaces-auth"
             ]
         }
-    }    
+    }
 }

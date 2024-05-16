@@ -73,6 +73,11 @@ cp ./scripts/run-rush-pnpm.sh /usr/local/bin/run-rush-pnpm.sh
 chmod +rx /usr/local/bin/run-rush-pnpm.sh
 
 
+if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
+    USER="${_REMOTE_USER}" /tmp/install-python-keyring.sh
+    rm /tmp/install-python-keyring.sh
+fi
+
 if command -v sudo >/dev/null 2>&1; then
     if [ "root" != "$_REMOTE_USER" ]; then
         if [ "${ALIAS_DOTNET}" = "true" ]; then
@@ -104,10 +109,6 @@ if command -v sudo >/dev/null 2>&1; then
         fi
         sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
         rm /tmp/install-provider.sh
-        if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
-            sudo -u ${_REMOTE_USER} bash -c "/tmp/install-python-keyring.sh"
-            rm /tmp/install-python-keyring.sh
-        fi
         exit 0
     fi
 fi
@@ -145,10 +146,6 @@ if [ "${ALIAS_RUSH}" = "true" ]; then
     sudo -u ${_REMOTE_USER} bash -c "echo 'alias rush-pnpm=/usr/local/bin/run-rush-pnpm.sh' >> /etc/zsh/zshrc || true
 fi
 
-if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
-    bash -c "/tmp/install-python-keyring.sh"
-    rm /tmp/install-python-keyring.sh
-fi
 rm /tmp/install-provider.sh
 
 exit 0
