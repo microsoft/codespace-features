@@ -1,7 +1,7 @@
 {
     "name": "Azure Artifacts Credential Helper",
     "id": "artifacts-helper",
-    "version": "1.0.8",
+    "version": "1.0.9",
     "description": "Configures Codespace to authenticate with Azure Artifact feeds",
     "options": {
         "nugetURIPrefixes": {
@@ -51,7 +51,8 @@
         }        
     },
     "installsAfter": [
-        "ghcr.io/devcontainers/features/common-utils"
+        "ghcr.io/devcontainers/features/common-utils",
+        "ghcr.io/devcontainers/features/python"
     ],
     "customizations": {
         "vscode": {
@@ -59,5 +60,5 @@
                 "ms-codespaces-tools.ado-codespaces-auth"
             ]
         }
-    }    
+    }
 }

@@ -1,0 +1,46 @@
+{
+    "python38_and_keyring_debian": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "ghcr.io/devcontainers/features/python:1": {
+                "version": "3.8"
+            },
+            "artifacts-helper": {
+                "python": true
+            }
+        }
+    },
+    "python38_and_keyring_ubuntu": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "ghcr.io/devcontainers/features/python:1": {
+                "version": "3.8"
+            },
+            "artifacts-helper": {
+                "python": true
+            }
+        }
+    },
+    "python312_and_keyring_debian": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "ghcr.io/devcontainers/features/python:1": {
+                "version": "3.12"
+            },
+            "artifacts-helper": {
+                "python": true
+            }
+        }
+    },
+    "python_and_no_keyring": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "ghcr.io/devcontainers/features/python:1": {
+                "version": "3.8"
+            },
+            "artifacts-helper": {
+                "python": false
+            }
+        }
+    }
+}
