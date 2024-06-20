@@ -6,6 +6,21 @@ cd "$(dirname "$0")"
 # Load the variables
 source ./variables.sh
 
+# Function to obtain OIDC token and authenticate with Azure
+obtain_oidc_token_and_authenticate() {
+    if [[ -n "${EXT_GIT_AZURE_CLIENT_ID}" && -n "${EXT_GIT_AZURE_TENANT_ID}"}" ]]; then
+        echo "Obtaining OIDC token for Azure authentication..."
+        response=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange")
+        federatedToken=$(echo $response | jq -r '.value')
+
+        echo "Logging in to Azure with OIDC token..."
+        az login --service-principal -u $AZURE_CLIENT_ID --tenant $AZURE_TENANT_ID --federated-token "$federatedToken"
+
+        echo "Obtaining Azure DevOps token..."
+        export $EXT_GIT_PREBUILD_PAT=$(az account get-access-token --tenant $AZURE_TENANT_ID --query accessToken -o tsv)
+    fi
+}
+
 clone_repository() {
     set -e
     GIT_REPO_URL=${1}
@@ -97,6 +112,9 @@ if [[ "${EXT_GIT_LOCAL_PATH}" == "" ]]; then
     echo "Workspace folder for external repository is not set"
     exit 0;
 fi
+
+# Obtain OIDC token and authenticate with Azure if Azure parameters are set
+obtain_oidc_token_and_authenticate
 
 if [[ "${EXT_GIT_PREBUILD_PAT}" == "" ]]; then
     echo "Prebuild secret is not set, attempting to clone with ado-auth-helper"

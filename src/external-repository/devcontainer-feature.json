@@ -1,7 +1,7 @@
 {
     "name": "External Git Repository in Codespace",
     "id": "external-repository",
-    "version": "3.0.3",
+    "version": "4.0.0",
     "description": "Configures Codespace to work with an external Git repository",
     "options": {
         "gitProvider": {
@@ -73,6 +73,16 @@
             ],
             "default": "none",
             "description": "Configure source of Git commit telemetry"
+        },
+        "clientID": {
+            "type": "string",
+            "default": "",
+            "description": "Azure Client ID for OIDC token acquisition during prebuild"
+        },
+        "tenantID": {
+            "type": "string",
+            "default": "",
+            "description": "Azure Tenant ID for OIDC token acquisition during prebuild"
         }
     },
     "installsAfter": [

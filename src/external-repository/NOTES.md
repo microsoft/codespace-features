@@ -71,6 +71,43 @@ If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns thi
 Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
 is not defined by the user it will fallback to the browser login.
 
+### Secret-less Azure DevOps Prebuilds
+
+It is possible to avoid using PATs entirely and dynamically obtain a token during prebuild using
+OIDC. This requires creating a Managed Identity or Service Principal in Entra, and creating a
+Federated Identity Credential for the prebuild scenario. The identity you create must also be added
+to Azure DevOps and given permission to the repositories and feeds you will be accessing during the
+prebuild process. The configuration looks similar to the previous example but adds in new options
+for the identity you have created:
+
+```json
+{
+"image": "mcr.microsoft.com/devcontainers/universal:ubuntu",
+"features": {
+    "ghcr.io/microsoft/codespace-features/external-repository:latest": {
+        "cloneUrl": "https://dev.azure.com/contoso/_git/reposname",
+        "cloneSecret": "ADO_PAT",
+        "clientID": "xxxx-yyyy-zzzz",
+        "tenantID": "1111-2222-3333",
+        "folder": "/workspaces/ado-repos"
+    }
+},
+"workspaceFolder": "/workspaces/ado-repos",
+"initializeCommand": "mkdir -p ${localWorkspaceFolder}/../ado-repos",
+"onCreateCommand": "external-git clone",
+"postStartCommand": "external-git config"     
+}
+```
+
+In this scenario you do not need to add a Codespaces secret for `ADO_PAT`. Instead, during
+the prebuild process this variable will be created and populated with a token obtained
+via OIDC. This token will be used during the git clone process but then is otherwise available
+for you to use in your scripts to install dependencies from feeds or anything else you may need.
+The variable will only be available during the prebuild process.
+
+You can name the variable anything you want, it does not need to be named `ADO_PAT` and in this case
+it contains an OIDC bearer token, not a PAT.
+
 ### Interactive authentication only (avoids PAT token)
 
 The advantage of using a PAT token is the ability to clone the repository during the devContainer creation
