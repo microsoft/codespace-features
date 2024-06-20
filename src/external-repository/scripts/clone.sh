@@ -17,7 +17,7 @@ obtain_oidc_token_and_authenticate() {
         az login --service-principal -u $AZURE_CLIENT_ID --tenant $AZURE_TENANT_ID --federated-token "$federatedToken"
 
         echo "Obtaining Azure DevOps token..."
-        export $EXT_GIT_PREBUILD_PAT=$(az account get-access-token --tenant $AZURE_TENANT_ID --query accessToken -o tsv)
+        export $EXT_GIT_PREBUILD_PAT=$(az account get-access-token --scope "499b84ac-1321-427f-aa17-267ca6975798/.default" --query accessToken -o tsv)
     fi
 }
 
