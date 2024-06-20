@@ -6,21 +6,6 @@ cd "$(dirname "$0")"
 # Load the variables
 source ./variables.sh
 
-# Function to obtain OIDC token and authenticate with Azure
-obtain_oidc_token_and_authenticate() {
-    if [[ -n "${EXT_GIT_AZURE_CLIENT_ID}" && -n "${EXT_GIT_AZURE_TENANT_ID}" ]]; then
-        echo "Obtaining OIDC token for Azure authentication..."
-        response=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange")
-        federatedToken=$(echo $response | jq -r '.value')
-
-        echo "Logging in to Azure with OIDC token..."
-        az login --service-principal -u $EXT_GIT_AZURE_CLIENT_ID --tenant $EXT_GIT_AZURE_TENANT_ID --federated-token "$federatedToken" --allow-no-subscriptions
-
-        echo "Obtaining Azure DevOps token..."
-        export $EXT_GIT_PREBUILD_PAT=$(az account get-access-token --scope "499b84ac-1321-427f-aa17-267ca6975798/.default" --query accessToken -o tsv)
-    fi
-}
-
 clone_repository() {
     set -e
     GIT_REPO_URL=${1}
@@ -33,10 +18,11 @@ clone_repository() {
             mv ${HOME}/.gitconfig ${HOME}/.gitconfig.external_git_feature
         fi
 
-        if [[ "${EXT_GIT_PREBUILD_PAT}" == "" ]]; then
+        if [[ "${EXT_GIT_PREBUILD_PAT}" == "" && "${EXT_GIT_OIDC_PREBUILD}" == "false" ]]; then
             # Put the ado-auth-helper git config in place
             ADO_HELPER=$(echo ~)/ado-auth-helper
             sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" > ${HOME}/.gitconfig
+        fi
         else
             # Put the prebuild git config in place
             cp /usr/local/external-repository-feature/prebuild-git.config ${HOME}/.gitconfig
@@ -113,10 +99,7 @@ if [[ "${EXT_GIT_LOCAL_PATH}" == "" ]]; then
     exit 0;
 fi
 
-# Obtain OIDC token and authenticate with Azure if Azure parameters are set
-obtain_oidc_token_and_authenticate
-
-if [[ "${EXT_GIT_PREBUILD_PAT}" == "" ]]; then
+if [[ "${EXT_GIT_PREBUILD_PAT}" == "" && "${EXT_GIT_OIDC_PREBUILD}" == "false" ]]; then
     echo "Prebuild secret is not set, attempting to clone with ado-auth-helper"
     if [ ! -f ${HOME}/ado-auth-helper ]; then
         echo "Waiting up to 180 seconds for ado-auth-helper extension to be installed"
@@ -132,7 +115,7 @@ else
     # Get the value from environment variable whose name is set in EXT_GIT_PREBUILD_PAT
     EXT_GIT_PAT_VALUE=${!EXT_GIT_PREBUILD_PAT}
 
-    if [[ "${EXT_GIT_PAT_VALUE}" == "" ]]; then
+    if [[ "${EXT_GIT_PAT_VALUE}" == "" && "${EXT_GIT_OIDC_PREBUILD}" == "false" ]]; then
         echo "There is no secret stored in ${EXT_GIT_PREBUILD_PAT}"
         exit 0;
     fi

@@ -87,7 +87,6 @@ for the identity you have created:
     "ghcr.io/devcontainers/features/azure-cli:1": {},
     "ghcr.io/microsoft/codespace-features/external-repository:latest": {
         "cloneUrl": "https://dev.azure.com/contoso/_git/reposname",
-        "cloneSecret": "ADO_PAT",
         "clientID": "xxxx-yyyy-zzzz",
         "tenantID": "1111-2222-3333",
         "folder": "/workspaces/ado-repos"
@@ -100,14 +99,11 @@ for the identity you have created:
 }
 ```
 
-In this scenario you do not need to add a Codespaces secret for `ADO_PAT`. Instead, during
-the prebuild process this variable will be created and populated with a token obtained
-via OIDC. This token will be used during the git clone process but then is otherwise available
-for you to use in your scripts to install dependencies from feeds or anything else you may need.
-The variable will only be available during the prebuild process.
-
-You can name the variable anything you want, it does not need to be named `ADO_PAT` and in this case
-it contains an OIDC bearer token, not a PAT.
+In this scenario, during the prebuild process an ADO token will be obtained via OIDC. This token will be used
+during the git clone process only. If you have other scripts you are running during `onCreateCommand` you can
+run the command `external-git prebuild` and the token will be sent to stdout. You can then use this to install
+dependencies from feeds or anything else you may need. The token will only be available during the prebuild
+process and this has to be done after the clone command so that the OIDC login has already happened.
 
 > [!NOTE]
 > You MUST install the Azure CLI feature in your devcontainer.json if using this option
