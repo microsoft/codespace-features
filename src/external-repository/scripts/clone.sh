@@ -22,7 +22,6 @@ clone_repository() {
             # Put the ado-auth-helper git config in place
             ADO_HELPER=$(echo ~)/ado-auth-helper
             sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" > ${HOME}/.gitconfig
-        fi
         else
             # Put the prebuild git config in place
             cp /usr/local/external-repository-feature/prebuild-git.config ${HOME}/.gitconfig
