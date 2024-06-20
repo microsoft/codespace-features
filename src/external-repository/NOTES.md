@@ -84,6 +84,7 @@ for the identity you have created:
 {
 "image": "mcr.microsoft.com/devcontainers/universal:ubuntu",
 "features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
     "ghcr.io/microsoft/codespace-features/external-repository:latest": {
         "cloneUrl": "https://dev.azure.com/contoso/_git/reposname",
         "cloneSecret": "ADO_PAT",
@@ -107,6 +108,9 @@ The variable will only be available during the prebuild process.
 
 You can name the variable anything you want, it does not need to be named `ADO_PAT` and in this case
 it contains an OIDC bearer token, not a PAT.
+
+> [!NOTE]
+> You MUST install the Azure CLI feature in your devcontainer.json if using this option
 
 ### Interactive authentication only (avoids PAT token)
 
