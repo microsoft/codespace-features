@@ -8,7 +8,7 @@ source ./variables.sh
 
 # Function to obtain OIDC token and authenticate with Azure
 obtain_oidc_token_and_authenticate() {
-    if [[ -n "${EXT_GIT_AZURE_CLIENT_ID}" && -n "${EXT_GIT_AZURE_TENANT_ID}"}" ]]; then
+    if [[ -n "${EXT_GIT_AZURE_CLIENT_ID}" && -n "${EXT_GIT_AZURE_TENANT_ID}" ]]; then
         echo "Obtaining OIDC token for Azure authentication..."
         response=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange")
         federatedToken=$(echo $response | jq -r '.value')
