@@ -4,9 +4,13 @@
         "features": {
             "external-repository": {
                 "cloneUrl": "https://github.com/devcontainers/community",
+                "cloneSecret": "EXT_GIT_PAT",
                 "folder": "/tmp/basic-repos"
             }
         },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },   
         "postStartCommand": "external-git clone && external-git config"     
     },
     "multi-install": {
@@ -14,9 +18,13 @@
         "features": {
             "external-repository": {
                 "cloneUrl": "https://github.com/devcontainers/community,https://github.com/devcontainers/spec.git,https://github.com/devcontainers/devcontainers.github.io",
+                "cloneSecret": "EXT_GIT_PAT",
                 "folder": "/tmp/multi-repos"
             }
         },
+        "remoteEnv": {
+            "EXT_GIT_PAT": "dummypat"
+        },   
         "postStartCommand": "external-git clone && external-git config"     
     },
     "branch-install": {
@@ -24,11 +32,13 @@
         "features": {
             "external-repository": {
                 "cloneUrl": "https://github.com/devcontainers/spec",
+                "cloneSecret": "EXT_GIT_PAT",
                 "folder": "/tmp/branch-repos"
             }
         },
         "remoteEnv": {
-            "AZDO_BRANCH": "joshaber/parallel-execution-schema"
+            "AZDO_BRANCH": "joshaber/parallel-execution-schema",
+            "EXT_GIT_PAT": "dummypat"
         },
         "postStartCommand": "external-git clone && external-git config"     
     },
@@ -103,7 +113,6 @@
     "scalar-basic": {
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
-            "ghcr.io/devcontainers/features/git:1": {"version": "latest"},
             "external-repository": {
                 "cloneUrl": "https://github.com/devcontainers/features",
                 "folder": "/tmp/scalar-basic",
