@@ -74,7 +74,7 @@ is not defined by the user it will fallback to the browser login.
 ### Secret-less Azure DevOps Prebuilds
 
 As of version 4, it is possible to avoid using PATs entirely and dynamically obtain a token during prebuild using
-OIDC. This requires creating a Managed Identity or App Regiastration in Entra, and creating a
+OIDC. This requires creating a Managed Identity or App Registration in Entra, and creating a
 Federated Identity Credential on the Service Principal for the branch you are prebuilding. The 
 Service Principal created must also be added to Azure DevOps and given permission to the repositories
 and feeds you will be accessing during the prebuild process. The configuration replaces the `cloneSecret`
