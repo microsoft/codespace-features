@@ -73,12 +73,13 @@ is not defined by the user it will fallback to the browser login.
 
 ### Secret-less Azure DevOps Prebuilds
 
-It is possible to avoid using PATs entirely and dynamically obtain a token during prebuild using
-OIDC. This requires creating a Managed Identity or Service Principal in Entra, and creating a
-Federated Identity Credential for the prebuild scenario. The identity you create must also be added
-to Azure DevOps and given permission to the repositories and feeds you will be accessing during the
-prebuild process. The configuration looks similar to the previous example but adds in new options
-for the identity you have created:
+As of version 4, it is possible to avoid using PATs entirely and dynamically obtain a token during prebuild using
+OIDC. This requires creating a Managed Identity or App Regiastration in Entra, and creating a
+Federated Identity Credential on the Service Principal for the branch you are prebuilding. The 
+Service Principal created must also be added to Azure DevOps and given permission to the repositories
+and feeds you will be accessing during the prebuild process. The configuration replaces the `cloneSecret`
+with parameters for the Azure `clientID` and `tenantID` and also requires adding the feature for
+the azure-cli:
 
 ```json
 {
@@ -99,11 +100,12 @@ for the identity you have created:
 }
 ```
 
-In this scenario, during the prebuild process an ADO token will be obtained via OIDC. This token will be used
-during the git clone process only. If you have other scripts you are running during `onCreateCommand` you can
-run the command `external-git prebuild` and the token will be sent to stdout. You can then use this to install
-dependencies from feeds or anything else you may need. The token will only be available during the prebuild
-process and this has to be done after the clone command so that the OIDC login has already happened.
+In this scenario, during the prebuild process an ADO token will be obtained via OIDC and the Federated Identity Credential.
+This token will be used during the git clone process only. If you have other scripts you are running during
+`onCreateCommand` you can run the command `external-git prebuild` and the ADO token will be sent to stdout for you
+to use in your scripts to install dependencies from feeds or anything else you may need. The token will only be
+available during the prebuild process and this has to be done after the clone command so that the OIDC login has
+already happened.
 
 > [!NOTE]
 > You MUST install the Azure CLI feature in your devcontainer.json if using this option
