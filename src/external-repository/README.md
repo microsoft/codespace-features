@@ -7,7 +7,7 @@ Configures Codespace to work with an external Git repository
 
 ```json
 "features": {
-    "ghcr.io/microsoft/codespace-features/external-repository:3": {}
+    "ghcr.io/microsoft/codespace-features/external-repository:4": {}
 }
 ```
 
@@ -27,6 +27,8 @@ Configures Codespace to work with an external Git repository
 | branch | Default branch | string | main |
 | timeout | Timeout for the clone operation | string | 30m |
 | telemetrySource | Configure source of Git commit telemetry | string | none |
+| clientID | Azure Client ID for OIDC token acquisition during prebuild | string | - |
+| tenantID | Azure Tenant ID for OIDC token acquisition during prebuild | string | - |
 
 ## Customizations
 
@@ -95,17 +97,49 @@ that the token only have this scope.
 This would clone the repository to `/workspaces/ado-repos` during the Prebuild process
 using the PAT stored in a Codespaces secret. At runtime, when a user opens the Codespace
 the `workspaceFolder` feature would open VS Code to this folder automatically and it
-would be configured to prompt the user to login to Azure DevOps when they open the Codespace.
+will prompt the user to login to Azure DevOps when they open the Codespace. The user of
+the Codespaces does not need a PAT as the runtime will use their own login provided by
+the VS Code extension.
 
-If you want to allow your users to use their own token, then you can add this to the configuration:
+### Secret-less Azure DevOps Prebuilds
+
+As of version 4, it is possible to avoid using PATs entirely and dynamically obtain a token during prebuild using
+OIDC. This requires creating a Managed Identity or App Registration in Entra, and creating a
+Federated Identity Credential on the Service Principal for the branch you are prebuilding. The 
+Service Principal created must also be added to Azure DevOps and given permission to the repositories
+and feeds you will be accessing during the prebuild process. The configuration replaces the `cloneSecret`
+with parameters for the Azure `clientID` and `tenantID` and also requires adding the feature for
+the azure-cli:
 
 ```json
-        "userSecret": "ADO_SECRET"
+{
+"image": "mcr.microsoft.com/devcontainers/universal:ubuntu",
+"features": {
+    "ghcr.io/devcontainers/features/azure-cli:1": {},
+    "ghcr.io/microsoft/codespace-features/external-repository:latest": {
+        "cloneUrl": "https://dev.azure.com/contoso/_git/reposname",
+        "clientID": "xxxx-yyyy-zzzz",
+        "tenantID": "1111-2222-3333",
+        "folder": "/workspaces/ado-repos"
+    }
+},
+"workspaceFolder": "/workspaces/ado-repos",
+"initializeCommand": "mkdir -p ${localWorkspaceFolder}/../ado-repos",
+"onCreateCommand": "external-git clone",
+"postStartCommand": "external-git config"     
+}
 ```
 
-If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns this secret to the
-Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
-is not defined by the user it will fallback to the browser login.
+In this scenario, during the prebuild process an ADO token will be obtained via OIDC and the Federated Identity Credential.
+This token will be used during the git clone process only. If you have other scripts you are running during
+`onCreateCommand` you can run the command `external-git prebuild` and the ADO token will be sent to stdout for you
+to use in your scripts to install dependencies from feeds or anything else you may need. The token will only be
+available during the prebuild process and this has to be done after the clone command so that the OIDC login has
+already happened. Install and use the [artifacts-helper](../artifacts-helper/README.md) feature to provide support
+at runtime for artifacts and feeds.
+
+> [!NOTE]
+> You MUST install the Azure CLI feature in your devcontainer.json if using this option
 
 ### Interactive authentication only (avoids PAT token)
 
@@ -127,6 +161,11 @@ Codespace loads. This means the repository will be cloned only after the Codespa
 "postStartCommand": "external-git clone && external-git config"     
 }
 ```
+
+> [!NOTE]
+> Obtaining the credentials from the user will not work from `onCreateCommand` because the required
+> VS Code extension is not available during this phase of the process. In this example, we are running
+> the clone during `postStartCommand`. This is important.
 
 ## Multiple Repository Support
 
