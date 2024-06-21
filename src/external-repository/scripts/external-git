@@ -19,8 +19,11 @@ case "${SUBCOMMAND}" in
           # Get token using OIDC
             if [ "$2" = "get" ]; then
                 FIC=$(curl -s -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange" | jq -r '.value')
-                az login --service-principal -u ${EXT_GIT_AZURE_CLIENT_ID} --tenant ${EXT_GIT_AZURE_TENANT_ID} --federated-token "${FIC}" --allow-no-subscriptions > /dev/null 2>&1
-                ADO_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
+                if az login --service-principal -u ${EXT_GIT_AZURE_CLIENT_ID} --tenant ${EXT_GIT_AZURE_TENANT_ID} --federated-token "${FIC}" --allow-no-subscriptions --only-show-errors &>/dev/null; then
+                    ADO_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
+                else
+                    ADO_TOKEN="ERROR"
+                fi
                 echo "username=${EXT_GIT_USERNAME}"
                 echo "password=${ADO_TOKEN}"
             else
