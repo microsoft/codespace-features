@@ -14,7 +14,13 @@ EXT_GIT_OPTIONS="${OPTIONS:-""}"
 EXT_GIT_SCALAR="${SCALAR:-"false"}"
 EXT_GIT_SPARSECHECKOUT="${SPARSECHECKOUT:-""}"
 EXT_GIT_TELEMETRY="${TELEMETRYSOURCE:-"none"}"
+EXT_GIT_AZURE_CLIENT_ID="${CLIENTID:-""}"
+EXT_GIT_AZURE_TENANT_ID="${TENANTID:-""}"
 
+EXT_GIT_OIDC_PREBUILD="false"
+if [ -n "${EXT_GIT_AZURE_CLIENT_ID}" ] && [ -n "${EXT_GIT_AZURE_TENANT_ID}" ]; then
+    EXT_GIT_OIDC_PREBUILD="true"
+fi
 
 if [ "$(id -u)" -ne 0 ]; then
     echo 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
@@ -47,6 +53,9 @@ echo "EXT_GIT_OPTIONS=\"${EXT_GIT_OPTIONS}\"" >> /usr/local/external-repository-
 echo "EXT_GIT_SCALAR=\"${EXT_GIT_SCALAR}\"" >> /usr/local/external-repository-feature/variables.sh
 echo "EXT_GIT_SPARSECHECKOUT=\"${EXT_GIT_SPARSECHECKOUT}\"" >> /usr/local/external-repository-feature/variables.sh
 echo "EXT_GIT_TELEMETRY=\"${EXT_GIT_TELEMETRY}\"" >> /usr/local/external-repository-feature/variables.sh
+echo "EXT_GIT_AZURE_CLIENT_ID=\"${EXT_GIT_AZURE_CLIENT_ID}\"" >> /usr/local/external-repository-feature/variables.sh
+echo "EXT_GIT_AZURE_TENANT_ID=\"${EXT_GIT_AZURE_TENANT_ID}\"" >> /usr/local/external-repository-feature/variables.sh
+echo "EXT_GIT_OIDC_PREBUILD=\"${EXT_GIT_OIDC_PREBUILD}\"" >> /usr/local/external-repository-feature/variables.sh
 
 # Make the scripts executable
 chmod +rx /usr/local/external-repository-feature/*.sh

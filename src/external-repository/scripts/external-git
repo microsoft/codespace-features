@@ -14,11 +14,29 @@ case "${SUBCOMMAND}" in
         exec /bin/bash "/usr/local/external-repository-feature/setup-user.sh"
         ;;
     "prebuild")
-        if [ "$2" = "get" ]; then
-            source /usr/local/external-repository-feature/variables.sh
-            PREBUILD_PAT=${!EXT_GIT_PREBUILD_PAT}
-            echo "username=${EXT_GIT_USERNAME}"
-            echo "password=${PREBUILD_PAT}"
+        source /usr/local/external-repository-feature/variables.sh
+        if [ "${EXT_GIT_OIDC_PREBUILD}" == "true" ]; then
+          # Get token using OIDC
+            if [ "$2" = "get" ]; then
+                FIC=$(curl -s -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange" | jq -r '.value')
+                if az login --service-principal -u ${EXT_GIT_AZURE_CLIENT_ID} --tenant ${EXT_GIT_AZURE_TENANT_ID} --federated-token "${FIC}" --allow-no-subscriptions --only-show-errors &>/dev/null; then
+                    ADO_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
+                else
+                    ADO_TOKEN="ERROR"
+                fi
+                echo "username=${EXT_GIT_USERNAME}"
+                echo "password=${ADO_TOKEN}"
+            else
+               # This allows the prebuild command to be called and just get the token on stdout
+                echo $(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
+            fi
+        else
+            # Get token using PAT
+            if [ "$2" = "get" ]; then
+                PREBUILD_PAT=${!EXT_GIT_PREBUILD_PAT}
+                echo "username=${EXT_GIT_USERNAME}"
+                echo "password=${PREBUILD_PAT}"
+            fi
         fi
         exit 0
         ;;
@@ -31,6 +49,22 @@ case "${SUBCOMMAND}" in
         fi
         exit 0
         ;;
+    "ado-helper")
+        if [ "$2" = "get" ]; then
+            # Wait up to 120 seconds for the ado-auth-helper to be installed
+            for i in {1..120}; do
+                if [ -f ${HOME}/ado-auth-helper ]; then
+                    ~/ado-auth-helper get
+                    exit 0
+                fi
+                sleep 1
+            done
+            # Helper is not available
+            echo "username=helper"
+            echo "password=notinstalled"
+        fi
+        exit 0
+        ;;        
     *)
         echo "devcontainer.json example:"
         echo "  "\"onCreateCommand\": \"external-git clone\",""

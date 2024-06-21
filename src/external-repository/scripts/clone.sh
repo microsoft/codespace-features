@@ -6,6 +6,18 @@ cd "$(dirname "$0")"
 # Load the variables
 source ./variables.sh
 
+check_prebuild() {
+    # If EXT_GIT_OIDC_PREBUILD is true and ACTIONS_ID_TOKEN_REQUEST_URL is set then return 0
+    if [[ "${EXT_GIT_OIDC_PREBUILD}" == "true" && "${ACTIONS_ID_TOKEN_REQUEST_URL}" != "" ]]; then
+        return 0
+    fi
+    # If EXT_GIT_PREBUILD_PAT is set and the value of the variable is not empty then return 0
+    if [[ "${EXT_GIT_PREBUILD_PAT}" != "" && "${!EXT_GIT_PREBUILD_PAT}" != "" ]]; then
+        return 0
+    fi
+    return 1
+}
+
 clone_repository() {
     set -e
     GIT_REPO_URL=${1}
@@ -18,13 +30,12 @@ clone_repository() {
             mv ${HOME}/.gitconfig ${HOME}/.gitconfig.external_git_feature
         fi
 
-        if [[ "${EXT_GIT_PREBUILD_PAT}" == "" ]]; then
-            # Put the ado-auth-helper git config in place
-            ADO_HELPER=$(echo ~)/ado-auth-helper
-            sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" > ${HOME}/.gitconfig
-        else
+        if check_prebuild; then
             # Put the prebuild git config in place
             cp /usr/local/external-repository-feature/prebuild-git.config ${HOME}/.gitconfig
+        else
+            # Put the ado-auth-helper git config in place
+            cp /usr/local/external-repository-feature/ado-git.config ${HOME}/.gitconfig
         fi
 
         # Perform a git clone
@@ -98,21 +109,13 @@ if [[ "${EXT_GIT_LOCAL_PATH}" == "" ]]; then
     exit 0;
 fi
 
-if [[ "${EXT_GIT_PREBUILD_PAT}" == "" ]]; then
-    echo "Prebuild secret is not set, attempting to clone with ado-auth-helper"
-    if [ ! -f ${HOME}/ado-auth-helper ]; then
-        echo "Waiting up to 180 seconds for ado-auth-helper extension to be installed"
-    fi    
-    # Wait up to 3 minutes for the ado-auth-helper to be installed
-    for i in {1..180}; do
-        if [ -f ${HOME}/ado-auth-helper ]; then
-            break
-        fi
-        sleep 1
-    done
-else
-    # Get the value from environment variable whose name is set in EXT_GIT_PREBUILD_PAT
-    EXT_GIT_PAT_VALUE=${!EXT_GIT_PREBUILD_PAT}
+
+if check_prebuild; then
+    if [[ "${EXT_GIT_OIDC_PREBUILD}" == "true" ]]; then
+        EXT_GIT_PAT_VALUE="OIDC"
+    else
+        EXT_GIT_PAT_VALUE=${!EXT_GIT_PREBUILD_PAT}
+    fi
 
     if [[ "${EXT_GIT_PAT_VALUE}" == "" ]]; then
         echo "There is no secret stored in ${EXT_GIT_PREBUILD_PAT}"
