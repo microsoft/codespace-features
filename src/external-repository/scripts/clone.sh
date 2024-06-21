@@ -121,18 +121,6 @@ if check_prebuild; then
         echo "There is no secret stored in ${EXT_GIT_PREBUILD_PAT}"
         exit 0;
     fi
-else
-    echo "Prebuild secret is not set, attempting to clone with ado-auth-helper"
-    if [ ! -f ${HOME}/ado-auth-helper ]; then
-        echo "Waiting up to 90 seconds for ado-auth-helper extension to be installed"
-    fi    
-    # Wait up to 90 seconds for the ado-auth-helper to be installed
-    for i in {1..90}; do
-        if [ -f ${HOME}/ado-auth-helper ]; then
-            break
-        fi
-        sleep 1
-    done
 fi
 
 # Split EXT_GIT_REPO_URL into an array based on a comma delimiter

@@ -51,14 +51,17 @@ case "${SUBCOMMAND}" in
         ;;
     "ado-helper")
         if [ "$2" = "get" ]; then
-            # Check if ~/ado-auth-helper exists and run it
-            if [ -f ~/ado-auth-helper ]; then
-                ~/ado-auth-helper get
-            else
-                # Force a failure if the helper is not available
-                echo "username=helper"
-                echo "password=notinstalled"
-            fi
+            # Wait up to 120 seconds for the ado-auth-helper to be installed
+            for i in {1..120}; do
+                if [ -f ${HOME}/ado-auth-helper ]; then
+                    ~/ado-auth-helper get
+                    exit 0
+                fi
+                sleep 1
+            done
+            # Helper is not available
+            echo "username=helper"
+            echo "password=notinstalled"
         fi
         exit 0
         ;;        
