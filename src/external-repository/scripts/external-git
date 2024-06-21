@@ -15,25 +15,25 @@ case "${SUBCOMMAND}" in
         ;;
     "prebuild")
         source /usr/local/external-repository-feature/variables.sh
-        if [[ "${EXT_GIT_OIDC_PREBUILD}" == "true" ]]; then
+        if [ "${EXT_GIT_OIDC_PREBUILD}" == "true" ]; then
           # Get token using OIDC
             if [ "$2" = "get" ]; then
-                response=$(curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=api://AzureADTokenExchange")
-                federatedToken=$(echo $response | jq -r '.value')
-                az login --service-principal -u $EXT_GIT_AZURE_CLIENT_ID --tenant $EXT_GIT_AZURE_TENANT_ID --federated-token "$federatedToken" --allow-no-subscriptions 
+                FIC=$(curl -s -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange" | jq -r '.value')
+                az login --service-principal -u ${EXT_GIT_AZURE_CLIENT_ID} --tenant ${EXT_GIT_AZURE_TENANT_ID} --federated-token "${FIC}" --allow-no-subscriptions > /dev/null 2>&1
+                ADO_TOKEN=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
                 echo "username=${EXT_GIT_USERNAME}"
-                echo "password=$(az account get-access-token --scope "499b84ac-1321-427f-aa17-267ca6975798/.default" --query accessToken -o tsv)"
-                exit 0
+                echo "password=${ADO_TOKEN}"
+            else
+               # This allows the prebuild command to be called and just get the token on stdout
+                echo $(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 | jq -r .accessToken)
             fi
-            # This allows the prebuild command to be called and just get the token on stdout
-            echo $(az account get-access-token --scope "499b84ac-1321-427f-aa17-267ca6975798/.default" --query accessToken -o tsv)
-            exit 0
-        fi
-        # Get token using PAT
-        if [ "$2" = "get" ]; then
-            PREBUILD_PAT=${!EXT_GIT_PREBUILD_PAT}
-            echo "username=${EXT_GIT_USERNAME}"
-            echo "password=${PREBUILD_PAT}"
+        else
+            # Get token using PAT
+            if [ "$2" = "get" ]; then
+                PREBUILD_PAT=${!EXT_GIT_PREBUILD_PAT}
+                echo "username=${EXT_GIT_USERNAME}"
+                echo "password=${PREBUILD_PAT}"
+            fi
         fi
         exit 0
         ;;

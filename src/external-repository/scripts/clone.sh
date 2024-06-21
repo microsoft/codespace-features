@@ -112,9 +112,13 @@ if [[ "${EXT_GIT_PREBUILD_PAT}" == "" && "${EXT_GIT_OIDC_PREBUILD}" == "false" ]
     done
 else
     # Get the value from environment variable whose name is set in EXT_GIT_PREBUILD_PAT
-    EXT_GIT_PAT_VALUE=${!EXT_GIT_PREBUILD_PAT}
+    if [[ "${EXT_GIT_OIDC_PREBUILD}" == "true" ]]; then
+        EXT_GIT_PAT_VALUE="OIDC"
+    else
+        EXT_GIT_PAT_VALUE=${!EXT_GIT_PREBUILD_PAT}
+    fi
 
-    if [[ "${EXT_GIT_PAT_VALUE}" == "" && "${EXT_GIT_OIDC_PREBUILD}" == "false" ]]; then
+    if [[ "${EXT_GIT_PAT_VALUE}" == "" ]]; then
         echo "There is no secret stored in ${EXT_GIT_PREBUILD_PAT}"
         exit 0;
     fi
