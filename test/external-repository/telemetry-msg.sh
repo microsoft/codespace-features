@@ -7,7 +7,7 @@ source dev-container-features-test-lib
 
 # Definition specific tests
 
-check "git-config" grep "ado-auth-helper" <(cat /tmp/telemetry-msg/.git/config)
+check "git-config" grep "ado-helper" <(cat /tmp/telemetry-msg/.git/config)
 
 cd /tmp/telemetry-msg
 export CODESPACE_NAME="commit.hooks-testing"
