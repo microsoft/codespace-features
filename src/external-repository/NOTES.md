@@ -59,17 +59,9 @@ that the token only have this scope.
 This would clone the repository to `/workspaces/ado-repos` during the Prebuild process
 using the PAT stored in a Codespaces secret. At runtime, when a user opens the Codespace
 the `workspaceFolder` feature would open VS Code to this folder automatically and it
-would be configured to prompt the user to login to Azure DevOps when they open the Codespace.
-
-If you want to allow your users to use their own token, then you can add this to the configuration:
-
-```json
-        "userSecret": "ADO_SECRET"
-```
-
-If a user configures a Codespaces User Secret named `ADO_SECRET` and assigns this secret to the
-Codespace, then the value of that secret will be used as a PAT for authentication. If the secret
-is not defined by the user it will fallback to the browser login.
+will prompt the user to login to Azure DevOps when they open the Codespace. The user of
+the Codespaces does not need a PAT as the runtime will use their own login provided by
+the VS Code extension.
 
 ### Secret-less Azure DevOps Prebuilds
 
@@ -105,7 +97,8 @@ This token will be used during the git clone process only. If you have other scr
 `onCreateCommand` you can run the command `external-git prebuild` and the ADO token will be sent to stdout for you
 to use in your scripts to install dependencies from feeds or anything else you may need. The token will only be
 available during the prebuild process and this has to be done after the clone command so that the OIDC login has
-already happened.
+already happened. Install and use the [artifacts-helper](../artifacts-helper/README.md) feature to provide support
+at runtime for artifacts and feeds.
 
 > [!NOTE]
 > You MUST install the Azure CLI feature in your devcontainer.json if using this option
@@ -130,6 +123,11 @@ Codespace loads. This means the repository will be cloned only after the Codespa
 "postStartCommand": "external-git clone && external-git config"     
 }
 ```
+
+> [!NOTE]
+> Obtaining the credentials from the user will not work from `onCreateCommand` because the required
+> VS Code extension is not available during this phase of the process. In this example, we are running
+> the clone during `postStartCommand`. This is important.
 
 ## Multiple Repository Support
 

@@ -49,6 +49,19 @@ case "${SUBCOMMAND}" in
         fi
         exit 0
         ;;
+    "ado-helper")
+        if [ "$2" = "get" ]; then
+            # Check if ~/ado-auth-helper exists and run it
+            if [ -f ~/ado-auth-helper ]; then
+                ~/ado-auth-helper get
+            else
+                # Force a failure if the helper is not available
+                echo "username=helper"
+                echo "password=notinstalled"
+            fi
+        fi
+        exit 0
+        ;;        
     *)
         echo "devcontainer.json example:"
         echo "  "\"onCreateCommand\": \"external-git clone\",""

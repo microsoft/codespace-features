@@ -59,8 +59,7 @@ configure_git_for_user() {
 
     if [ "$ADO" = "true" ]; then
         echo "Configuring ADO Authorization Helper"
-        ADO_HELPER=$(echo ~)/ado-auth-helper
-        sed "s|ADO_HELPER_PATH|${ADO_HELPER}|g" "./ado-git.config" >> "${GIT_PATH}/config"
+        cat "./ado-git.config" >> "${GIT_PATH}/config"
         # See if there was a request to checkout an AzDO branch by checking the branch name of
         # the Codespaces bridge repository. If the branch name begins with azdo/ then the
         # rest of the branch name is the branch to checkout.
