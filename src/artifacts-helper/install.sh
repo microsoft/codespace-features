@@ -110,9 +110,9 @@ fi
 
 if [ "${COMMA_SEP_TARGET_FILES}" = "DEFAULT" ]; then
     if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
-        COMMA_SEP_TARGET_FILES="/etc/bash.bashrc,/etc/zsh/zshrc"
-    else
         COMMA_SEP_TARGET_FILES="~/.bashrc,~/.zshrc"
+    else
+        COMMA_SEP_TARGET_FILES="/etc/bash.bashrc,/etc/zsh/zshrc"
     fi
 fi
 
