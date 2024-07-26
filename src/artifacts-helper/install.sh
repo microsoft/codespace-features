@@ -13,7 +13,6 @@ ALIAS_NPX="${NPXALIAS:-"$DEFAULT_ENABLE_ALIAS"}"
 ALIAS_RUSH="${RUSHALIAS:-"$DEFAULT_ENABLE_ALIAS"}"
 INSTALL_PIP_HELPER="${PYTHON:-"false"}"
 COMMA_SEP_TARGET_FILES="${TARGETFILES:-"DEFAULT"}"
-CREATE_AS_FUNCTION="${CREATEASFUNCTION:-"false"}"
 
 ALIASES_ARR=()
 
@@ -120,11 +119,7 @@ IFS=',' read -r -a TARGET_FILES_ARR <<< "$COMMA_SEP_TARGET_FILES"
 
 for ALIAS in "${ALIASES_ARR[@]}"; do
     for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
-        if [ "${CREATE_AS_FUNCTION}" = "true" ]; then
-            CMD="$ALIAS() { /usr/local/bin/run-$ALIAS.sh; }"
-        else
-            CMD="alias $ALIAS=/usr/local/bin/run-$ALIAS.sh"
-        fi
+        CMD="$ALIAS() { /usr/local/bin/run-$ALIAS.sh; }"
 
         if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
             sudo -u ${_REMOTE_USER} bash -c "echo '$CMD' >> $TARGET_FILE"
