@@ -49,11 +49,6 @@
             "default": "DEFAULT",
             "description": "Comma separated list of files to write to. Default is '/etc/bash.bashrc,/etc/zsh/zshrc' for root and '~/.bashrc,~/.zshrc' for non-root"
         },
-        "createAsFunction": {
-            "type": "boolean",
-            "default": false,
-            "description": "Create aliases as functions instead, which can be easier to `source`"
-        },
         "python": {
             "type": "boolean",
             "default": false,
