@@ -1,5 +1,5 @@
 This installs [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
-and optionally configures an alias for `dotnet`, `nuget`, `npm`, `yarn`, and `rush` that dynamically sets an authentication token
+and optionally configures functions which shadow `dotnet`, `nuget`, `npm`, `yarn`, and `rush` which dynamically sets an authentication token
 for pulling artifacts from a feed before running the command.
 
 For `npm`, `yarn`, and `rush` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
