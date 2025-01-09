@@ -10,6 +10,7 @@ ALIAS_NPM="${NPMALIAS:-"true"}"
 ALIAS_YARN="${YARNALIAS:-"true"}"
 ALIAS_NPX="${NPXALIAS:-"true"}"
 ALIAS_RUSH="${RUSHALIAS:-"true"}"
+ALIAS_PNPM="${PNPMALIAS:-"true"}"
 INSTALL_PIP_HELPER="${PYTHON:-"false"}"
 COMMA_SEP_TARGET_FILES="${TARGETFILES:-"DEFAULT"}"
 
@@ -33,6 +34,10 @@ fi
 if [ "${ALIAS_RUSH}" = "true" ]; then
     ALIASES_ARR+=('rush')
     ALIASES_ARR+=('rush-pnpm')
+fi
+if [ "${ALIAS_PNPM}" = "true" ]; then
+    ALIASES_ARR+=('pnpm')
+    ALIASES_ARR+=('pnpx')
 fi
 
 # Source /etc/os-release to get OS info
@@ -93,6 +98,11 @@ cp ./scripts/run-rush.sh /usr/local/bin/run-rush.sh
 chmod +rx /usr/local/bin/run-rush.sh
 cp ./scripts/run-rush-pnpm.sh /usr/local/bin/run-rush-pnpm.sh
 chmod +rx /usr/local/bin/run-rush-pnpm.sh
+
+cp ./scripts/run-pnpm.sh /usr/local/bin/run-pnpm.sh
+chmod +rx /usr/local/bin/run-pnpm.sh
+cp ./scripts/run-pnpx.sh /usr/local/bin/run-pnpx.sh
+chmod +rx /usr/local/bin/run-pnpx.sh
 
 if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
     USER="${_REMOTE_USER}" /tmp/install-python-keyring.sh
