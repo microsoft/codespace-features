@@ -23,6 +23,7 @@ Configures Codespace to authenticate with Azure Artifact feeds
 | yarnAlias | Create alias for yarn | boolean | true |
 | npxAlias | Create alias for npx | boolean | true |
 | rushAlias | Create alias for rush | boolean | true |
+| pnpmAlias | Create alias for pnpm | boolean | true |
 | targetFiles | Comma separated list of files to write to. Default is '/etc/bash.bashrc,/etc/zsh/zshrc' for root and '~/.bashrc,~/.zshrc' for non-root | string | DEFAULT |
 | python | Install Python keyring helper for pip | boolean | false |
 
@@ -33,10 +34,10 @@ Configures Codespace to authenticate with Azure Artifact feeds
 - `ms-codespaces-tools.ado-codespaces-auth`
 
 This installs [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
-and optionally configures functions which shadow `dotnet`, `nuget`, `npm`, `yarn`, and `rush` which dynamically sets an authentication token
+and optionally configures functions which shadow `dotnet`, `nuget`, `npm`, `yarn`, `rush`, and `pnpm` which dynamically sets an authentication token
 for pulling artifacts from a feed before running the command.
 
-For `npm`, `yarn`, and `rush` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
+For `npm`, `yarn`, `rush`, and `pnpm` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
 environment variable for the `authToken`. A helper script has been added that you can use to write your `~/.npmrc`
 file during your setup process, though there are many ways you could accomplish this. To use the script, run it like
 this:
