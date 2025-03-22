@@ -118,9 +118,19 @@ fi
 
 if [ "${COMMA_SEP_TARGET_FILES}" = "DEFAULT" ]; then
     if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
-        COMMA_SEP_TARGET_FILES="~/.bashrc,~/.zshenv"
+        # Scripts to add auth wrapping functions to. .zshenv is always sourced by zsh, but for bash
+        # .bashrc is only sourced in interactive shells, and BASH_ENV is only sourced in bash scripts.
+        COMMA_SEP_TARGET_FILES="~/.bashrc,~/.zshenv,~/.bashenv"
+        # BASH_ENV is only sourced when running a bash script, without this, scripts will not
+        # call the auth function wrappers.
+        BASH_ENV_FILE="~/.bashenv"
+        # We'll need to update the .bashrc and .zshrc to have the BASH_ENV variable set so that
+        # bash scripts ran from zsh/bash source the BASH_ENV_FILE
+        COMMA_SEP_RC_FILES="~/.bashrc,~/.zshenv"
     else
-        COMMA_SEP_TARGET_FILES="/etc/bash.bashrc,/etc/zsh/zshenv"
+        COMMA_SEP_TARGET_FILES="/etc/bash.bashrc,/etc/zsh/zshenv,/etc/bash.bashenv"
+        BASH_ENV_FILE="/etc/bash.bashenv"
+        COMMA_SEP_RC_FILES="/etc/bash.bashrc,/etc/zsh/zshenv"
     fi
 fi
 
@@ -136,6 +146,18 @@ for ALIAS in "${ALIASES_ARR[@]}"; do
             echo $CMD >> $TARGET_FILE || true
         fi
     done
+done
+
+IFS=',' read -r -a RC_FILES_ARR <<< "$COMMA_SEP_RC_FILES"
+
+# Register a BASH_ENV variable in zshrc and bashrc so that when we run bash
+# scripts they will source the $BASH_ENV_FILE and get the auth function wrappers
+for RC_FILE in "${RC_FILES_ARR[@]}"; do
+    if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
+        sudo -u ${_REMOTE_USER} bash -c "echo 'export BASH_ENV=\"$BASH_ENV_FILE\"' >> $RC_FILE"
+    else
+        echo "export BASH_ENV=\"$BASH_ENV_FILE\"" >> $RC_FILE || true
+    fi
 done
 
 if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
