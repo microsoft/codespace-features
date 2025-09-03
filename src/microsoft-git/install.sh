@@ -44,15 +44,21 @@ fi
 # Partial version matching
 if [ "$(echo "${GIT_VERSION}" | grep -o '\.' | wc -l)" != "2" ]; then
     requested_version="${GIT_VERSION}"
-    version_list="$(curl -sSL -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/microsoft/git/tags?per_page=100" | grep -oP '"name":\s*"v\K[0-9]+\.[0-9]+\.[0-9]+\.vfs\.[0-9]+\.[0-9]+"' | tr -d '"' | sort -rV)"
     if [ "${requested_version}" = "latest" ] || [ "${requested_version}" = "lts" ] || [ "${requested_version}" = "current" ]; then
-        GIT_VERSION="$(echo "${version_list}" | head -n 1)"
+        # For latest, lts, and current, use the releases API to get the actual latest release
+        GIT_VERSION="$(curl -sSL -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/microsoft/git/releases/latest" | grep -oP '"tag_name":\s*"v\K[0-9]+\.[0-9]+\.[0-9]+\.vfs\.[0-9]+\.[0-9]+"' | tr -d '"')"
     else
+        # For partial versions, use the existing tags logic
+        version_list="$(curl -sSL -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/microsoft/git/tags?per_page=100" | grep -oP '"name":\s*"v\K[0-9]+\.[0-9]+\.[0-9]+\.vfs\.[0-9]+\.[0-9]+"' | tr -d '"' | sort -rV)"
         set +e
         GIT_VERSION="$(echo "${version_list}" | grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
         set -e
+        if [ -z "${GIT_VERSION}" ] || ! echo "${version_list}" | grep "^${GIT_VERSION//./\\.}$" > /dev/null 2>&1; then
+            echo "Invalid git version: ${requested_version}" >&2
+            exit 1
+        fi
     fi
-    if [ -z "${GIT_VERSION}" ] || ! echo "${version_list}" | grep "^${GIT_VERSION//./\\.}$" > /dev/null 2>&1; then
+    if [ -z "${GIT_VERSION}" ]; then
         echo "Invalid git version: ${requested_version}" >&2
         exit 1
     fi
