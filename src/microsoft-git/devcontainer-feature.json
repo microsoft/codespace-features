@@ -1,18 +1,18 @@
 {
     "name": "Microsoft Git for monorepo with GVFS support",
     "id": "microsoft-git",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "description": "A fork of Git containing Microsoft-specific patches",
     "options": {
         "version": {
             "type": "string",
             "proposals": [
                 "latest",
-                "2.43.0.vfs.0.0",
-                "2.42.0.vfs.0.3",
-                "2.40.1.vfs.0.2",
-                "2.39.2.vfs.0.0",
-                "2.38.1.vfs.0.1"
+                "2.50.1.vfs.0.2",
+                "2.50.1.vfs.0.1",
+                "2.50.1.vfs.0.0",
+                "2.49.0.vfs.0.4",
+                "2.49.0.vfs.0.3"
             ],
             "default": "latest",
             "description": "Select version of Microsoft Git, if not latest."
