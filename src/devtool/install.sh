@@ -59,7 +59,7 @@ for i in {1..180}; do
 done
 echo "::step::Installing DevTool..."
 cd /tmp
-curl -sL https://aka.ms/InstallToolLinux.sh | sh -s DevTool
+curl -sL https://aka.ms/InstallToolLinux.sh | bash -s DevTool
 EOF
 
 chmod 755 "$DEVTOOL_SCRIPT_PATH"
