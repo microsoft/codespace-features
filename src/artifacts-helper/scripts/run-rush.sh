@@ -5,7 +5,9 @@ if [ -f "${HOME}/ado-auth-helper" ]; then
 fi
 
 # Find the rush executable so we do not run the bash alias again
-RUSH_EXE=$(which rush)
+if [ -z "$RUSH_EXE" ]; then
+  RUSH_EXE=$(which rush)
+fi
 
 ${RUSH_EXE} "$@"
 EXIT_CODE=$?

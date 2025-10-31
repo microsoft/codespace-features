@@ -5,7 +5,9 @@ if [ -f "${HOME}/ado-auth-helper" ]; then
 fi
 
 # Find the pnpx executable so we do not run the bash alias again
-PNPX_EXE=$(which pnpx)
+if [ -z "$PNPX_EXE" ]; then
+  PNPX_EXE=$(which pnpx)
+fi
 
 ${PNPX_EXE} "$@"
 EXIT_CODE=$?

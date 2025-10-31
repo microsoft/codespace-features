@@ -11,7 +11,9 @@ if [ -f "${HOME}/ado-auth-helper" ]; then
 fi
 
 # Find the dotnet executable so we do not run the bash alias again
-DOTNET_EXE=$(which dotnet)
+if [ -z "$DOTNET_EXE" ]; then
+  DOTNET_EXE=$(which dotnet)
+fi
 
 ${DOTNET_EXE} "$@"
 EXIT_CODE=$?

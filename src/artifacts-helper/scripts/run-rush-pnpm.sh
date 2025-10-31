@@ -5,7 +5,9 @@ if [ -f "${HOME}/ado-auth-helper" ]; then
 fi
 
 # Find the rush-pnpm executable so we do not run the bash alias again
-RUSH_PNPM_EXE=$(which rush-pnpm)
+if [ -z "$RUSH_PNPM_EXE" ]; then
+  RUSH_PNPM_EXE=$(which rush-pnpm)
+fi
 
 ${RUSH_PNPM_EXE} "$@"
 EXIT_CODE=$?
