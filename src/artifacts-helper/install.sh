@@ -148,14 +148,11 @@ if [ "$WRAPPERTYPE" = "SHELL_FUNCTION" ]; then
     done
 elif [ "$WRAPPERTYPE" = "EXECUTABLE" ]; then
     echo "Installing executable scripts for wrapped commands."
+    sudo mkdir -p "${EXECUTABLES_TARGET_DIR}"
 
     for ALIAS in "${WRAPPED_BINS_ARR[@]}"; do
         CMD_LINE=(ln -s "/usr/local/bin/run-$ALIAS.sh" "${EXECUTABLES_TARGET_DIR}/$ALIAS")
-        if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
-            sudo -u "${_REMOTE_USER}" "${CMD_LINE[@]}"
-        else
-            "${CMD_LINE[@]}"
-        fi
+        sudo "${CMD_LINE[@]}"
     done
 else
     echo "Invalid WRAPPERTYPE specified: $WRAPPERTYPE. Must be one of SHELL_FUNCTION or EXECUTABLE."
