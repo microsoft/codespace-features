@@ -5,7 +5,9 @@ if [ -f "${HOME}/ado-auth-helper" ]; then
 fi
 
 # Find the yarn executable so we do not run the bash alias again
-YARN_EXE=$(which yarn)
+if [ -z "$YARN_EXE" ]; then
+  YARN_EXE=$(which yarn)
+fi
 
 ${YARN_EXE} "$@"
 EXIT_CODE=$?

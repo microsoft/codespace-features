@@ -4,8 +4,10 @@ if [ -f "${HOME}/ado-auth-helper" ]; then
   export ARTIFACTS_ACCESSTOKEN=$(${HOME}/ado-auth-helper get-access-token)
 fi
 
-# Find the npm executable so we do not run the bash alias again
-NPM_EXE=$(which npm)
+if [ -z "$NPM_EXE" ]; then
+  # Find the npm executable so we do not run the bash alias again
+  NPM_EXE=$(which npm)
+fi
 
 ${NPM_EXE} "$@"
 EXIT_CODE=$?

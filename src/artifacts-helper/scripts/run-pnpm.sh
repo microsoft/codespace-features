@@ -5,7 +5,9 @@ if [ -f "${HOME}/ado-auth-helper" ]; then
 fi
 
 # Find the pnpm executable so we do not run the bash alias again
-PNPM_EXE=$(which pnpm)
+if [ -z "$PNPM_EXE" ]; then
+  PNPM_EXE=$(which pnpm)
+fi
 
 ${PNPM_EXE} "$@"
 EXIT_CODE=$?

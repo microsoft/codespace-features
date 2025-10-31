@@ -3,7 +3,7 @@
 set -e
 
 WRAPPER_INSTALL_PATH='/usr/local/share/codespace-features'
-BINS_TO_CHECK=('yarn' 'npm' 'npx')
+BINS_TO_CHECK=(npm npx pnpm pnpx rush-pnpm rush yarn)
 
 check_path_priority() {
     echo "Checking PATH priority"
@@ -30,6 +30,13 @@ check_path_priority() {
 check_bin_exec() {
     echo "Checking if the wrapped binaries get executed"
 
+    cat <<EOF>"$HOME/ado-auth-helper"
+#!/usr/bin/env bash
+
+echo "dummy-token"
+EOF
+    chmod +x "$HOME/ado-auth-helper"
+
     WRAPPED_BINS_DIR=$(mktemp -d)
     BASH_BIN_DIR=$(dirname "$(command -v bash)")
     TEST_PATH="$WRAPPER_INSTALL_PATH:$WRAPPER_INSTALL_PATH:$WRAPPED_BINS_DIR:$BASH_BIN_DIR"
@@ -42,7 +49,11 @@ check_bin_exec() {
         cat <<EOF >"$WRAPPED_BIN"
 #!/usr/bin/env bash
 if [ -z "\$ARTIFACTS_ACCESSTOKEN" ]; then
-  echo "Error: ARTIFACTS_ACCESSTOKEN was not set! It should be set by the artifacts-helper wrapper."
+  echo >&2 "Error: ARTIFACTS_ACCESSTOKEN was not set! It should be set by the artifacts-helper wrapper."
+  exit 1
+fi
+if [ "\$ARTIFACTS_ACCESSTOKEN" != "dummy-token" ]; then
+  echo >&2 "Error: ARTIFACTS_ACCESSTOKEN was set to an unexpected value: \$ARTIFACTS_ACCESSTOKEN"
   exit 1
 fi
 echo "$expected_stdout"
@@ -50,12 +61,15 @@ EOF
         chmod +x "$WRAPPED_BIN"
 
         echo "Executing $BIN_NAME to check if it wraps the temporary binary"
-        actual_stdout=$(PATH="$TEST_PATH" "$BIN_NAME")
-        actual_stderr=$(PATH="$TEST_PATH" "$BIN_NAME" 2>&1 >/dev/null)
+        status_code=0
+        actual_stdout="$(PATH="$TEST_PATH" ARTIFACTS_HELPER_DEBUG=1 "$BIN_NAME")" || status_code=$?
+        if [ $status_code -ne 0 ]; then
+            echo "Error: wrapper for $BIN_NAME exited non-zero with $status_code."
+            exit 1
+        fi
 
         echo "Checking the output of the wrapper"
         echo "stdout: $actual_stdout"
-        echo "stderr: $actual_stderr"
         if [ "$actual_stdout" = "$expected_stdout" ]; then
             echo "Success: wrapper for $BIN_NAME executed correctly."
         else

@@ -151,8 +151,12 @@ elif [ "$WRAPPERTYPE" = "EXECUTABLE" ]; then
     sudo mkdir -p "${EXECUTABLES_TARGET_DIR}"
 
     for ALIAS in "${WRAPPED_BINS_ARR[@]}"; do
-        CMD_LINE=(ln -s "/usr/local/bin/run-$ALIAS.sh" "${EXECUTABLES_TARGET_DIR}/$ALIAS")
-        sudo "${CMD_LINE[@]}"
+        TARGET_EXECUTABLE_PATH="${EXECUTABLES_TARGET_DIR}/$ALIAS"
+        TARGET_WRAPPER_PATH="/usr/local/bin/run-$ALIAS.sh"
+        TARGET_WRAPPER_EXE_ENV_VAR_NAME=$(sed "s|-|_|g" <<<"${ALIAS}_EXE" | tr '[:lower:]' '[:upper:]')
+        cp ./scripts/executable-wrapper-template.sh "$TARGET_EXECUTABLE_PATH"
+        sed -i "s|SUBST_TARGET_WRAPPER_PATH|$TARGET_WRAPPER_PATH|g; s|SUBST_TARGET_BIN_NAME|$ALIAS|g; s|SUBST_EXE_ENV_VAR|$TARGET_WRAPPER_EXE_ENV_VAR_NAME|g" "$TARGET_EXECUTABLE_PATH"
+        chmod +x "$TARGET_EXECUTABLE_PATH"
     done
 else
     echo "Invalid WRAPPERTYPE specified: $WRAPPERTYPE. Must be one of SHELL_FUNCTION or EXECUTABLE."

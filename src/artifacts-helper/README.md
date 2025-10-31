@@ -26,6 +26,14 @@ Configures Codespace to authenticate with Azure Artifact feeds
 | pnpmAlias | Create alias for pnpm | boolean | true |
 | targetFiles | Comma separated list of files to write to. Default is '/etc/bash.bashrc,/etc/zsh/zshrc' for root and '~/.bashrc,~/.zshrc' for non-root | string | DEFAULT |
 | python | Install Python keyring helper for pip | boolean | false |
+| wrapperType | Type of wrapper to use. Options are 'SHELL_FUNCTION' or 'EXECUTABLE' | string | `SHELL_FUNCTION` |
+
+### Wrapper Types
+
+| Wrapper Type | Description |
+|-|-|
+| `SHELL_FUNCTION` | Configures shell functions that wrap the commands to set the authentication token before calling the actual command. This is the default options. |
+| `EXECUTABLE` | Configures a separate executable that wraps the commands to set the authentication token before calling the actual command. Suited for scenarios where the commands need to be invoked from scripts that do not consider shell functions, e.g. `subprocess.Popen(['npx'], shell=False)`. |
 
 ## Customizations
 

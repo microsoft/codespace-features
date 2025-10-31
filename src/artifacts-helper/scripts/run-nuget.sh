@@ -10,8 +10,10 @@ if [ -f "${HOME}/ado-auth-helper" ]; then
   export VSS_NUGET_URI_PREFIXES=REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX
 fi
 
-# Find the dotnet executable so we do not run the bash alias again
-NUGET_EXE=$(which nuget)
+# Find the nuget executable so we do not run the bash alias again
+if [ -z "$NUGET_EXE" ]; then
+  NUGET_EXE=$(which nuget)
+fi
 
 ${NUGET_EXE} "$@"
 EXIT_CODE=$?
