@@ -58,11 +58,24 @@
             "type": "boolean",
             "default": false,
             "description": "Install Python keyring helper for pip"
+        },
+        "wrapperType": {
+            "type": "string",
+            "default": "SHELL_FUNCTION",
+            "description": "Type of wrapper script to use.",
+            "enum": [
+                "SHELL_FUNCTION",
+                "EXECUTABLE"
+            ]
         }
+    },
+    "containerEnv": {
+        "PATH": "/usr/local/share/codespace-features:${PATH}"
     },
     "installsAfter": [
         "ghcr.io/devcontainers/features/common-utils",
-        "ghcr.io/devcontainers/features/python"
+        "ghcr.io/devcontainers/features/python",
+        "ghcr.io/devcontainers/features/node"
     ],
     "customizations": {
         "vscode": {

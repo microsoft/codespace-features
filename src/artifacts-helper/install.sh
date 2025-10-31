@@ -4,6 +4,7 @@ set -e
 
 PREFIXES="${NUGETURIPREFIXES:-"https://pkgs.dev.azure.com/"}"
 USENET6="${DOTNET6:-"false"}"
+WRAPPERTYPE="${WRAPPERTYPE:-"SHELL_FUNCTION"}"
 ALIAS_DOTNET="${DOTNETALIAS:-"true"}"
 ALIAS_NUGET="${NUGETALIAS:-"true"}"
 ALIAS_NPM="${NPMALIAS:-"true"}"
@@ -14,30 +15,35 @@ ALIAS_PNPM="${PNPMALIAS:-"true"}"
 INSTALL_PIP_HELPER="${PYTHON:-"false"}"
 COMMA_SEP_TARGET_FILES="${TARGETFILES:-"DEFAULT"}"
 
-ALIASES_ARR=()
+# Destination to install wrappers for the `EXECUTABLE` wrapper type.
+# This path must take precedence over /usr/local/bin and the original tools,
+# which is ensured via `containerEnv.PATH` in devcontainer-feature.json.
+EXECUTABLES_TARGET_DIR='/usr/local/share/codespace-features'
+
+WRAPPED_BINS_ARR=()
 
 if [ "${ALIAS_DOTNET}" = "true" ]; then
-    ALIASES_ARR+=('dotnet')
+    WRAPPED_BINS_ARR+=('dotnet')
 fi
 if [ "${ALIAS_NUGET}" = "true" ]; then
-    ALIASES_ARR+=('nuget')
+    WRAPPED_BINS_ARR+=('nuget')
 fi
 if [ "${ALIAS_NPM}" = "true" ]; then
-    ALIASES_ARR+=('npm')
+    WRAPPED_BINS_ARR+=('npm')
 fi
 if [ "${ALIAS_YARN}" = "true" ]; then
-    ALIASES_ARR+=('yarn')
+    WRAPPED_BINS_ARR+=('yarn')
 fi
 if [ "${ALIAS_NPX}" = "true" ]; then
-    ALIASES_ARR+=('npx')
+    WRAPPED_BINS_ARR+=('npx')
 fi
 if [ "${ALIAS_RUSH}" = "true" ]; then
-    ALIASES_ARR+=('rush')
-    ALIASES_ARR+=('rush-pnpm')
+    WRAPPED_BINS_ARR+=('rush')
+    WRAPPED_BINS_ARR+=('rush-pnpm')
 fi
 if [ "${ALIAS_PNPM}" = "true" ]; then
-    ALIASES_ARR+=('pnpm')
-    ALIASES_ARR+=('pnpx')
+    WRAPPED_BINS_ARR+=('pnpm')
+    WRAPPED_BINS_ARR+=('pnpx')
 fi
 
 # Source /etc/os-release to get OS info
@@ -116,27 +122,45 @@ if command -v sudo >/dev/null 2>&1; then
     fi
 fi
 
-if [ "${COMMA_SEP_TARGET_FILES}" = "DEFAULT" ]; then
-    if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
-        COMMA_SEP_TARGET_FILES="~/.bashrc,~/.zshrc"
-    else
-        COMMA_SEP_TARGET_FILES="/etc/bash.bashrc,/etc/zsh/zshrc"
-    fi
-fi
+if [ "$WRAPPERTYPE" = "SHELL_FUNCTION" ]; then
+    echo "Installing shell functions for wrapped commands."
 
-IFS=',' read -r -a TARGET_FILES_ARR <<< "$COMMA_SEP_TARGET_FILES"
-
-for ALIAS in "${ALIASES_ARR[@]}"; do
-    for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
-        CMD="$ALIAS() { /usr/local/bin/run-$ALIAS.sh \"\$@\"; }"
-
+    if [ "${COMMA_SEP_TARGET_FILES}" = "DEFAULT" ]; then
         if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
-            sudo -u ${_REMOTE_USER} bash -c "echo '$CMD' >> $TARGET_FILE"
+            COMMA_SEP_TARGET_FILES="~/.bashrc,~/.zshrc"
         else
-            echo $CMD >> $TARGET_FILE || true
+            COMMA_SEP_TARGET_FILES="/etc/bash.bashrc,/etc/zsh/zshrc"
+        fi
+    fi
+
+    IFS=',' read -r -a TARGET_FILES_ARR <<< "$COMMA_SEP_TARGET_FILES"
+
+    for ALIAS in "${WRAPPED_BINS_ARR[@]}"; do
+        for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
+            CMD="$ALIAS() { /usr/local/bin/run-$ALIAS.sh \"\$@\"; }"
+
+            if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
+                sudo -u ${_REMOTE_USER} bash -c "echo '$CMD' >> $TARGET_FILE"
+            else
+                echo $CMD >> $TARGET_FILE || true
+            fi
+        done
+    done
+elif [ "$WRAPPERTYPE" = "EXECUTABLE" ]; then
+    echo "Installing executable scripts for wrapped commands."
+
+    for ALIAS in "${WRAPPED_BINS_ARR[@]}"; do
+        CMD_LINE=(ln -s "/usr/local/bin/run-$ALIAS.sh" "${EXECUTABLES_TARGET_DIR}/$ALIAS")
+        if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
+            sudo -u "${_REMOTE_USER}" "${CMD_LINE[@]}"
+        else
+            "${CMD_LINE[@]}"
         fi
     done
-done
+else
+    echo "Invalid WRAPPERTYPE specified: $WRAPPERTYPE. Must be one of SHELL_FUNCTION or EXECUTABLE."
+    exit 1
+fi
 
 if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
     sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"

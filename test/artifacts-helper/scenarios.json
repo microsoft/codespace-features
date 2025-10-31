@@ -42,5 +42,13 @@
                 "python": false
             }
         }
+    },
+    "scenario_executable_wrapper": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "artifacts-helper": {
+                "wrapperType": "EXECUTABLE"
+            }
+        }
     }
 }
