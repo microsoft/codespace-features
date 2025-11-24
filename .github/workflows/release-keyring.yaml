@@ -12,7 +12,7 @@ jobs:
         working-directory: src/artifacts-helper/codespaces_artifacts_helper_keyring
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: wntrblm/nox@main
         with:
