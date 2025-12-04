@@ -1,0 +1,6 @@
+#!/bin/bash
+source auth-ado.sh
+source resolve-shim.sh
+
+RUSH_PNPM_EXE="$(resolve_shim)"
+ARTIFACTS_ACCESSTOKEN="${ARTIFACTS_ACCESSTOKEN:-}" ${RUSH_PNPM_EXE} "$@"
