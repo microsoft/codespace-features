@@ -12,7 +12,7 @@ ALIAS_NPX="${NPXALIAS:-"true"}"
 ALIAS_RUSH="${RUSHALIAS:-"true"}"
 ALIAS_PNPM="${PNPMALIAS:-"true"}"
 INSTALL_PIP_HELPER="${PYTHON:-"false"}"
-SHIM_DIRECTORY="${SHIMDIRECTORY:-"/usr/local/bin"}"
+SHIM_DIRECTORY="${SHIMDIRECTORY:-"/usr/local/share/codespace-shims"}"
 
 ALIASES_ARR=()
 
@@ -107,6 +107,29 @@ if command -v sudo >/dev/null 2>&1; then
         INSTALL_WITH_SUDO="true"
     fi
 fi
+
+if [ "${COMMA_SEP_TARGET_FILES}" = "DEFAULT" ]; then
+    if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
+        COMMA_SEP_TARGET_FILES="~/.bashrc,~/.zshrc"
+    else
+        COMMA_SEP_TARGET_FILES="/etc/bash.bashrc,/etc/zsh/zshrc"
+    fi
+fi
+
+IFS=',' read -r -a TARGET_FILES_ARR <<< "$COMMA_SEP_TARGET_FILES"
+
+ALIASES_BLOCK=""
+for ALIAS in "${ALIASES_ARR[@]}"; do
+    ALIASES_BLOCK+="$ALIAS() { \"${SHIM_DIRECTORY}/$ALIAS\" \"\$@\"; }\n"
+done
+
+for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
+    if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
+        sudo -u ${_REMOTE_USER} bash -c "printf '%s' \"$ALIASES_BLOCK\" >> $TARGET_FILE"
+    else
+        printf '%s' "$ALIASES_BLOCK" >> "$TARGET_FILE" || true
+    fi
+done
 
 if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
     sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"

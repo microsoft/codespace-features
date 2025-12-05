@@ -51,8 +51,13 @@
         },
         "shimDirectory": {
             "type": "string",
-            "default": "/usr/local/bin",
+            "default": "/usr/local/share/codespace-shims",
             "description": "Directory where the shims will be installed. This must be in $PATH, and needs to be as early as possible in priority for the scripts to override the base executables."
+        },
+        "targetFiles": {
+            "type": "string",
+            "default": "DEFAULT",
+            "description": "Comma separated list of files to write to. Default is '/etc/bash.bashrc,/etc/zsh/zshrc' for root and '~/.bashrc,~/.zshrc' for non-root"
         },
         "python": {
             "type": "boolean",
@@ -60,9 +65,13 @@
             "description": "Install Python keyring helper for pip"
         }
     },
+    "containerEnv": {
+        "PATH": "${shimDirectory}:${PATH}"
+    },
     "installsAfter": [
         "ghcr.io/devcontainers/features/common-utils",
-        "ghcr.io/devcontainers/features/python"
+        "ghcr.io/devcontainers/features/python",
+        "ghcr.io/devcontainers/features/node"
     ],
     "customizations": {
         "vscode": {
