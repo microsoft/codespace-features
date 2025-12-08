@@ -1,6 +1,6 @@
 #!/bin/bash
-source auth-ado.sh
-source resolve-shim.sh
+source "$(dirname $0)"/auth-ado.sh
+source "$(dirname $0)"/resolve-shim.sh
 
 # Install artifact credential provider if it is not already installed
 if [ ! -d "${HOME}/.nuget/plugins/netcore" ]; then

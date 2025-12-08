@@ -12,7 +12,7 @@ ALIAS_NPX="${NPXALIAS:-"true"}"
 ALIAS_RUSH="${RUSHALIAS:-"true"}"
 ALIAS_PNPM="${PNPMALIAS:-"true"}"
 INSTALL_PIP_HELPER="${PYTHON:-"false"}"
-SHIM_DIRECTORY="${SHIMDIRECTORY:-"/usr/local/share/codespace-shims"}"
+SHIM_DIRECTORY="${SHIMDIRECTORY:-"/usr/local/share/codespace-shims/"}"
 
 ALIASES_ARR=()
 
@@ -85,6 +85,9 @@ chmod +rx /tmp/install-python-keyring.sh
 # Replace AZURE_DEVOPS_NUGET_FEED_URL_PREFIX in scripts that require it
 sed -i "s|REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX|${PREFIXES}|g" ./scripts/dotnet
 sed -i "s|REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX|${PREFIXES}|g" ./scripts/nuget
+
+# Create ${SHIM_DIRECTORY}
+mkdir -p "${SHIM_DIRECTORY}"
 
 # Install helper scripts in ${SHIM_DIRECTORY}
 cp "./scripts/auth-ado.sh" "${SHIM_DIRECTORY}"
