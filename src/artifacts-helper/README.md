@@ -77,14 +77,14 @@ to download the package.
 
 The shim scripts (e.g., `dotnet`, `npm`, `nuget`) now include a wait mechanism for the Azure DevOps authentication helper. When invoked, these scripts will:
 
-1. Wait up to 3 minutes for the `ado-auth-helper` to become available
+1. Wait up to 3 minutes for the `ado-auth-helper` to become available (configurable via `MAX_WAIT` environment variable)
 2. Display progress indicators every 20 seconds while waiting
 3. Continue execution once authentication is successful
-4. Return an error (but not terminate dependent scripts) if the helper is not available after the timeout
+4. **Continue with the underlying command even if authentication is not available** after the timeout
 
-This ensures that package restore operations can proceed even if there's a slight delay in the authentication helper installation, which can occur in some codespace initialization scenarios.
+This ensures that package restore operations can proceed even if there's a slight delay in the authentication helper installation, which can occur in some codespace initialization scenarios. Commands will still execute without authentication, though they may fail to access private Azure Artifacts feeds.
 
-The scripts are designed to be sourced safely, meaning they won't terminate the calling shell if authentication fails - they will simply return an error code that can be handled by the calling script.
+The scripts are designed to be sourced safely, meaning they won't terminate the calling shell if authentication fails - they will simply return an error code and allow the underlying tool to execute. This allows you to work with public packages or other package sources even when Azure Artifacts authentication is unavailable.
 
 ## OS Support
 
@@ -101,11 +101,6 @@ devcontainer features test -f artifacts-helper
 # Test specific scenario
 devcontainer features test -f artifacts-helper --scenario test_auth_wait
 ```
-
-The test suite includes:
-- **test_auth_wait.sh**: Verifies that auth-ado.sh can be sourced without terminating the shell
-- **test_shim_integration.sh**: Tests that shim scripts properly handle missing authentication helper
-- **Python keyring tests**: Validates Python package installation with Azure Artifacts authentication
 
 ## Changing where functions are configured
 

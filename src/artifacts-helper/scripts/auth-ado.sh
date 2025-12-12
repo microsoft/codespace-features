@@ -3,7 +3,8 @@
 echo "::step::Waiting for AzDO Authentication Helper..."
 
 # Wait up to 3 minutes for the ado-auth-helper to be installed
-MAX_WAIT=180
+# Can be overridden via environment variable for testing
+MAX_WAIT=${MAX_WAIT:-180}
 ELAPSED=0
 
 while [ $ELAPSED -lt $MAX_WAIT ]; do
@@ -22,8 +23,8 @@ while [ $ELAPSED -lt $MAX_WAIT ]; do
     fi
 done
 
-# Timeout reached
-echo "::error::AzDO Authentication Helper not found after ${MAX_WAIT} seconds"
+# Timeout reached - continue without authentication
+echo "::warning::AzDO Authentication Helper not found after ${MAX_WAIT} seconds"
 echo "Expected location: ${HOME}/ado-auth-helper"
-echo "Restore cannot proceed without authentication"
+echo "Continuing without Azure Artifacts authentication..."
 return 1

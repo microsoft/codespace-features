@@ -9,6 +9,7 @@ check "npm shim exists" test -f /usr/local/share/codespace-shims/npm
 check "nuget shim exists" test -f /usr/local/share/codespace-shims/nuget
 
 # Test that auth-ado.sh can be sourced without exiting the shell
+export MAX_WAIT=5
 check "auth-ado.sh can be sourced" bash -c 'source /usr/local/share/codespace-shims/auth-ado.sh 2>/dev/null || true; echo "still running"'
 
 # Test that sourcing auth-ado.sh doesn't terminate the parent shell

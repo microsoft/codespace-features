@@ -58,5 +58,17 @@
                 "nugetAlias": true
             }
         }
+    },
+    "test_fallback_execution": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "ghcr.io/devcontainers/features/dotnet:1": {},
+            "ghcr.io/devcontainers/features/node:1": {},
+            "artifacts-helper": {
+                "dotnetAlias": true,
+                "npmAlias": true,
+                "nugetAlias": true
+            }
+        }
     }
 }
