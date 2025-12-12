@@ -92,6 +92,8 @@ mkdir -p "${SHIM_DIRECTORY}"
 # Install helper scripts in ${SHIM_DIRECTORY}
 cp "./scripts/auth-ado.sh" "${SHIM_DIRECTORY}"
 cp "./scripts/resolve-shim.sh" "${SHIM_DIRECTORY}"
+cp "./scripts/write-npm.sh" "${SHIM_DIRECTORY}"
+chmod +rx "${SHIM_DIRECTORY}/write-npm.sh"
 
 # Install selected shim scripts in ${SHIM_DIRECTORY}
 for alias in "${ALIASES_ARR[@]}"; do

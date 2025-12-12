@@ -42,5 +42,21 @@
                 "python": false
             }
         }
+    },
+    "test_auth_wait": {
+        "image": "mcr.microsoft.com/devcontainers/base:debian",
+        "features": {
+            "artifacts-helper": {}
+        }
+    },
+    "test_shim_integration": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "artifacts-helper": {
+                "dotnetAlias": true,
+                "npmAlias": true,
+                "nugetAlias": true
+            }
+        }
     }
 }
