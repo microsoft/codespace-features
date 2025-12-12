@@ -66,7 +66,7 @@
         }
     },
     "containerEnv": {
-        "PATH": "${shimDirectory}:${PATH}"
+        "PATH": "/usr/local/share/codespace-shims:${PATH}"
     },
     "installsAfter": [
         "ghcr.io/devcontainers/features/common-utils",
