@@ -7,7 +7,7 @@ Configures Codespace to authenticate with Azure Artifact feeds
 
 ```json
 "features": {
-    "ghcr.io/microsoft/codespace-features/artifacts-helper:2": {}
+    "ghcr.io/microsoft/codespace-features/artifacts-helper:3": {}
 }
 ```
 
@@ -24,6 +24,7 @@ Configures Codespace to authenticate with Azure Artifact feeds
 | npxAlias | Create alias for npx | boolean | true |
 | rushAlias | Create alias for rush | boolean | true |
 | pnpmAlias | Create alias for pnpm | boolean | true |
+| shimDirectory | Directory where the shims will be installed. This must be in $PATH, and needs to be as early as possible in priority for the scripts to override the base executables. | string | /usr/local/share/codespace-shims |
 | targetFiles | Comma separated list of files to write to. Default is '/etc/bash.bashrc,/etc/zsh/zshrc' for root and '~/.bashrc,~/.zshrc' for non-root | string | DEFAULT |
 | python | Install Python keyring helper for pip | boolean | false |
 
@@ -34,8 +35,8 @@ Configures Codespace to authenticate with Azure Artifact feeds
 - `ms-codespaces-tools.ado-codespaces-auth`
 
 This installs [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
-and optionally configures functions which shadow `dotnet`, `nuget`, `npm`, `yarn`, `rush`, and `pnpm` which dynamically sets an authentication token
-for pulling artifacts from a feed before running the command.
+and optionally configures shims which shadow `dotnet`, `nuget`, `npm`, `yarn`, `rush`, and `pnpm`.
+These dynamically sets an authentication token for pulling artifacts from a feed before running the command.
 
 For `npm`, `yarn`, `rush`, and `pnpm` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
 environment variable for the `authToken`. A helper script has been added that you can use to write your `~/.npmrc`
