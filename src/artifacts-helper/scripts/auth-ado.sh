@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# If ACTIONS_ID_TOKEN_REQUEST_URL is set, we're in a GitHub Actions environment
+# Skip Azure DevOps authentication and just execute the real command
+if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL}" ]; then
+    echo "::step::GitHub Actions environment detected, skipping Azure DevOps authentication"
+    return 0
+fi
+
 echo "::step::Waiting for AzDO Authentication Helper..."
 
 # Wait up to 3 minutes for the ado-auth-helper to be installed
