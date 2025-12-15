@@ -38,6 +38,55 @@ pip install <package_name> --index-url https://pkgs.dev.azure.com/<org_name>/_pa
 When the feed URL is an Azure Artifacts feed pip will use the keyring helper to provide the credentials needed
 to download the package.
 
+## Authentication Helper Wait Behavior
+
+The shim scripts (e.g., `dotnet`, `npm`, `nuget`) now include a wait mechanism for the Azure DevOps authentication helper. When invoked, these scripts will:
+
+1. Wait up to 3 minutes for the `ado-auth-helper` to become available (configurable via `MAX_WAIT` environment variable)
+2. Display progress indicators every 20 seconds while waiting
+3. Continue execution once authentication is successful
+4. **Continue with the underlying command even if authentication is not available** after the timeout
+
+This ensures that package restore operations can proceed even if there's a slight delay in the authentication helper installation, which can occur in some codespace initialization scenarios. Commands will still execute without authentication, though they may fail to access private Azure Artifacts feeds.
+
+The scripts are designed to be sourced safely, meaning they won't terminate the calling shell if authentication fails - they will simply return an error code and allow the underlying tool to execute. This allows you to work with public packages or other package sources even when Azure Artifacts authentication is unavailable.
+
 ## OS Support
 
 This feature is tested to work on Debian/Ubuntu and Mariner CBL 2.0
+
+## Testing
+
+To test this feature locally, you can use the devcontainer CLI:
+
+```bash
+# Test all scenarios
+devcontainer features test -f artifacts-helper
+
+# Test specific scenario
+devcontainer features test -f artifacts-helper --scenario test_auth_wait
+```
+
+## Changing where functions are configured
+
+By default, the functions are defined in `/etc/bash.bashrc` and `/etc/zsh/zshrc` if the container user is `root`, otherwise `~/.bashrc` and `~/.zshrc`.
+This default configuration ensures that the functions are always available for any interactive shells.
+
+In some cases it can be useful to have the functions written to a non-default location. For example:
+- the configuration file of a shell other than `bash` and `zsh`
+- a custom file which is not a shell configuration script (so that it can be `source`d in non-interactive shells and scripts)
+
+To do this, set the `targetFiles` option to the path script path where the functions should be written. Note that the default paths WILL NOT be used
+if the `targetFiles` option is provided, so you may want to include them in the overridden value, or add `source` the custom script in those configurations:
+
+```bash
+# .devcontainer/devcontainer.json
+{
+    // ...
+    "targetFiles": "/custom/path/to/auth-helper.sh"
+}
+
+# ~/.bashrc
+
+source /custom/path/to/auth-helper.sh
+```
