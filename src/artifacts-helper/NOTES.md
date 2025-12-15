@@ -2,16 +2,6 @@ This installs [Azure Artifacts Credential Provider](https://github.com/microsoft
 and optionally configures shims which shadow `dotnet`, `nuget`, `npm`, `yarn`, `rush`, and `pnpm`.
 These dynamically sets an authentication token for pulling artifacts from a feed before running the command.
 
-## GitHub Actions / Codespaces Prebuild Support
-
-**Version 3.0.1+**: The shim scripts now detect when running in a GitHub Actions environment (during Codespaces prebuild) by checking for the `ACTIONS_ID_TOKEN_REQUEST_URL` environment variable. When this variable is set, the shims bypass all Azure DevOps authentication setup and execute the real commands directly. This prevents:
-
-- Unnecessary 3-minute wait for authentication helper
-- Installation of credential providers that aren't needed
-- Setting Azure DevOps-specific environment variables
-
-This ensures package restore operations work seamlessly during Codespaces prebuild without interference from the Azure Artifacts authentication mechanisms.
-
 For `npm`, `yarn`, `rush`, and `pnpm` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
 environment variable for the `authToken`. A helper script has been added that you can use to write your `~/.npmrc`
 file during your setup process, though there are many ways you could accomplish this. To use the script, run it like
@@ -47,6 +37,12 @@ pip install <package_name> --index-url https://pkgs.dev.azure.com/<org_name>/_pa
 
 When the feed URL is an Azure Artifacts feed pip will use the keyring helper to provide the credentials needed
 to download the package.
+
+## GitHub Actions / Codespaces Prebuild Support
+
+**Version 3.0.1+**: The shim scripts now detect when running in a GitHub Actions environment (during Codespaces prebuild) by checking for the `ACTIONS_ID_TOKEN_REQUEST_URL` environment variable. When this variable is set, the shims bypass all Azure DevOps authentication setup and execute the real commands directly.
+
+This ensures any custom scripting in place during Codespaces build process will work as expected. This feature can only be used at Codespaces runtime as it requires user interaction.
 
 ## Authentication Helper Wait Behavior
 
