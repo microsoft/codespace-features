@@ -4,7 +4,7 @@
 if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL}" ]; then
   source "$(dirname $0)"/resolve-shim.sh
   PNPM_EXE="$(resolve_shim)"
-  ${PNPM_EXE} "$@"
+  "${PNPM_EXE}" "$@"
   exit $?
 fi
 
