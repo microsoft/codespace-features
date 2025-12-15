@@ -1,4 +1,13 @@
 #!/bin/bash
+
+# If ACTIONS_ID_TOKEN_REQUEST_URL is set, we're in GitHub Actions - skip Azure DevOps setup
+if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL}" ]; then
+  source "$(dirname $0)"/resolve-shim.sh
+  NUGET_EXE="$(resolve_shim)"
+  ${NUGET_EXE} "$@"
+  exit $?
+fi
+
 source "$(dirname $0)"/auth-ado.sh
 source "$(dirname $0)"/resolve-shim.sh
 
