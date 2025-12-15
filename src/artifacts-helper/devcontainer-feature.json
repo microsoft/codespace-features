@@ -1,7 +1,7 @@
 {
     "name": "Azure Artifacts Credential Helper",
     "id": "artifacts-helper",
-    "version": "2.0.3",
+    "version": "3.0.0",
     "description": "Configures Codespace to authenticate with Azure Artifact feeds",
     "options": {
         "nugetURIPrefixes": {
@@ -49,6 +49,11 @@
             "default": true,
             "description": "Create alias for pnpm"
         },
+        "shimDirectory": {
+            "type": "string",
+            "default": "/usr/local/share/codespace-shims",
+            "description": "Directory where the shims will be installed. This must be in $PATH, and needs to be as early as possible in priority for the scripts to override the base executables."
+        },
         "targetFiles": {
             "type": "string",
             "default": "DEFAULT",
@@ -60,9 +65,13 @@
             "description": "Install Python keyring helper for pip"
         }
     },
+    "containerEnv": {
+        "PATH": "/usr/local/share/codespace-shims:${PATH}"
+    },
     "installsAfter": [
         "ghcr.io/devcontainers/features/common-utils",
-        "ghcr.io/devcontainers/features/python"
+        "ghcr.io/devcontainers/features/python",
+        "ghcr.io/devcontainers/features/node"
     ],
     "customizations": {
         "vscode": {

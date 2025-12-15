@@ -1,0 +1,6 @@
+#!/bin/bash
+source "$(dirname $0)"/auth-ado.sh
+source "$(dirname $0)"/resolve-shim.sh
+
+NPX_EXE="$(resolve_shim)"
+ARTIFACTS_ACCESSTOKEN="${ARTIFACTS_ACCESSTOKEN:-}" ${NPX_EXE} "$@"

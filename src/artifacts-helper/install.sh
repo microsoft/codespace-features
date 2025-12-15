@@ -12,7 +12,7 @@ ALIAS_NPX="${NPXALIAS:-"true"}"
 ALIAS_RUSH="${RUSHALIAS:-"true"}"
 ALIAS_PNPM="${PNPMALIAS:-"true"}"
 INSTALL_PIP_HELPER="${PYTHON:-"false"}"
-COMMA_SEP_TARGET_FILES="${TARGETFILES:-"DEFAULT"}"
+SHIM_DIRECTORY="${SHIMDIRECTORY:-"/usr/local/share/codespace-shims/"}"
 
 ALIASES_ARR=()
 
@@ -78,31 +78,28 @@ cd "$(dirname "$0")"
 
 cp ./scripts/install-provider.sh /tmp
 chmod +rx /tmp/install-provider.sh
+
 cp ./scripts/install-python-keyring.sh /tmp
 chmod +rx /tmp/install-python-keyring.sh
 
-sed "s|REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX|${PREFIXES}|g" ./scripts/run-dotnet.sh > /usr/local/bin/run-dotnet.sh
-chmod +rx /usr/local/bin/run-dotnet.sh
-sed "s|REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX|${PREFIXES}|g" ./scripts/run-nuget.sh > /usr/local/bin/run-nuget.sh
-chmod +rx /usr/local/bin/run-nuget.sh
-cp ./scripts/run-npm.sh /usr/local/bin/run-npm.sh
-chmod +rx /usr/local/bin/run-npm.sh
-cp ./scripts/run-yarn.sh /usr/local/bin/run-yarn.sh
-chmod +rx /usr/local/bin/run-yarn.sh
-cp ./scripts/write-npm.sh /usr/local/bin/write-npm.sh
-chmod +rx /usr/local/bin/write-npm.sh
-cp ./scripts/run-npx.sh /usr/local/bin/run-npx.sh
-chmod +rx /usr/local/bin/run-npx.sh
+# Replace AZURE_DEVOPS_NUGET_FEED_URL_PREFIX in scripts that require it
+sed -i "s|REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX|${PREFIXES}|g" ./scripts/dotnet
+sed -i "s|REPLACE_WITH_AZURE_DEVOPS_NUGET_FEED_URL_PREFIX|${PREFIXES}|g" ./scripts/nuget
 
-cp ./scripts/run-rush.sh /usr/local/bin/run-rush.sh
-chmod +rx /usr/local/bin/run-rush.sh
-cp ./scripts/run-rush-pnpm.sh /usr/local/bin/run-rush-pnpm.sh
-chmod +rx /usr/local/bin/run-rush-pnpm.sh
+# Create ${SHIM_DIRECTORY}
+mkdir -p "${SHIM_DIRECTORY}"
 
-cp ./scripts/run-pnpm.sh /usr/local/bin/run-pnpm.sh
-chmod +rx /usr/local/bin/run-pnpm.sh
-cp ./scripts/run-pnpx.sh /usr/local/bin/run-pnpx.sh
-chmod +rx /usr/local/bin/run-pnpx.sh
+# Install helper scripts in ${SHIM_DIRECTORY}
+cp "./scripts/auth-ado.sh" "${SHIM_DIRECTORY}"
+cp "./scripts/resolve-shim.sh" "${SHIM_DIRECTORY}"
+cp "./scripts/write-npm.sh" "${SHIM_DIRECTORY}"
+chmod +rx "${SHIM_DIRECTORY}/write-npm.sh"
+
+# Install selected shim scripts in ${SHIM_DIRECTORY}
+for alias in "${ALIASES_ARR[@]}"; do
+    chmod +rx "./scripts/${alias}"
+    cp "./scripts/${alias}" "${SHIM_DIRECTORY}"
+done
 
 if [ "${INSTALL_PIP_HELPER}" = "true" ]; then
     USER="${_REMOTE_USER}" /tmp/install-python-keyring.sh
@@ -126,16 +123,17 @@ fi
 
 IFS=',' read -r -a TARGET_FILES_ARR <<< "$COMMA_SEP_TARGET_FILES"
 
+ALIASES_BLOCK=""
 for ALIAS in "${ALIASES_ARR[@]}"; do
-    for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
-        CMD="$ALIAS() { /usr/local/bin/run-$ALIAS.sh \"\$@\"; }"
+    ALIASES_BLOCK+="$ALIAS() { \"${SHIM_DIRECTORY}/$ALIAS\" \"\$@\"; }\n"
+done
 
-        if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
-            sudo -u ${_REMOTE_USER} bash -c "echo '$CMD' >> $TARGET_FILE"
-        else
-            echo $CMD >> $TARGET_FILE || true
-        fi
-    done
+for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
+    if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
+        sudo -u ${_REMOTE_USER} bash -c "printf '%s' \"$ALIASES_BLOCK\" >> $TARGET_FILE"
+    else
+        printf '%s' "$ALIASES_BLOCK" >> "$TARGET_FILE" || true
+    fi
 done
 
 if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
