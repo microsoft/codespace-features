@@ -2,6 +2,16 @@ This installs [Azure Artifacts Credential Provider](https://github.com/microsoft
 and optionally configures shims which shadow `dotnet`, `nuget`, `npm`, `yarn`, `rush`, and `pnpm`.
 These dynamically sets an authentication token for pulling artifacts from a feed before running the command.
 
+## GitHub Actions / Codespaces Prebuild Support
+
+**Version 3.0.1+**: The shim scripts now detect when running in a GitHub Actions environment (during Codespaces prebuild) by checking for the `ACTIONS_ID_TOKEN_REQUEST_URL` environment variable. When this variable is set, the shims bypass all Azure DevOps authentication setup and execute the real commands directly. This prevents:
+
+- Unnecessary 3-minute wait for authentication helper
+- Installation of credential providers that aren't needed
+- Setting Azure DevOps-specific environment variables
+
+This ensures package restore operations work seamlessly during Codespaces prebuild without interference from the Azure Artifacts authentication mechanisms.
+
 For `npm`, `yarn`, `rush`, and `pnpm` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
 environment variable for the `authToken`. A helper script has been added that you can use to write your `~/.npmrc`
 file during your setup process, though there are many ways you could accomplish this. To use the script, run it like
