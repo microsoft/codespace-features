@@ -136,6 +136,28 @@ for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
     fi
 done
 
+# fish shell support
+FISH_FUNCTIONS_DIR=""
+if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
+    FISH_FUNCTIONS_DIR=$(sudo -u ${_REMOTE_USER} bash -c 'echo ~/.config/fish/functions')
+    sudo -u ${_REMOTE_USER} mkdir -p "$FISH_FUNCTIONS_DIR"
+else
+    FISH_FUNCTIONS_DIR="/etc/fish/functions"
+    mkdir -p "$FISH_FUNCTIONS_DIR" 2>/dev/null || true
+fi
+
+for ALIAS in "${ALIASES_ARR[@]}"; do
+    FISH_FUNC_FILE="${FISH_FUNCTIONS_DIR}/${ALIAS}.fish"
+    FISH_FUNC_CONTENT="function ${ALIAS} --wraps=${SHIM_DIRECTORY}${ALIAS}
+    ${SHIM_DIRECTORY}${ALIAS} \$argv
+end"
+    if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
+        sudo -u ${_REMOTE_USER} bash -c "cat > \"$FISH_FUNC_FILE\"" <<< "$FISH_FUNC_CONTENT"
+    else
+        echo "$FISH_FUNC_CONTENT" > "$FISH_FUNC_FILE" 2>/dev/null || true
+    fi
+done
+
 if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
     sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
 fi
