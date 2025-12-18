@@ -85,9 +85,20 @@ This ensures any custom scripting in place during Codespaces build process will 
 The shim scripts (e.g., `dotnet`, `npm`, `nuget`) now include a wait mechanism for the Azure DevOps authentication helper. When invoked, these scripts will:
 
 1. Wait up to 3 minutes for the `ado-auth-helper` to become available (configurable via `MAX_WAIT` environment variable)
-2. Display progress indicators every 20 seconds while waiting
+2. Display progress indicators every 20 seconds while waiting (only when `ARTIFACTS_HELPER_VERBOSE=true`)
 3. Continue execution once authentication is successful
 4. **Continue with the underlying command even if authentication is not available** after the timeout
+
+By default, the authentication process runs silently. To enable verbose logging (useful for troubleshooting), set the `ARTIFACTS_HELPER_VERBOSE` environment variable to `true`:
+
+```bash
+export ARTIFACTS_HELPER_VERBOSE=true
+```
+
+When verbose mode is enabled, you will see step-by-step messages like:
+- `::step::Waiting for AzDO Authentication Helper...`
+- `::step::Running ado-auth-helper get-access-token...`
+- `::step::✓ Access token retrieved successfully`
 
 This ensures that package restore operations can proceed even if there's a slight delay in the authentication helper installation, which can occur in some codespace initialization scenarios. Commands will still execute without authentication, though they may fail to access private Azure Artifacts feeds.
 
