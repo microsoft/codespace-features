@@ -33,6 +33,7 @@ while [ $ELAPSED -lt $MAX_WAIT ]; do
         log_step "Running ado-auth-helper get-access-token..."
         ARTIFACTS_ACCESSTOKEN=$(${HOME}/ado-auth-helper get-access-token)
         log_step "✓ Access token retrieved successfully"
+        # Return 0 to indicate successful authentication
         return 0
     fi
     sleep 2
@@ -45,8 +46,9 @@ while [ $ELAPSED -lt $MAX_WAIT ]; do
 done
 
 # Timeout reached - continue without authentication
-# Always show warnings, even if verbose is disabled
+# Always show timeout warnings regardless of verbose setting, as this indicates a potential issue
 echo "::warning::AzDO Authentication Helper not found after ${MAX_WAIT} seconds"
 echo "Expected location: ${HOME}/ado-auth-helper"
 echo "Continuing without Azure Artifacts authentication..."
+# Return 1 to indicate authentication was not successful, but don't exit (allow sourcing script to continue)
 return 1
