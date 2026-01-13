@@ -5,12 +5,12 @@
 
 # If ACTIONS_ID_TOKEN_REQUEST_URL is set, we are in GitHub Actions - skip interception
 if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL}" ]; then
-    source "$(dirname $0)"/resolve-shim.sh
+    source "$(dirname "$0")"/resolve-shim.sh
     AZ_EXE="$(resolve_shim)"
     exec "${AZ_EXE}" "$@"
 fi
 
-source "$(dirname $0)"/resolve-shim.sh
+source "$(dirname "$0")"/resolve-shim.sh
 
 # Well-known resource type mappings (az account get-access-token --resource-type)
 declare -A RESOURCE_TYPE_MAP=(
@@ -31,10 +31,17 @@ if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
     prev=""
 
     for arg in "${@:3}"; do
-        case "$prev" in
-            --resource) resource="$arg" ;;
-            --scope) scope="$arg" ;;
-            --resource-type) resource_type="$arg" ;;
+        case "$arg" in
+            --resource=*) resource="${arg#--resource=}" ;;
+            --scope=*) scope="${arg#--scope=}" ;;
+            --resource-type=*) resource_type="${arg#--resource-type=}" ;;
+            *)
+                case "$prev" in
+                    --resource) resource="$arg" ;;
+                    --scope) scope="$arg" ;;
+                    --resource-type) resource_type="$arg" ;;
+                esac
+                ;;
         esac
         prev="$arg"
     done
@@ -60,6 +67,10 @@ if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
     if [[ -n "$request_scope" && -f "${HOME}/azure-auth-helper" ]]; then
         token=$("${HOME}/azure-auth-helper" get-access-token "$request_scope" 2>/dev/null)
         if [[ $? -eq 0 && -n "$token" ]]; then
+            # Escape token for safe JSON embedding (handle backslashes and quotes)
+            escaped_token="${token//\\/\\\\}"
+            escaped_token="${escaped_token//\"/\\\"}"
+
             # Calculate expiry timestamps (conservative 1 hour estimate)
             # expires_on = POSIX timestamp, expiresOn = local datetime
             if date --version >/dev/null 2>&1; then
@@ -75,7 +86,7 @@ if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
             # Return in az CLI JSON format (matching real az CLI output)
             cat <<EOF
 {
-  "accessToken": "${token}",
+  "accessToken": "${escaped_token}",
   "expiresOn": "${expires_on_datetime}",
   "expires_on": ${expires_on},
   "subscription": "",
