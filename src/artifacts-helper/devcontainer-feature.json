@@ -49,6 +49,11 @@
             "default": true,
             "description": "Create alias for pnpm"
         },
+        "azAlias": {
+            "type": "boolean",
+            "default": true,
+            "description": "Create alias for az (Azure CLI)"
+        },
         "shimDirectory": {
             "type": "string",
             "default": "/usr/local/share/codespace-shims",
