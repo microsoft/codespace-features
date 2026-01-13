@@ -78,26 +78,10 @@ if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
         exit_code=$?
 
         if [[ $exit_code -eq 0 && -n "$token" ]]; then
-            # Calculate expiry timestamps (conservative 1 hour estimate)
-            # expires_on = POSIX timestamp, expiresOn = local datetime
-            if date --version >/dev/null 2>&1; then
-                # GNU date (Linux)
-                expires_on=$(date -d "+1 hour" "+%s")
-                expires_on_datetime=$(date -d "+1 hour" "+%Y-%m-%d %H:%M:%S.000000")
-            else
-                # BSD date (macOS)
-                expires_on=$(date -v+1H "+%s")
-                expires_on_datetime=$(date -v+1H "+%Y-%m-%d %H:%M:%S.000000")
-            fi
-
-            # Return in az CLI JSON format (matching real az CLI output)
+            # Return in az CLI JSON format
             cat <<EOF
 {
   "accessToken": "${token}",
-  "expiresOn": "${expires_on_datetime}",
-  "expires_on": ${expires_on},
-  "subscription": "",
-  "tenant": "",
   "tokenType": "Bearer"
 }
 EOF
