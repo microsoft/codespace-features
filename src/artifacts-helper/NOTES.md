@@ -1,6 +1,10 @@
 This installs [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
-and optionally configures shims which shadow `dotnet`, `nuget`, `npm`, `yarn`, `rush`, and `pnpm`.
-These dynamically sets an authentication token for pulling artifacts from a feed before running the command.
+and optionally configures shims which shadow `dotnet`, `nuget`, `npm`, `yarn`, `rush`, `pnpm`, and `az`.
+These dynamically set an authentication token for pulling artifacts from a feed before running the command.
+
+The `az` shim specifically intercepts `az account get-access-token` requests and uses the `azure-auth-helper`
+to acquire tokens via the ado-codespaces-auth VS Code extension. This enables `DefaultAzureCredential`'s
+`AzureCliCredential` to work in Codespaces without requiring `az login`.
 
 For `npm`, `yarn`, `rush`, and `pnpm` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
 environment variable for the `authToken`. A helper script has been added that you can use to write your `~/.npmrc`

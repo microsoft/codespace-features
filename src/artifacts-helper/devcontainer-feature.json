@@ -1,7 +1,7 @@
 {
     "name": "Azure Artifacts Credential Helper",
     "id": "artifacts-helper",
-    "version": "3.0.2",
+    "version": "3.0.3",
     "description": "Configures Codespace to authenticate with Azure Artifact feeds",
     "options": {
         "nugetURIPrefixes": {
@@ -48,6 +48,11 @@
             "type": "boolean",
             "default": true,
             "description": "Create alias for pnpm"
+        },
+        "azAlias": {
+            "type": "boolean",
+            "default": true,
+            "description": "Create alias for az (Azure CLI)"
         },
         "shimDirectory": {
             "type": "string",
