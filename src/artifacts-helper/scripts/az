@@ -5,86 +5,86 @@
 
 # If ACTIONS_ID_TOKEN_REQUEST_URL is set, we are in GitHub Actions - skip interception
 if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL}" ]; then
-    source "$(dirname "$0")"/resolve-shim.sh
-    AZ_EXE="$(resolve_shim)"
-    exec "${AZ_EXE}" "$@"
+  source "$(dirname "$0")"/resolve-shim.sh
+  AZ_EXE="$(resolve_shim)"
+  exec "${AZ_EXE}" "$@"
 fi
 
 source "$(dirname "$0")"/resolve-shim.sh
 
 # Well-known resource type mappings (az account get-access-token --resource-type)
 declare -A RESOURCE_TYPE_MAP=(
-    ["arm"]="https://management.azure.com"
-    ["aad-graph"]="https://graph.windows.net"
-    ["ms-graph"]="https://graph.microsoft.com"
-    ["batch"]="https://batch.core.windows.net"
-    ["data-lake"]="https://datalake.azure.net"
-    ["media"]="https://rest.media.azure.net"
-    ["oss-rdbms"]="https://ossrdbms-aad.database.windows.net"
+  ["arm"]="https://management.azure.com"
+  ["aad-graph"]="https://graph.windows.net"
+  ["ms-graph"]="https://graph.microsoft.com"
+  ["batch"]="https://batch.core.windows.net"
+  ["data-lake"]="https://datalake.azure.net"
+  ["media"]="https://rest.media.azure.net"
+  ["oss-rdbms"]="https://ossrdbms-aad.database.windows.net"
 )
 
 # Check if this is a get-access-token request that we should intercept
 if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
-    resource=""
-    scope=""
-    resource_type=""
-    prev=""
+  resource=""
+  scope=""
+  resource_type=""
+  prev=""
 
-    for arg in "${@:3}"; do
-        case "$arg" in
-            --resource=*) resource="${arg#--resource=}" ;;
-            --scope=*) scope="${arg#--scope=}" ;;
-            --resource-type=*) resource_type="${arg#--resource-type=}" ;;
-            *)
-                case "$prev" in
-                    --resource) resource="$arg" ;;
-                    --scope) scope="$arg" ;;
-                    --resource-type) resource_type="$arg" ;;
-                esac
-                ;;
-        esac
-        prev="$arg"
-    done
+  for arg in "${@:3}"; do
+    case "$arg" in
+    --resource=*) resource="${arg#--resource=}" ;;
+    --scope=*) scope="${arg#--scope=}" ;;
+    --resource-type=*) resource_type="${arg#--resource-type=}" ;;
+    *)
+      case "$prev" in
+      --resource) resource="$arg" ;;
+      --scope) scope="$arg" ;;
+      --resource-type) resource_type="$arg" ;;
+      esac
+      ;;
+    esac
+    prev="$arg"
+  done
 
-    # Resolve resource-type to resource URL if specified
-    if [[ -n "$resource_type" && -z "$resource" ]]; then
-        resource="${RESOURCE_TYPE_MAP[$resource_type]}"
+  # Resolve resource-type to resource URL if specified
+  if [[ -n "$resource_type" && -z "$resource" ]]; then
+    resource="${RESOURCE_TYPE_MAP[$resource_type]}"
+  fi
+
+  # Determine the scope to request
+  request_scope=""
+  if [[ -n "$scope" ]]; then
+    request_scope="$scope"
+  elif [[ -n "$resource" ]]; then
+    if [[ "$resource" == *"/.default" ]]; then
+      request_scope="$resource"
+    else
+      request_scope="${resource}/.default"
     fi
+  fi
 
-    # Determine the scope to request
-    request_scope=""
-    if [[ -n "$scope" ]]; then
-        request_scope="$scope"
-    elif [[ -n "$resource" ]]; then
-        if [[ "$resource" == *"/.default" ]]; then
-            request_scope="$resource"
-        else
-            request_scope="${resource}/.default"
-        fi
-    fi
+  # If we have a scope and azure-auth-helper exists, use it
+  if [[ -n "$request_scope" && -f "${HOME}/azure-auth-helper" ]]; then
+    token=$("${HOME}/azure-auth-helper" get-access-token "$request_scope" 2>/dev/null)
+    if [[ $? -eq 0 && -n "$token" ]]; then
+      # Escape token for safe JSON embedding (handle backslashes and quotes)
+      escaped_token="${token//\\/\\\\}"
+      escaped_token="${escaped_token//\"/\\\"}"
 
-    # If we have a scope and azure-auth-helper exists, use it
-    if [[ -n "$request_scope" && -f "${HOME}/azure-auth-helper" ]]; then
-        token=$("${HOME}/azure-auth-helper" get-access-token "$request_scope" 2>/dev/null)
-        if [[ $? -eq 0 && -n "$token" ]]; then
-            # Escape token for safe JSON embedding (handle backslashes and quotes)
-            escaped_token="${token//\\/\\\\}"
-            escaped_token="${escaped_token//\"/\\\"}"
+      # Calculate expiry timestamps (conservative 1 hour estimate)
+      # expires_on = POSIX timestamp, expiresOn = local datetime
+      if date --version >/dev/null 2>&1; then
+        # GNU date (Linux)
+        expires_on=$(date -d "+1 hour" "+%s")
+        expires_on_datetime=$(date -d "+1 hour" "+%Y-%m-%d %H:%M:%S.000000")
+      else
+        # BSD date (macOS)
+        expires_on=$(date -v+1H "+%s")
+        expires_on_datetime=$(date -v+1H "+%Y-%m-%d %H:%M:%S.000000")
+      fi
 
-            # Calculate expiry timestamps (conservative 1 hour estimate)
-            # expires_on = POSIX timestamp, expiresOn = local datetime
-            if date --version >/dev/null 2>&1; then
-                # GNU date (Linux)
-                expires_on=$(date -d "+1 hour" "+%s")
-                expires_on_datetime=$(date -d "+1 hour" "+%Y-%m-%d %H:%M:%S.000000")
-            else
-                # BSD date (macOS)
-                expires_on=$(date -v+1H "+%s")
-                expires_on_datetime=$(date -v+1H "+%Y-%m-%d %H:%M:%S.000000")
-            fi
-
-            # Return in az CLI JSON format (matching real az CLI output)
-            cat <<EOF
+      # Return in az CLI JSON format (matching real az CLI output)
+      cat <<EOF
 {
   "accessToken": "${escaped_token}",
   "expiresOn": "${expires_on_datetime}",
@@ -94,53 +94,19 @@ if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
   "tokenType": "Bearer"
 }
 EOF
-            exit 0
-        fi
+      exit 0
     fi
+  fi
 fi
 
-# Fall through to real az CLI for all other commands
-# Before fallthrough, set AZURE_DEVOPS_EXT_PAT if ado-auth-helper is available
-# This enables 'az devops' commands to authenticate automatically
-if [[ -z "${AZURE_DEVOPS_EXT_PAT}" ]]; then
-    MAX_WAIT=${MAX_WAIT:-180}
-    ELAPSED=0
-
-    if [[ "${ARTIFACTS_HELPER_VERBOSE}" == "true" ]]; then
-        echo "::step::Waiting for AzDO Authentication Helper for az devops..." >&2
-    fi
-
-    while [[ $ELAPSED -lt $MAX_WAIT ]]; do
-        if [[ -f "${HOME}/ado-auth-helper" ]]; then
-            AZURE_DEVOPS_EXT_PAT=$("${HOME}/ado-auth-helper" get-access-token 2>/dev/null)
-            if [[ $? -eq 0 && -n "$AZURE_DEVOPS_EXT_PAT" ]]; then
-                export AZURE_DEVOPS_EXT_PAT
-                if [[ "${ARTIFACTS_HELPER_VERBOSE}" == "true" ]]; then
-                    echo "::step::✓ AZURE_DEVOPS_EXT_PAT set successfully" >&2
-                fi
-                break
-            fi
-        fi
-        sleep 2
-        ELAPSED=$((ELAPSED + 2))
-
-        # Progress indicator every 20 seconds (verbose only)
-        if [[ "${ARTIFACTS_HELPER_VERBOSE}" == "true" && $((ELAPSED % 20)) -eq 0 ]]; then
-            echo "  Still waiting... (${ELAPSED}s elapsed)" >&2
-        fi
-    done
-
-    # Always show timeout warnings regardless of verbose setting, as this indicates a potential issue
-    if [[ $ELAPSED -ge $MAX_WAIT ]]; then
-        echo "::warning::AzDO Authentication Helper not found after ${MAX_WAIT} seconds" >&2
-        echo "Continuing without AZURE_DEVOPS_EXT_PAT..." >&2
-    fi
-fi
-
+# Fall through to real az CLI for all other commands.
 AZ_EXE="$(resolve_shim)"
 if [[ -n "$AZ_EXE" ]]; then
+  # If AZURE_DEVOPS_EXT_PAT is not already set, try to acquire it from ado-auth-helper
+  # so that 'az devops' commands authenticate automatically.
+  AZURE_DEVOPS_EXT_PAT="${AZURE_DEVOPS_EXT_PAT:-$("${HOME}/ado-auth-helper" get-access-token 2>/dev/null)}" \
     exec "${AZ_EXE}" "$@"
 else
-    echo "Error: Azure CLI not found in PATH" >&2
-    exit 1
+  echo "Error: Azure CLI not found in PATH" >&2
+  exit 1
 fi
