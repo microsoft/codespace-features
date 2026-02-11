@@ -100,6 +100,43 @@ EOF
 fi
 
 # Fall through to real az CLI for all other commands
+# Before fallthrough, set AZURE_DEVOPS_EXT_PAT if ado-auth-helper is available
+# This enables 'az devops' commands to authenticate automatically
+if [[ -z "${AZURE_DEVOPS_EXT_PAT}" ]]; then
+    MAX_WAIT=${MAX_WAIT:-180}
+    ELAPSED=0
+
+    if [[ "${ARTIFACTS_HELPER_VERBOSE}" == "true" ]]; then
+        echo "::step::Waiting for AzDO Authentication Helper for az devops..." >&2
+    fi
+
+    while [[ $ELAPSED -lt $MAX_WAIT ]]; do
+        if [[ -f "${HOME}/ado-auth-helper" ]]; then
+            AZURE_DEVOPS_EXT_PAT=$("${HOME}/ado-auth-helper" get-access-token 2>/dev/null)
+            if [[ $? -eq 0 && -n "$AZURE_DEVOPS_EXT_PAT" ]]; then
+                export AZURE_DEVOPS_EXT_PAT
+                if [[ "${ARTIFACTS_HELPER_VERBOSE}" == "true" ]]; then
+                    echo "::step::✓ AZURE_DEVOPS_EXT_PAT set successfully" >&2
+                fi
+                break
+            fi
+        fi
+        sleep 2
+        ELAPSED=$((ELAPSED + 2))
+
+        # Progress indicator every 20 seconds (verbose only)
+        if [[ "${ARTIFACTS_HELPER_VERBOSE}" == "true" && $((ELAPSED % 20)) -eq 0 ]]; then
+            echo "  Still waiting... (${ELAPSED}s elapsed)" >&2
+        fi
+    done
+
+    # Always show timeout warnings regardless of verbose setting, as this indicates a potential issue
+    if [[ $ELAPSED -ge $MAX_WAIT ]]; then
+        echo "::warning::AzDO Authentication Helper not found after ${MAX_WAIT} seconds" >&2
+        echo "Continuing without AZURE_DEVOPS_EXT_PAT..." >&2
+    fi
+fi
+
 AZ_EXE="$(resolve_shim)"
 if [[ -n "$AZ_EXE" ]]; then
     exec "${AZ_EXE}" "$@"

@@ -74,6 +74,76 @@ check "az shim bypasses interception in GitHub Actions" bash -c '
     echo "$output" | grep -qv "test-token-12345" && echo "SUCCESS" || echo "FAILED"
 ' | grep -q "SUCCESS"
 
+# Test AZURE_DEVOPS_EXT_PAT integration with ado-auth-helper
+check "az shim sets AZURE_DEVOPS_EXT_PAT when ado-auth-helper exists" bash -c '
+    export HOME='"$TEST_HOME"'
+    export MAX_WAIT=2  # Short timeout for testing
+    # Create a mock ado-auth-helper
+    cat > "${HOME}/ado-auth-helper" << '\''HELPER'\''
+#!/bin/bash
+echo "ado-test-pat-token"
+HELPER
+    chmod +x "${HOME}/ado-auth-helper"
+    
+    # Create a mock az that echoes the env var
+    mkdir -p "${HOME}/bin"
+    cat > "${HOME}/bin/az" << '\''MOCKAZ'\''
+#!/bin/bash
+echo "PAT=${AZURE_DEVOPS_EXT_PAT}"
+MOCKAZ
+    chmod +x "${HOME}/bin/az"
+    export PATH="${HOME}/bin:$PATH"
+    
+    # Call the shim with a non-token command
+    output=$(/usr/local/share/codespace-shims/az devops --help 2>&1)
+    echo "$output" | grep -q "PAT=ado-test-pat-token" && echo "SUCCESS" || echo "FAILED: $output"
+' | grep -q "SUCCESS"
+
+# Test that existing AZURE_DEVOPS_EXT_PAT is not overwritten
+check "az shim does not overwrite existing AZURE_DEVOPS_EXT_PAT" bash -c '
+    export HOME='"$TEST_HOME"'
+    export MAX_WAIT=2
+    export AZURE_DEVOPS_EXT_PAT="existing-pat-value"
+    # Create mock ado-auth-helper that would return different value
+    cat > "${HOME}/ado-auth-helper" << '\''HELPER'\''
+#!/bin/bash
+echo "new-pat-token"
+HELPER
+    chmod +x "${HOME}/ado-auth-helper"
+    
+    # Create mock az
+    mkdir -p "${HOME}/bin"
+    cat > "${HOME}/bin/az" << '\''MOCKAZ'\''
+#!/bin/bash
+echo "PAT=${AZURE_DEVOPS_EXT_PAT}"
+MOCKAZ
+    chmod +x "${HOME}/bin/az"
+    export PATH="${HOME}/bin:$PATH"
+    
+    output=$(/usr/local/share/codespace-shims/az devops --help 2>&1)
+    # Should still have original value
+    echo "$output" | grep -q "PAT=existing-pat-value" && echo "SUCCESS" || echo "FAILED: $output"
+' | grep -q "SUCCESS"
+
+# Test that missing ado-auth-helper still allows fallthrough
+check "az shim falls through without ado-auth-helper" bash -c '
+    export HOME='"$TEST_HOME"'
+    export MAX_WAIT=2  # Short timeout
+    rm -f "${HOME}/ado-auth-helper"
+    
+    # Create mock az
+    mkdir -p "${HOME}/bin"
+    cat > "${HOME}/bin/az" << '\''MOCKAZ'\''
+#!/bin/bash
+echo "FALLTHROUGH_OK"
+MOCKAZ
+    chmod +x "${HOME}/bin/az"
+    export PATH="${HOME}/bin:$PATH"
+    
+    output=$(/usr/local/share/codespace-shims/az version 2>&1)
+    echo "$output" | grep -q "FALLTHROUGH_OK" && echo "SUCCESS" || echo "FAILED: $output"
+' | grep -q "SUCCESS"
+
 # Cleanup
 rm -rf "$TEST_HOME"
 
