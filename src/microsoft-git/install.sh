@@ -85,11 +85,21 @@ fi
 # Install for Debian/Ubuntu
 check_packages wget git
 
-wget -q https://github.com/microsoft/git/releases/download/v${GIT_VERSION}/microsoft-git_${GIT_VERSION}.deb
+# Detect host architecture for arch-specific .deb packages (added in v2.52.0.vfs.0.5+)
+ARCH="$(dpkg --print-architecture)"
+DEB_URL="https://github.com/microsoft/git/releases/download/v${GIT_VERSION}/microsoft-git_${GIT_VERSION}_${ARCH}.deb"
+DEB_FILE="microsoft-git_${GIT_VERSION}_${ARCH}.deb"
 
-dpkg -i "microsoft-git_${GIT_VERSION}.deb"
+# Try arch-specific .deb first, fall back to no-arch .deb for older releases
+if ! wget -q "${DEB_URL}" -O "${DEB_FILE}" 2>/dev/null; then
+    DEB_URL="https://github.com/microsoft/git/releases/download/v${GIT_VERSION}/microsoft-git_${GIT_VERSION}.deb"
+    DEB_FILE="microsoft-git_${GIT_VERSION}.deb"
+    wget -q "${DEB_URL}" -O "${DEB_FILE}"
+fi
 
-rm "microsoft-git_${GIT_VERSION}.deb"
+dpkg -i "${DEB_FILE}"
+
+rm "${DEB_FILE}"
 
 rm -rf /var/lib/apt/lists/*
 echo "Done!"
