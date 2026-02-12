@@ -6,6 +6,20 @@ The `az` shim specifically intercepts `az account get-access-token` requests and
 to acquire tokens via the ado-codespaces-auth VS Code extension. This enables `DefaultAzureCredential`'s
 `AzureCliCredential` to work in Codespaces without requiring `az login`.
 
+## Azure DevOps CLI Integration
+
+For `az devops` commands, the shim automatically sets the `AZURE_DEVOPS_EXT_PAT` environment variable
+using the `ado-auth-helper` when falling through to the real Azure CLI. This enables `az devops`
+commands to authenticate without requiring manual `az devops login` or setting the token manually.
+
+The shim will:
+1. Wait for `ado-auth-helper` to become available (up to 3 minutes, configurable via `MAX_WAIT`)
+2. Call `ado-auth-helper get-access-token` to retrieve an access token used by the Azure DevOps CLI extension
+3. Export `AZURE_DEVOPS_EXT_PAT` before executing the real `az` command
+
+If `AZURE_DEVOPS_EXT_PAT` is already set, the shim will not overwrite it. If `ado-auth-helper` is not
+available after the timeout, the command will still execute (but may fail to authenticate to Azure DevOps).
+
 For `npm`, `yarn`, `rush`, and `pnpm` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
 environment variable for the `authToken`. A helper script has been added that you can use to write your `~/.npmrc`
 file during your setup process, though there are many ways you could accomplish this. To use the script, run it like

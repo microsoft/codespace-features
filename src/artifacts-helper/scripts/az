@@ -102,7 +102,11 @@ fi
 # Fall through to real az CLI for all other commands
 AZ_EXE="$(resolve_shim)"
 if [[ -n "$AZ_EXE" ]]; then
-    exec "${AZ_EXE}" "$@"
+    # If AZURE_DEVOPS_EXT_PAT is not already set, try to acquire it from ado-auth-helper
+    # so that 'az' commands that interact with azure devops authenticate automatically.
+    # Examples are things like: `az devops`, `az boards`, `az pipelines`, `az repos`, `az artifacts`, etc.
+    AZURE_DEVOPS_EXT_PAT="${AZURE_DEVOPS_EXT_PAT:-$("${HOME}/ado-auth-helper" get-access-token 2>/dev/null)}" \
+        exec "${AZ_EXE}" "$@"
 else
     echo "Error: Azure CLI not found in PATH" >&2
     exit 1
