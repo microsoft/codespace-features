@@ -63,6 +63,39 @@ HELPER
     echo "SUCCESS" || echo "FAILED"
 ' | grep -q "SUCCESS"
 
+# Test that accessToken queries with TSV output return only the token
+check "az shim honors query accessToken with tsv output" bash -c '
+    export HOME='"$TEST_HOME"'
+    cat > "${HOME}/azure-auth-helper" << '\''HELPER'\''
+#!/bin/bash
+echo "test-token-12345"
+HELPER
+    chmod +x "${HOME}/azure-auth-helper"
+
+    output=$(/usr/local/share/codespace-shims/az account get-access-token --resource https://management.azure.com -q accessToken -o tsv 2>&1)
+    [ "$output" = "test-token-12345" ] && echo "SUCCESS" || echo "FAILED: $output"
+' | grep -q "SUCCESS"
+
+# Test that the shim defaults to the Azure DevOps resource when none is specified
+check "az shim defaults to Azure DevOps resource" bash -c '
+    export HOME='"$TEST_HOME"'
+    cat > "${HOME}/azure-auth-helper" << '\''HELPER'\''
+#!/bin/bash
+if [ "$1" = "get-access-token" ]; then
+    echo "$2" > "${HOME}/requested-scope"
+    echo "default-resource-token"
+fi
+HELPER
+    chmod +x "${HOME}/azure-auth-helper"
+
+    output=$(/usr/local/share/codespace-shims/az account get-access-token -q accessToken -o tsv 2>&1)
+    requested_scope=$(cat "${HOME}/requested-scope")
+
+    [ "$output" = "default-resource-token" ] && \
+    [ "$requested_scope" = "499b84ac-1321-427f-aa17-267ca6975798/.default" ] && \
+    echo "SUCCESS" || echo "FAILED: output=$output scope=$requested_scope"
+' | grep -q "SUCCESS"
+
 # Test GitHub Actions bypass (simulate by setting the env var)
 check "az shim bypasses interception in GitHub Actions" bash -c '
     export HOME='"$TEST_HOME"'

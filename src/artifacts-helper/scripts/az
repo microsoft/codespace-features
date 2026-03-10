@@ -28,6 +28,8 @@ if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
     resource=""
     scope=""
     resource_type=""
+    query=""
+    output_format=""
     prev=""
 
     for arg in "${@:3}"; do
@@ -35,11 +37,16 @@ if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
             --resource=*) resource="${arg#--resource=}" ;;
             --scope=*) scope="${arg#--scope=}" ;;
             --resource-type=*) resource_type="${arg#--resource-type=}" ;;
+            --query=*) query="${arg#--query=}" ;;
+            --output=*) output_format="${arg#--output=}" ;;
+            -o=*) output_format="${arg#-o=}" ;;
             *)
                 case "$prev" in
                     --resource) resource="$arg" ;;
                     --scope) scope="$arg" ;;
                     --resource-type) resource_type="$arg" ;;
+                    --query|-q) query="$arg" ;;
+                    --output|-o) output_format="$arg" ;;
                 esac
                 ;;
         esac
@@ -49,6 +56,11 @@ if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
     # Resolve resource-type to resource URL if specified
     if [[ -n "$resource_type" && -z "$resource" ]]; then
         resource="${RESOURCE_TYPE_MAP[$resource_type]}"
+    fi
+
+    # Default to Azure DevOps resource if no resource or scope specified
+    if [[ -z "$resource" && -z "$scope" ]]; then
+        resource="499b84ac-1321-427f-aa17-267ca6975798"
     fi
 
     # Determine the scope to request
@@ -67,6 +79,18 @@ if [[ "$1" == "account" && "$2" == "get-access-token" ]]; then
     if [[ -n "$request_scope" && -f "${HOME}/azure-auth-helper" ]]; then
         token=$("${HOME}/azure-auth-helper" get-access-token "$request_scope" 2>/dev/null)
         if [[ $? -eq 0 && -n "$token" ]]; then
+            # Handle --query accessToken for direct token extraction
+            if [[ "$query" == "accessToken" ]]; then
+                if [[ "$output_format" == "tsv" ]]; then
+                    echo "$token"
+                else
+                    escaped_token="${token//\\/\\\\}"
+                    escaped_token="${escaped_token//\"/\\\"}"
+                    echo "\"$escaped_token\""
+                fi
+                exit 0
+            fi
+
             # Escape token for safe JSON embedding (handle backslashes and quotes)
             escaped_token="${token//\\/\\\\}"
             escaped_token="${escaped_token//\"/\\\"}"
