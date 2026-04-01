@@ -3,9 +3,6 @@
 set -e
 
 
-# Source /etc/os-release to get OS info
-. /etc/os-release
-
 if [ "$(id -u)" -ne 0 ]; then
     echo -e 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
     exit 1
@@ -30,7 +27,7 @@ check_packages() {
 
 export DEBIAN_FRONTEND=noninteractive
 
-if [ "${ID}" = "mariner" ]; then
+if command -v tdnf >/dev/null 2>&1; then
     tdnf install -y curl ca-certificates tar
     tdnf clean all
 else
