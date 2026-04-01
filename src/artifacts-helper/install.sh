@@ -70,7 +70,7 @@ check_packages() {
 
 export DEBIAN_FRONTEND=noninteractive
 
-if [ "${ID}" = "mariner" ]; then
+if [ "${ID}" = "mariner" ] || { [ "${ID}" = "azurelinux" ] && [ "${VERSION_ID}" = "3.0" ]; then
     tdnf install -y wget ca-certificates
     tdnf clean all
 else
