@@ -9,9 +9,6 @@ GIT_VERSION=${VERSION:-"latest"}
 
 set -e
 
-# Source /etc/os-release to get OS info
-. /etc/os-release
-
 if [ "$(id -u)" -ne 0 ]; then
     echo -e 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
     exit 1
@@ -35,7 +32,7 @@ check_packages() {
 
 export DEBIAN_FRONTEND=noninteractive
 
-if [ "${ID}" = "mariner" ]; then
+if command -v tdnf >/dev/null 2>&1; then
     tdnf install -y curl ca-certificates
 else
     check_packages curl ca-certificates
@@ -67,8 +64,7 @@ fi
 
 echo "Downloading Microsoft Git ${GIT_VERSION}..."
 
-# If ID is mariner
-if [ "${ID}" = "mariner" ]; then
+if command -v tdnf >/dev/null 2>&1; then
     # We need to build Git from source release on Mariner
     tdnf install -y wget tar git pcre2 binutils build-essential openssl-devel expat-devel curl-devel python3-devel gettext asciidoc xmlto cronie
     wget -q https://github.com/microsoft/git/archive/refs/tags/v${GIT_VERSION}.tar.gz

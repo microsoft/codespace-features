@@ -19,8 +19,6 @@ INSTALL_GO_TOOLS="${INSTALL_GO_TOOLS:-"true"}"
 GO_GPG_KEY_URI="https://dl.google.com/linux/linux_signing_key.pub"
 
 set -e
-# Source /etc/os-release to get OS info
-. /etc/os-release
 
 if [ "$(id -u)" -ne 0 ]; then
     echo -e 'Script must be run as root. Use sudo, su, or add "USER root" to your Dockerfile before running this script.'
@@ -116,7 +114,7 @@ check_packages() {
 
 export DEBIAN_FRONTEND=noninteractive
 
-if [ "${ID}" = "mariner" ]; then
+if command -v tdnf >/dev/null 2>&1; then
     tdnf install -y curl ca-certificates gnupg2 tar g++ gcc make git build-essential
 else
     # Clean up
@@ -252,7 +250,7 @@ find "${TARGET_GOROOT}" -type d -print0 | xargs -n 1 -0 chmod g+s
 find "${TARGET_GOPATH}" -type d -print0 | xargs -n 1 -0 chmod g+s
 
 # Clean up
-if [ "${ID}" = "mariner" ]; then
+if command -v tdnf >/dev/null 2>&1; then
     tdnf clean all
 else
     rm -rf /var/lib/apt/lists/*
