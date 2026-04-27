@@ -114,6 +114,8 @@ if command -v sudo >/dev/null 2>&1; then
     fi
 fi
 
+COMMA_SEP_TARGET_FILES="${TARGETFILES:-"DEFAULT"}"
+
 if [ "${COMMA_SEP_TARGET_FILES}" = "DEFAULT" ]; then
     if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
         COMMA_SEP_TARGET_FILES="~/.bashrc,~/.zshrc"
@@ -126,7 +128,7 @@ IFS=',' read -r -a TARGET_FILES_ARR <<< "$COMMA_SEP_TARGET_FILES"
 
 ALIASES_BLOCK=""
 for ALIAS in "${ALIASES_ARR[@]}"; do
-    ALIASES_BLOCK+="$ALIAS() { \"${SHIM_DIRECTORY}/$ALIAS\" \"\$@\"; }\n"
+    ALIASES_BLOCK+="$ALIAS() { \"${SHIM_DIRECTORY}/$ALIAS\" \"\$@\"; }"$'\n'
 done
 
 for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
