@@ -131,13 +131,18 @@ for ALIAS in "${ALIASES_ARR[@]}"; do
     ALIASES_BLOCK+="$ALIAS() { \"${SHIM_DIRECTORY}/$ALIAS\" \"\$@\"; }"$'\n'
 done
 
+_TEMP_BLOCK=$(mktemp)
+printf '%s' "$ALIASES_BLOCK" > "$_TEMP_BLOCK"
+
 for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
     if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
-        sudo -u ${_REMOTE_USER} bash -c "printf '%s' \"$ALIASES_BLOCK\" >> $TARGET_FILE"
+        sudo -u ${_REMOTE_USER} bash -c "cat '$_TEMP_BLOCK' >> $TARGET_FILE"
     else
-        printf '%s' "$ALIASES_BLOCK" >> "$TARGET_FILE" || true
+        cat "$_TEMP_BLOCK" >> "$TARGET_FILE" || true
     fi
 done
+
+rm -f "$_TEMP_BLOCK"
 
 if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
     sudo -u ${_REMOTE_USER} bash -c "/tmp/install-provider.sh ${USENET6}"
