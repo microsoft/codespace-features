@@ -29,6 +29,10 @@ check "npm shell function written to bash.bashrc" grep -q "npm()" /etc/bash.bash
 check "dotnet shell function written to bash.bashrc" grep -q "dotnet()" /etc/bash.bashrc
 check "npm shell function on its own line in bash.bashrc" grep -q "^npm()" /etc/bash.bashrc
 
+# Verify aliases include proper quoting and argument passing ($@)
+check "dotnet alias has quoted path and passes args" grep -q 'dotnet() { ".*/dotnet" "\$@"; }' /etc/bash.bashrc
+check "npm alias has quoted path and passes args" grep -q 'npm() { ".*/npm" "\$@"; }' /etc/bash.bashrc
+
 # Verify newlines between shim definitions (each function should be on its own line)
 check "each shim function is on its own line" bash -c '
     # Count function definitions at line starts - with proper newlines each will start at column 0
