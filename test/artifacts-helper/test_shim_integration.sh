@@ -31,9 +31,10 @@ check "npm shell function on its own line in bash.bashrc" grep -q "^npm()" /etc/
 
 # Verify newlines between shim definitions (each function should be on its own line)
 check "each shim function is on its own line" bash -c '
-    # Extract lines containing shim function definitions from bash.bashrc
-    # Each function should be on its own line (not all concatenated together)
-    grep -c "()" /etc/bash.bashrc | grep -qv "^0$"
+    # Count function definitions at line starts - with proper newlines each will start at column 0
+    # The test_shim_integration scenario enables dotnet, npm, and nuget aliases (3 shims)
+    COUNT=$(grep -cE "^[a-z][-a-z]*\(\)" /etc/bash.bashrc)
+    [[ "$COUNT" -ge 3 ]]
 '
 
 # Report results
