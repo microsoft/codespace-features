@@ -24,5 +24,18 @@ check "npm shim sources auth-ado.sh" grep -q "source.*auth-ado.sh" /usr/local/sh
 # Verify the shim directory is in PATH
 check "shim directory in PATH" bash -c '[[ ":$PATH:" == *":/usr/local/share/codespace-shims:"* ]]'
 
+# Verify that shell function shims are written to rc files (not just shim scripts)
+check "npm shell function written to bash.bashrc" grep -q "npm()" /etc/bash.bashrc
+check "dotnet shell function written to bash.bashrc" grep -q "dotnet()" /etc/bash.bashrc
+check "npm shell function on its own line in bash.bashrc" grep -q "^npm()" /etc/bash.bashrc
+
+# Verify newlines between shim definitions (each function should be on its own line)
+check "each shim function is on its own line" bash -c '
+    # Count function definitions at line starts - with proper newlines each will start at column 0
+    # The test_shim_integration scenario enables dotnet, npm, and nuget aliases (3 shims)
+    COUNT=$(grep -cE "^[a-z][-a-z]*\(\)" /etc/bash.bashrc)
+    [[ "$COUNT" -ge 3 ]]
+'
+
 # Report results
 reportResults
