@@ -59,6 +59,17 @@
             }
         }
     },
+    "test_non_root_install": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "remoteUser": "vscode",
+        "features": {
+            "artifacts-helper": {
+                "dotnetAlias": true,
+                "npmAlias": true,
+                "nugetAlias": true
+            }
+        }
+    },
     "test_fallback_execution": {
         "image": "mcr.microsoft.com/devcontainers/base:debian",
         "features": {
