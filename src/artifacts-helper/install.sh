@@ -133,6 +133,7 @@ done
 
 _TEMP_BLOCK=$(mktemp)
 printf '%s' "$ALIASES_BLOCK" > "$_TEMP_BLOCK"
+chmod a+r "$_TEMP_BLOCK"
 
 for TARGET_FILE in "${TARGET_FILES_ARR[@]}"; do
     if [ "${INSTALL_WITH_SUDO}" = "true" ]; then
