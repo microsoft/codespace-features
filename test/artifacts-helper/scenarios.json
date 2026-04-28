@@ -51,6 +51,7 @@
     },
     "test_shim_integration": {
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "remoteUser": "root",
         "features": {
             "artifacts-helper": {
                 "dotnetAlias": true,
