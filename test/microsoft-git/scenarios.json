@@ -1,0 +1,34 @@
+{
+    "latest_stable": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "microsoft-git": {
+                "version": "latest"
+            }
+        }
+    },
+    "old_noarch_deb": {
+        "image": "mcr.microsoft.com/devcontainers/base@sha256:4511e477aa0ca06a16dd2e70e1c5a540d0f23fbcfeea3b9ee6f8819403d9a602",
+        "features": {
+            "microsoft-git": {
+                "version": "2.52.0.vfs.0.4"
+            }
+        }
+    },
+    "multi_digit_vfs": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "microsoft-git": {
+                "version": "2.53.0.vfs.0"
+            }
+        }
+    },
+    "explicit_prerelease": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+        "features": {
+            "microsoft-git": {
+                "version": "2.55.0-rc1.vfs.0.0"
+            }
+        }
+    }
+}
