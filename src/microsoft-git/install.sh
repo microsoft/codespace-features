@@ -30,6 +30,8 @@ check_packages() {
     fi
 }
 
+MICROSOFT_GIT_VERSION_REGEX='[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?\.vfs\.[0-9]+\.[0-9]+'
+
 export DEBIAN_FRONTEND=noninteractive
 
 if command -v tdnf >/dev/null 2>&1; then
@@ -39,26 +41,30 @@ else
 fi
 
 # Partial version matching
-if [ "$(echo "${GIT_VERSION}" | grep -o '\.' | wc -l)" != "2" ]; then
-    requested_version="${GIT_VERSION}"
+requested_version="${GIT_VERSION#v}"
+if ! echo "${requested_version}" | grep -Eq "^${MICROSOFT_GIT_VERSION_REGEX}$"; then
     if [ "${requested_version}" = "latest" ] || [ "${requested_version}" = "lts" ] || [ "${requested_version}" = "current" ]; then
-        # For latest, lts, and current, use the releases API to get the actual latest release
-        GIT_VERSION="$(curl -sSL -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/microsoft/git/releases/latest" | grep -oP '"tag_name":\s*"v\K[0-9]+\.[0-9]+\.[0-9]+\.vfs\.[0-9]+\.[0-9]+"' | tr -d '"')"
+        # For latest, lts, and current, use the releases API to get the actual latest stable release
+        GIT_VERSION="$(curl -sSL -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/microsoft/git/releases/latest" | sed -nE "s/.*\"tag_name\"[[:space:]]*:[[:space:]]*\"v(${MICROSOFT_GIT_VERSION_REGEX})\".*/\1/p")"
     else
-        # For partial versions, use the existing tags logic
-        version_list="$(curl -sSL -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/microsoft/git/tags?per_page=100" | grep -oP '"name":\s*"v\K[0-9]+\.[0-9]+\.[0-9]+\.vfs\.[0-9]+\.[0-9]+"' | tr -d '"' | sort -rV)"
+        # For partial versions, use the releases API so multi-digit VFS and RC releases are included
+        version_list="$(curl -sSL -H "Accept: application/vnd.github.v3+json" "https://api.github.com/repos/microsoft/git/releases?per_page=100" | sed -nE "s/.*\"tag_name\"[[:space:]]*:[[:space:]]*\"v(${MICROSOFT_GIT_VERSION_REGEX})\".*/\1/p" | sort -rV | uniq)"
+        escaped_requested_version="$(echo "${requested_version}" | sed -E 's/[][(){}.^$*+?|\\]/\\&/g')"
         set +e
-        GIT_VERSION="$(echo "${version_list}" | grep -E -m 1 "^${requested_version//./\\.}([\\.\\s]|$)")"
+        GIT_VERSION="$(echo "${version_list}" | grep -E -m 1 "^${escaped_requested_version}([.-]|$)")"
         set -e
         if [ -z "${GIT_VERSION}" ] || ! echo "${version_list}" | grep "^${GIT_VERSION//./\\.}$" > /dev/null 2>&1; then
             echo "Invalid git version: ${requested_version}" >&2
             exit 1
         fi
     fi
-    if [ -z "${GIT_VERSION}" ]; then
-        echo "Invalid git version: ${requested_version}" >&2
-        exit 1
-    fi
+else
+    GIT_VERSION="${requested_version}"
+fi
+
+if [ -z "${GIT_VERSION}" ]; then
+    echo "Invalid git version: ${requested_version}" >&2
+    exit 1
 fi
 
 
@@ -86,8 +92,13 @@ ARCH="$(dpkg --print-architecture)"
 DEB_URL="https://github.com/microsoft/git/releases/download/v${GIT_VERSION}/microsoft-git_${GIT_VERSION}_${ARCH}.deb"
 DEB_FILE="microsoft-git_${GIT_VERSION}_${ARCH}.deb"
 
-# Try arch-specific .deb first, fall back to no-arch .deb for older releases
+# Try arch-specific .deb first, fall back to legacy amd64 .deb for older releases
 if ! wget -q "${DEB_URL}" -O "${DEB_FILE}" 2>/dev/null; then
+    if [ "${ARCH}" != "amd64" ]; then
+        echo "Could not download Microsoft Git ${GIT_VERSION} package for architecture ${ARCH}." >&2
+        echo "Older Microsoft Git releases only published legacy amd64 Debian package assets." >&2
+        exit 1
+    fi
     DEB_URL="https://github.com/microsoft/git/releases/download/v${GIT_VERSION}/microsoft-git_${GIT_VERSION}.deb"
     DEB_FILE="microsoft-git_${GIT_VERSION}.deb"
     wget -q "${DEB_URL}" -O "${DEB_FILE}"
