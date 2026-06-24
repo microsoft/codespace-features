@@ -12,7 +12,7 @@ jobs:
       packages: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: "Publish Features"
         uses: devcontainers/action@v1
