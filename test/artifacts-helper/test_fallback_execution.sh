@@ -28,6 +28,14 @@ check "npm command executes without auth helper" bash -c '
     timeout 10 /usr/local/share/codespace-shims/npm --version 2>&1 | grep -q "[0-9]\+\.[0-9]\+\.[0-9]\+" && echo "SUCCESS" || echo "FAILED"
 ' | grep -q "SUCCESS"
 
+# Corepack must pass the token environment to package managers it dispatches to.
+check "corepack command executes without auth helper" bash -c '
+    export HOME='"$TEST_HOME"'
+    export MAX_WAIT=5
+
+    timeout 10 /usr/local/share/codespace-shims/corepack --version 2>&1 | grep -q "[0-9]\+\.[0-9]\+\.[0-9]\+" && echo "SUCCESS" || echo "FAILED"
+' | grep -q "SUCCESS"
+
 # Test that nuget can be called (may not return version without auth, but should not crash)
 check "nuget command attempts to execute without auth helper" bash -c '
     export HOME='"$TEST_HOME"'
