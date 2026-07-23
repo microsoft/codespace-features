@@ -49,6 +49,11 @@
             "default": true,
             "description": "Create alias for pnpm"
         },
+        "corepackAlias": {
+            "type": "boolean",
+            "default": true,
+            "description": "Create alias for corepack"
+        },
         "azAlias": {
             "type": "boolean",
             "default": true,

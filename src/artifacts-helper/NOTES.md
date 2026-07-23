@@ -1,5 +1,5 @@
 This installs [Azure Artifacts Credential Provider](https://github.com/microsoft/artifacts-credprovider)
-and optionally configures shims which shadow `dotnet`, `nuget`, `npm`, `yarn`, `rush`, `pnpm`, and `az`.
+and optionally configures shims which shadow `dotnet`, `nuget`, `npm`, `yarn`, `rush`, `pnpm`, `corepack`, and `az`.
 These dynamically set an authentication token for pulling artifacts from a feed before running the command.
 
 The `az` shim specifically intercepts `az account get-access-token` requests and uses the `azure-auth-helper`
@@ -20,7 +20,7 @@ The shim will:
 If `AZURE_DEVOPS_EXT_PAT` is already set, the shim will not overwrite it. If `ado-auth-helper` is not
 available after the timeout, the command will still execute (but may fail to authenticate to Azure DevOps).
 
-For `npm`, `yarn`, `rush`, and `pnpm` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
+For `npm`, `yarn`, `rush`, `pnpm`, and `corepack` this requires that your `~/.npmrc` file is configured to use the ${ARTIFACTS_ACCESSTOKEN}
 environment variable for the `authToken`. A helper script has been added that you can use to write your `~/.npmrc`
 file during your setup process, though there are many ways you could accomplish this. To use the script, run it like
 this:

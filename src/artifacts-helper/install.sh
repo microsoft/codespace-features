@@ -11,6 +11,7 @@ ALIAS_YARN="${YARNALIAS:-"true"}"
 ALIAS_NPX="${NPXALIAS:-"true"}"
 ALIAS_RUSH="${RUSHALIAS:-"true"}"
 ALIAS_PNPM="${PNPMALIAS:-"true"}"
+ALIAS_COREPACK="${COREPACKALIAS:-"true"}"
 ALIAS_AZ="${AZALIAS:-"true"}"
 INSTALL_PIP_HELPER="${PYTHON:-"false"}"
 SHIM_DIRECTORY="${SHIMDIRECTORY:-"/usr/local/share/codespace-shims/"}"
@@ -39,6 +40,9 @@ fi
 if [ "${ALIAS_PNPM}" = "true" ]; then
     ALIASES_ARR+=('pnpm')
     ALIASES_ARR+=('pnpx')
+fi
+if [ "${ALIAS_COREPACK}" = "true" ]; then
+    ALIASES_ARR+=('corepack')
 fi
 if [ "${ALIAS_AZ}" = "true" ]; then
     ALIASES_ARR+=('az')
