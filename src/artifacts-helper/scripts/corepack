@@ -1,15 +1,40 @@
 #!/bin/bash
 
+source "$(dirname "$0")"/resolve-shim.sh
+
 # If ACTIONS_ID_TOKEN_REQUEST_URL is set, we're in GitHub Actions - skip Azure DevOps setup
+if [ -z "${ACTIONS_ID_TOKEN_REQUEST_URL}" ]; then
+  source "$(dirname "$0")"/auth-ado.sh
+fi
+
+# Corepack otherwise uses `which corepack`, which resolves to this shim and causes
+# enable/disable to modify the protected shim directory instead of Node's bin directory.
+COREPACK_EXE="$(resolve_shim)"
+COREPACK_ARGS=("$@")
+case "${1:-}" in
+  enable|disable)
+    INSTALL_DIRECTORY_SET=false
+    for arg in "${COREPACK_ARGS[@]:1}"; do
+      if [[ "${arg}" == "--install-directory" || "${arg}" == --install-directory=* ]]; then
+        INSTALL_DIRECTORY_SET=true
+        break
+      fi
+    done
+
+    if [[ "${INSTALL_DIRECTORY_SET}" == "false" ]]; then
+      COREPACK_ARGS=(
+        "${1}"
+        "--install-directory"
+        "$(dirname "${COREPACK_EXE}")"
+        "${COREPACK_ARGS[@]:1}"
+      )
+    fi
+    ;;
+esac
+
 if [ -n "${ACTIONS_ID_TOKEN_REQUEST_URL}" ]; then
-  source "$(dirname "$0")"/resolve-shim.sh
-  COREPACK_EXE="$(resolve_shim)"
-  "${COREPACK_EXE}" "$@"
+  "${COREPACK_EXE}" "${COREPACK_ARGS[@]}"
   exit $?
 fi
 
-source "$(dirname "$0")"/auth-ado.sh
-source "$(dirname "$0")"/resolve-shim.sh
-
-COREPACK_EXE="$(resolve_shim)"
-ARTIFACTS_ACCESSTOKEN="${ARTIFACTS_ACCESSTOKEN:-}" "${COREPACK_EXE}" "$@"
+ARTIFACTS_ACCESSTOKEN="${ARTIFACTS_ACCESSTOKEN:-}" "${COREPACK_EXE}" "${COREPACK_ARGS[@]}"

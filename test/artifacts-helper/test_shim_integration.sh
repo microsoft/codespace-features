@@ -36,6 +36,35 @@ check "dotnet alias has quoted path and passes args" grep -q 'dotnet() { ".*/dot
 check "npm alias has quoted path and passes args" grep -q 'npm() { ".*/npm" "\$@"; }' /etc/bash.bashrc
 check "corepack alias has quoted path and passes args" grep -q 'corepack() { ".*/corepack" "\$@"; }' /etc/bash.bashrc
 
+# Verify Corepack lifecycle commands target the real binary directory rather than the shim directory.
+check "corepack enable targets the real binary directory" bash -c '
+    TEST_DIR=$(mktemp -d)
+    trap "rm -rf \"$TEST_DIR\"" EXIT
+    mkdir -p "$TEST_DIR/bin"
+    printf "#!/bin/bash\nprintf \"%%s\\n\" \"\$@\" > \"%s/args\"\n" "$TEST_DIR" > "$TEST_DIR/bin/corepack"
+    chmod +x "$TEST_DIR/bin/corepack"
+
+    PATH="/usr/local/share/codespace-shims:$TEST_DIR/bin:/usr/bin:/bin" \
+      ACTIONS_ID_TOKEN_REQUEST_URL=test \
+      /usr/local/share/codespace-shims/corepack enable pnpm
+
+    diff -u <(printf "enable\n--install-directory\n%s/bin\npnpm\n" "$TEST_DIR") "$TEST_DIR/args"
+'
+
+check "corepack preserves an explicit install directory" bash -c '
+    TEST_DIR=$(mktemp -d)
+    trap "rm -rf \"$TEST_DIR\"" EXIT
+    mkdir -p "$TEST_DIR/bin"
+    printf "#!/bin/bash\nprintf \"%%s\\n\" \"\$@\" > \"%s/args\"\n" "$TEST_DIR" > "$TEST_DIR/bin/corepack"
+    chmod +x "$TEST_DIR/bin/corepack"
+
+    PATH="/usr/local/share/codespace-shims:$TEST_DIR/bin:/usr/bin:/bin" \
+      ACTIONS_ID_TOKEN_REQUEST_URL=test \
+      /usr/local/share/codespace-shims/corepack disable --install-directory /tmp/corepack yarn
+
+    diff -u <(printf "disable\n--install-directory\n/tmp/corepack\nyarn\n") "$TEST_DIR/args"
+'
+
 # Verify newlines between shim definitions (each function should be on its own line)
 check "each shim function is on its own line" bash -c '
     # Count function definitions at line starts - with proper newlines each will start at column 0
