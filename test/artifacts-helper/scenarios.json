@@ -56,7 +56,8 @@
             "artifacts-helper": {
                 "dotnetAlias": true,
                 "npmAlias": true,
-                "nugetAlias": true
+                "nugetAlias": true,
+                "corepackAlias": true
             }
         }
     },
@@ -79,7 +80,8 @@
             "artifacts-helper": {
                 "dotnetAlias": true,
                 "npmAlias": true,
-                "nugetAlias": true
+                "nugetAlias": true,
+                "corepackAlias": true
             }
         }
     },

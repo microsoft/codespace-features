@@ -24,7 +24,7 @@ Configures Codespace to authenticate with Azure Artifact feeds
 | npxAlias | Create alias for npx | boolean | true |
 | rushAlias | Create alias for rush | boolean | true |
 | pnpmAlias | Create alias for pnpm | boolean | true |
-| corepackAlias | Create alias for corepack | boolean | true |
+| corepackAlias | Create alias for corepack | boolean | false |
 | azAlias | Create alias for az (Azure CLI) | boolean | true |
 | shimDirectory | Directory where the shims will be installed. This must be in $PATH, and needs to be as early as possible in priority for the scripts to override the base executables. | string | /usr/local/share/codespace-shims |
 | targetFiles | Comma separated list of files to write to. Default is '/etc/bash.bashrc,/etc/zsh/zshrc' for root and '~/.bashrc,~/.zshrc' for non-root | string | DEFAULT |
