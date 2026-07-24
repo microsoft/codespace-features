@@ -7,6 +7,7 @@ source dev-container-features-test-lib || exit 1
 check "dotnet shim exists" test -f /usr/local/share/codespace-shims/dotnet
 check "npm shim exists" test -f /usr/local/share/codespace-shims/npm
 check "nuget shim exists" test -f /usr/local/share/codespace-shims/nuget
+check "corepack shim is disabled by default" test ! -e /usr/local/share/codespace-shims/corepack
 
 # Test that auth-ado.sh can be sourced without exiting the shell
 export MAX_WAIT=5
