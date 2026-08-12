@@ -50,7 +50,7 @@ jobs:
           python-versions: "3.8, 3.9, 3.10, 3.11, 3.12, pypy-3.9, pypy-3.10"
 
       - name: Setup PDM
-        uses: pdm-project/setup-pdm@94a823180e06fcde4ad29308721954a521c96ed0 # v4.4
+        uses: pdm-project/setup-pdm@973541a5febeafcfdadf8a51211435be6ecfd90f # v4.5
         with:
           version: "2.15.1"
           python-version-file: "src/artifacts-helper/codespaces_artifacts_helper_keyring/pyproject.toml"
