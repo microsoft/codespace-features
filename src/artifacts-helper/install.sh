@@ -38,6 +38,7 @@ if [ "${ALIAS_RUSH}" = "true" ]; then
     ALIASES_ARR+=('rush-pnpm')
 fi
 if [ "${ALIAS_PNPM}" = "true" ]; then
+    ALIASES_ARR+=('pn')
     ALIASES_ARR+=('pnpm')
     ALIASES_ARR+=('pnpx')
 fi
