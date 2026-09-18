@@ -20,6 +20,7 @@ check "dotnet shim handles missing auth helper" bash -c '
 # Test that the shim scripts properly source auth-ado.sh
 check "dotnet shim sources auth-ado.sh" grep -q "source.*auth-ado.sh" /usr/local/share/codespace-shims/dotnet
 check "npm shim sources auth-ado.sh" grep -q "source.*auth-ado.sh" /usr/local/share/codespace-shims/npm
+check "pn shim sources auth-ado.sh" grep -q "source.*auth-ado.sh" /usr/local/share/codespace-shims/pn
 check "corepack shim sources auth-ado.sh" grep -q "source.*auth-ado.sh" /usr/local/share/codespace-shims/corepack
 
 # Verify the shim directory is in PATH
@@ -27,6 +28,7 @@ check "shim directory in PATH" bash -c '[[ ":$PATH:" == *":/usr/local/share/code
 
 # Verify that shell function shims are written to rc files (not just shim scripts)
 check "npm shell function written to bash.bashrc" grep -q "npm()" /etc/bash.bashrc
+check "pn shell function written to bash.bashrc" grep -q "pn()" /etc/bash.bashrc
 check "corepack shell function written to bash.bashrc" grep -q "corepack()" /etc/bash.bashrc
 check "dotnet shell function written to bash.bashrc" grep -q "dotnet()" /etc/bash.bashrc
 check "npm shell function on its own line in bash.bashrc" grep -q "^npm()" /etc/bash.bashrc
@@ -34,7 +36,22 @@ check "npm shell function on its own line in bash.bashrc" grep -q "^npm()" /etc/
 # Verify aliases include proper quoting and argument passing ($@)
 check "dotnet alias has quoted path and passes args" grep -q 'dotnet() { ".*/dotnet" "\$@"; }' /etc/bash.bashrc
 check "npm alias has quoted path and passes args" grep -q 'npm() { ".*/npm" "\$@"; }' /etc/bash.bashrc
+check "pn alias has quoted path and passes args" grep -q 'pn() { ".*/pn" "\$@"; }' /etc/bash.bashrc
 check "corepack alias has quoted path and passes args" grep -q 'corepack() { ".*/corepack" "\$@"; }' /etc/bash.bashrc
+
+check "pn shim delegates to the underlying pn command" bash -c '
+    TEST_DIR=$(mktemp -d)
+    trap "rm -rf \"$TEST_DIR\"" EXIT
+    mkdir -p "$TEST_DIR/bin"
+    printf "#!/bin/bash\nprintf \"%%s\\n\" \"\$@\" > \"%s/args\"\n" "$TEST_DIR" > "$TEST_DIR/bin/pn"
+    chmod +x "$TEST_DIR/bin/pn"
+
+    PATH="/usr/local/share/codespace-shims:$TEST_DIR/bin:/usr/bin:/bin" \
+      ACTIONS_ID_TOKEN_REQUEST_URL=test \
+      /usr/local/share/codespace-shims/pn install --frozen-lockfile
+
+    diff -u <(printf "install\n--frozen-lockfile\n") "$TEST_DIR/args"
+'
 
 # Verify Corepack lifecycle commands target the real binary directory rather than the shim directory.
 check "corepack enable targets the real binary directory" bash -c '
