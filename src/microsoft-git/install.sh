@@ -72,7 +72,7 @@ echo "Downloading Microsoft Git ${GIT_VERSION}..."
 
 if command -v tdnf >/dev/null 2>&1; then
     # We need to build Git from source release on Mariner
-    tdnf install -y wget tar git pcre2 binutils build-essential openssl-devel expat-devel curl-devel python3-devel gettext asciidoc xmlto cronie
+    tdnf install -y wget tar git pcre2 binutils build-essential rust openssl-devel expat-devel curl-devel python3-devel gettext asciidoc xmlto cronie
     wget -q https://github.com/microsoft/git/archive/refs/tags/v${GIT_VERSION}.tar.gz
     tar xvf v${GIT_VERSION}.tar.gz -C /usr
     rm v${GIT_VERSION}.tar.gz
@@ -87,21 +87,32 @@ fi
 # Install for Debian/Ubuntu
 check_packages wget git
 
-# Detect host architecture for arch-specific .deb packages (added in v2.52.0.vfs.0.5+)
+# Support current Linux names, older arch-specific names, and legacy amd64 packages.
 ARCH="$(dpkg --print-architecture)"
-DEB_URL="https://github.com/microsoft/git/releases/download/v${GIT_VERSION}/microsoft-git_${GIT_VERSION}_${ARCH}.deb"
-DEB_FILE="microsoft-git_${GIT_VERSION}_${ARCH}.deb"
+DEB_FILES=(
+    "microsoft-git_${GIT_VERSION}_linux_${ARCH}.deb"
+    "microsoft-git_${GIT_VERSION}_${ARCH}.deb"
+)
+if [ "${ARCH}" = "amd64" ]; then
+    DEB_FILES+=("microsoft-git_${GIT_VERSION}.deb")
+fi
 
-# Try arch-specific .deb first, fall back to legacy amd64 .deb for older releases
-if ! wget -q "${DEB_URL}" -O "${DEB_FILE}" 2>/dev/null; then
-    if [ "${ARCH}" != "amd64" ]; then
-        echo "Could not download Microsoft Git ${GIT_VERSION} package for architecture ${ARCH}." >&2
-        echo "Older Microsoft Git releases only published legacy amd64 Debian package assets." >&2
-        exit 1
+DEB_FILE=""
+for candidate in "${DEB_FILES[@]}"; do
+    DEB_URL="https://github.com/microsoft/git/releases/download/v${GIT_VERSION}/${candidate}"
+    echo "Trying ${DEB_URL}..."
+    if wget -q "${DEB_URL}" -O "${candidate}" 2>/dev/null; then
+        DEB_FILE="${candidate}"
+        break
     fi
-    DEB_URL="https://github.com/microsoft/git/releases/download/v${GIT_VERSION}/microsoft-git_${GIT_VERSION}.deb"
-    DEB_FILE="microsoft-git_${GIT_VERSION}.deb"
-    wget -q "${DEB_URL}" -O "${DEB_FILE}"
+    rm -f "${candidate}"
+done
+
+if [ -z "${DEB_FILE}" ]; then
+    echo "Could not download Microsoft Git ${GIT_VERSION} package for architecture ${ARCH}." >&2
+    echo "Attempted Debian package assets: ${DEB_FILES[*]}" >&2
+    echo "Legacy packages without an architecture suffix are only supported on amd64." >&2
+    exit 1
 fi
 
 dpkg -i "${DEB_FILE}"
