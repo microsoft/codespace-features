@@ -1,4 +1,20 @@
 {
+    "linux_named_deb": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu24.04",
+        "features": {
+            "microsoft-git": {
+                "version": "2.56.0.vfs.0.2"
+            }
+        }
+    },
+    "old_arch_deb": {
+        "image": "mcr.microsoft.com/devcontainers/base:ubuntu24.04",
+        "features": {
+            "microsoft-git": {
+                "version": "2.55.0.vfs.0.10"
+            }
+        }
+    },
     "latest_stable": {
         "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
         "features": {
