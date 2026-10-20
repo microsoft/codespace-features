@@ -72,7 +72,7 @@ echo "Downloading Microsoft Git ${GIT_VERSION}..."
 
 if command -v tdnf >/dev/null 2>&1; then
     # We need to build Git from source release on Mariner
-    tdnf install -y wget tar git pcre2 binutils build-essential openssl-devel expat-devel curl-devel python3-devel gettext asciidoc xmlto cronie
+    tdnf install -y wget tar git pcre2 binutils build-essential rust openssl-devel expat-devel curl-devel python3-devel gettext asciidoc xmlto cronie
     wget -q https://github.com/microsoft/git/archive/refs/tags/v${GIT_VERSION}.tar.gz
     tar xvf v${GIT_VERSION}.tar.gz -C /usr
     rm v${GIT_VERSION}.tar.gz
